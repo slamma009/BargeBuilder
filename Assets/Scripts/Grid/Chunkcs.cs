@@ -41,17 +41,19 @@ public class ChunkObject
 
     public float LastUpdateTimestamp;
 
-    public void UpdateBlock()
+    public void UpdateBlock(ChunkHandler chunkController, Vector2 ChunkPos, Vector3 ChunkGridPos)
     {
         // TODO: Check if referenced chunkObject still exists before removing
         if (IsReference && ChunkHolder.ChunkController.Chunks[ReferenceChunkPosition].ChunkObjects[(int)ReferenceObjectPosition.x, (int)ReferenceObjectPosition.y, (int)ReferenceObjectPosition.z] == null)
         {
             ChunkHolder.ChunkObjects[(int)SelfObjectPosition.x, (int)SelfObjectPosition.y, (int)SelfObjectPosition.z] = null;
-            Debug.Log("Removing reference in chunk " + ReferenceChunkPosition + " from chunkGridPosition " + ReferenceObjectPosition);
+            //Debug.Log("Removing reference in chunk " + ReferenceChunkPosition + " from chunkGridPosition " + ReferenceObjectPosition);
         }
 
-
-        Object.UpdateBlock();
+        if (Object != null)
+        {
+            Object.UpdateBlock(chunkController, ChunkPos, ChunkGridPos);
+        }
     }
 
 }

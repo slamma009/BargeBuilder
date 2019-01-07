@@ -5,6 +5,7 @@ TagManager:
   serializedVersion: 2
   tags:
   - Placable
+  - ConveyorWall
   layers:
   - Default
   - TransparentFX
@@ -17,7 +18,7 @@ TagManager:
   - PostProcessing
   - Grabbable
   - Placable
-  - 
+  - ConveyorWall
   - 
   - 
   - 

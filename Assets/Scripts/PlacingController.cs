@@ -67,7 +67,7 @@ public class PlacingController : MonoBehaviour {
 
             if (DestructionMode)
             {
-                if (hit.collider.transform.GetComponent<PlacableObject>() != null)
+                if (hit.collider.tag == "Placable")
                 {
                     GhostDeleteMarker.transform.position = hit.collider.transform.position;
                     // Check for the right hand trigger

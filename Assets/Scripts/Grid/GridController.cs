@@ -50,7 +50,7 @@ public class GridController : MonoBehaviour {
         // Add the object to the chunkobjects in the appropiate chunk
         PlacableObject placableObject = newObj.GetComponent<PlacableObject>();
         ChunkController.Chunks[chunkPosition].ChunkObjects[(int)chunkGridPosition.x, (int)chunkGridPosition.y, (int)chunkGridPosition.z] = new ChunkObject(placableObject, ChunkController.Chunks[chunkPosition]);
-        Debug.Log("Object placed in chunk " + chunkPosition + "at ChunkGridPosition " + chunkGridPosition);
+        //Debug.Log("Object placed in chunk " + chunkPosition + "at ChunkGridPosition " + chunkGridPosition);
 
         // For each anchor reference that chunk to the main chunk object.Used for multi - block objects
         foreach (Transform anchor in placableObject.GridAnchors)
@@ -64,10 +64,11 @@ public class GridController : MonoBehaviour {
                 );
             
             ChunkController.Chunks[anchorChunkPosition].ChunkObjects[(int)anchorChunkGridPosition.x, (int)anchorChunkGridPosition.y, (int)anchorChunkGridPosition.z] = new ChunkObject(chunkPosition, chunkGridPosition, anchorChunkGridPosition, ChunkController.Chunks[chunkPosition]);
-            Debug.Log(" > Object referenced in chunk " + chunkPosition + "at ChunkGridPosition " + chunkGridPosition);
+            //Debug.Log(" > Object referenced in chunk " + chunkPosition + "at ChunkGridPosition " + chunkGridPosition);
         }
 
-        ChunkController.Chunks[chunkPosition].ChunkObjects[(int)chunkGridPosition.x, (int)chunkGridPosition.y, (int)chunkGridPosition.z].UpdateBlock();
+        UpdateBlocks(chunkPosition, chunkGridPosition);
+        
 
 
     }
@@ -82,8 +83,16 @@ public class GridController : MonoBehaviour {
                 gridPosition.y,
                 (gridPosition.z - (chunkPosition.y * ChunkController.ChunkSize)) * -1
             );
-        Debug.Log("Object removed in chunk " + chunkPosition + "at ChunkGridPosition " + chunkGridPosition);
+        //Debug.Log("Object removed in chunk " + chunkPosition + "at ChunkGridPosition " + chunkGridPosition);
         // Destroy the object in question, and remove it from the chunkobjects list.
+        if (ChunkController.Chunks[chunkPosition].ChunkObjects[(int)chunkGridPosition.x, (int)chunkGridPosition.y, (int)chunkGridPosition.z].IsReference)
+        {
+            Vector3 newChunkPos = ChunkController.Chunks[chunkPosition].ChunkObjects[(int)chunkGridPosition.x, (int)chunkGridPosition.y, (int)chunkGridPosition.z].ReferenceChunkPosition;
+            Vector3 newChunkGridPos = ChunkController.Chunks[chunkPosition].ChunkObjects[(int)chunkGridPosition.x, (int)chunkGridPosition.y, (int)chunkGridPosition.z].ReferenceObjectPosition;
+
+            chunkPosition = newChunkPos;
+            chunkGridPosition = newChunkGridPos;
+        }
         Destroy(ChunkController.Chunks[chunkPosition].ChunkObjects[(int)chunkGridPosition.x, (int)chunkGridPosition.y, (int)chunkGridPosition.z].Object.gameObject);
         ChunkController.Chunks[chunkPosition].ChunkObjects[(int)chunkGridPosition.x, (int)chunkGridPosition.y, (int)chunkGridPosition.z] = null;
         UpdateBlocks(chunkPosition, chunkGridPosition);
@@ -145,7 +154,7 @@ public class GridController : MonoBehaviour {
         // now that we've called every side block, update ourselves.
         if (ChunkController.Chunks[chunkPosition].ChunkObjects[(int)chunkGridPosition.x, (int)chunkGridPosition.y, (int)chunkGridPosition.z] != null)
         {
-            ChunkController.Chunks[chunkPosition].ChunkObjects[(int)chunkGridPosition.x, (int)chunkGridPosition.y, (int)chunkGridPosition.z].UpdateBlock();
+            ChunkController.Chunks[chunkPosition].ChunkObjects[(int)chunkGridPosition.x, (int)chunkGridPosition.y, (int)chunkGridPosition.z].UpdateBlock(ChunkController, chunkPosition, chunkGridPosition);
         }
     }
 

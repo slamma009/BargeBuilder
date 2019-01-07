@@ -32,7 +32,7 @@ public class ChunkHandler
                 if (!Chunks.ContainsKey(newChunkPos))
                 {
                     Chunks.Add(newChunkPos, new Chunk(ChunkSize, this));
-                    Debug.Log("New Chunk created at (" + newChunkPos.x + ", " + newChunkPos.y + ")");
+                    //Debug.Log("New Chunk created at (" + newChunkPos.x + ", " + newChunkPos.y + ")");
                 }
             }
         }

@@ -56,7 +56,6 @@ public class GodView : PlacingController
             // Check to exit placing mode
             if (Input.GetKeyDown(KeyCode.F))
             {
-                Debug.Log("Switch");
                 EnablePlacingMode(true);
             }
 
