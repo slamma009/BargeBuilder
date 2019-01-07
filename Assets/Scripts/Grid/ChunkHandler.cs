@@ -38,6 +38,14 @@ public class ChunkHandler
         }
     }
 
+    public Vector3 ConvertWorldGridPositionToChunkGridPosition(Vector2 chunkPosition, Vector3 gridPosition)
+    {
+        return new Vector3(
+               gridPosition.x - (chunkPosition.x * ChunkSize),
+               gridPosition.y,
+               (gridPosition.z - (chunkPosition.y * ChunkSize)) * -1
+           );
+    }
     // Convert the grid position to the chunk position.
     public Vector2 ConvertGridPositionToChunkPosition(Vector3 gridPosition)
     {

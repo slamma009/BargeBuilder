@@ -41,7 +41,7 @@ public class ChunkObject
 
     public float LastUpdateTimestamp;
 
-    public void UpdateBlock(ChunkHandler chunkController, Vector2 ChunkPos, Vector3 ChunkGridPos)
+    public void UpdateBlock(GridController gridController, Vector2 ChunkPos, Vector3 ChunkGridPos)
     {
         // TODO: Check if referenced chunkObject still exists before removing
         if (IsReference && ChunkHolder.ChunkController.Chunks[ReferenceChunkPosition].ChunkObjects[(int)ReferenceObjectPosition.x, (int)ReferenceObjectPosition.y, (int)ReferenceObjectPosition.z] == null)
@@ -52,7 +52,7 @@ public class ChunkObject
 
         if (Object != null)
         {
-            Object.UpdateBlock(chunkController, ChunkPos, ChunkGridPos);
+            Object.UpdateBlock(gridController, ChunkPos, ChunkGridPos);
         }
     }
 

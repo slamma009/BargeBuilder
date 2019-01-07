@@ -33,7 +33,7 @@ public class PlacableObject : MonoBehaviour {
         }
     }
 
-    public virtual void UpdateBlock(ChunkHandler chunkController, Vector2 ChunkPos, Vector3 ChunkGridPos)
+    public virtual void UpdateBlock(GridController gridController, Vector2 ChunkPos, Vector3 ChunkGridPos)
     {
         if(!Placed)
         {

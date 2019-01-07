@@ -6,6 +6,8 @@ using UnityEngine;
 public class ConveyorBelt : PlacableObject
 {
     public List<GameObject> Walls;
+    public int MaxItemsOnBelt = 3;
+
     [HideInInspector]
     public List<Rigidbody> ActiveRigidBodies = new List<Rigidbody>();
 
@@ -43,7 +45,7 @@ public class ConveyorBelt : PlacableObject
         }
     }
 
-    public override void UpdateBlock(ChunkHandler chunkController, Vector2 ChunkPos, Vector3 ChunkGridPos)
+    public override void UpdateBlock(GridController gridController, Vector2 ChunkPos, Vector3 ChunkGridPos)
     {
         //Debug.Log("Checking block in chunk " + ChunkPos + " in grid position " + ChunkGridPos);
         //Vector3 forward = transform.forward;
@@ -119,7 +121,7 @@ public class ConveyorBelt : PlacableObject
         //}
 
        // if (chunkController.Chunks[ChunkPos].ChunkObjects[])
-        base.UpdateBlock(chunkController, ChunkPos, ChunkGridPos);
+        base.UpdateBlock(gridController, ChunkPos, ChunkGridPos);
     }
 }
 
