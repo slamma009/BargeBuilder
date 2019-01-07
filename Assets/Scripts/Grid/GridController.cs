@@ -66,7 +66,10 @@ public class GridController : MonoBehaviour {
             ChunkController.Chunks[anchorChunkPosition].ChunkObjects[(int)anchorChunkGridPosition.x, (int)anchorChunkGridPosition.y, (int)anchorChunkGridPosition.z] = new ChunkObject(chunkPosition, chunkGridPosition, anchorChunkGridPosition, ChunkController.Chunks[chunkPosition]);
             Debug.Log(" > Object referenced in chunk " + chunkPosition + "at ChunkGridPosition " + chunkGridPosition);
         }
-        
+
+        ChunkController.Chunks[chunkPosition].ChunkObjects[(int)chunkGridPosition.x, (int)chunkGridPosition.y, (int)chunkGridPosition.z].UpdateBlock();
+
+
     }
 
     public void DeleteObject(Vector3 worldPosition)

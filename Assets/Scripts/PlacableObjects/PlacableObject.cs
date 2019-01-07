@@ -5,8 +5,9 @@ using UnityEngine;
 public class PlacableObject : MonoBehaviour {
 
     public Transform[] GridAnchors;
+    protected bool Placed = false;
 
-	public void MakeGhost(Material ghostMaterial)
+    public void MakeGhost(Material ghostMaterial)
     {
         disableChildren(transform, ghostMaterial);
     }
@@ -29,6 +30,14 @@ public class PlacableObject : MonoBehaviour {
         for(var i=0; i< childTransform.childCount; ++i)
         {
             disableChildren(childTransform.GetChild(i), ghostMaterial);
+        }
+    }
+
+    public virtual void UpdateBlock()
+    {
+        if(!Placed)
+        {
+            Placed = true;
         }
     }
 }

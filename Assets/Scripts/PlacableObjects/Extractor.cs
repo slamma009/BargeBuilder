@@ -11,7 +11,6 @@ public class Extractor : PlacableObject
     private float TimeSinceLastSpawn;
     private float SecondsToSpawn;
 
-    public bool Placed = false;
 
     public void Start()
     {

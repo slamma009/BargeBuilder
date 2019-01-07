@@ -49,6 +49,9 @@ public class ChunkObject
             ChunkHolder.ChunkObjects[(int)SelfObjectPosition.x, (int)SelfObjectPosition.y, (int)SelfObjectPosition.z] = null;
             Debug.Log("Removing reference in chunk " + ReferenceChunkPosition + " from chunkGridPosition " + ReferenceObjectPosition);
         }
+
+
+        Object.UpdateBlock();
     }
 
 }

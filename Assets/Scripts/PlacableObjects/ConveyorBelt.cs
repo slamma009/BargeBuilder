@@ -3,7 +3,10 @@ using UnityEngine;
 
 public class ConveyorBelt : PlacableObject
 {
+    public GameObject[] Walls;
+    [HideInInspector]
     public List<Rigidbody> ActiveRigidBodies = new List<Rigidbody>();
+    
     private void OnTriggerEnter(Collider other)
     {
         Rigidbody rigid = other.GetComponent<Rigidbody>();
@@ -27,6 +30,12 @@ public class ConveyorBelt : PlacableObject
         foreach (Rigidbody rigid in ActiveRigidBodies) {
             rigid.AddForce(transform.forward * 10 * Time.deltaTime);
         }
+    }
+
+    public override void UpdateBlock()
+    {
+
+        base.UpdateBlock();
     }
 }
 
