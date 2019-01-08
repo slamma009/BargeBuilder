@@ -50,7 +50,7 @@ public class Extractor : PlacableObject
         // Find the output object, and make sure it exists and is a conveyor belt.
         if (gridController.ChunkController.Chunks.ContainsKey(outputChunkPosition))
         {
-            ChunkObject chunkObject = gridController.ChunkController.Chunks[outputChunkPosition].ChunkObjects[outputChunkGridPosition.x, outputChunkGridPosition.y, outputChunkGridPosition.z];
+            ChunkObject chunkObject = gridController.ChunkController.Chunks[outputChunkPosition].ChunkObjects[outputChunkGridPosition];
             if (chunkObject == null || chunkObject.Object == null)
             {
                 Debug.Log("Nothing found, removing reference.");

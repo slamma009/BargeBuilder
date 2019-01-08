@@ -6,11 +6,11 @@ using UnityEngine;
 
 public class Chunk
 {
-    public ChunkObject[,,] ChunkObjects;
+    public Array3d<ChunkObject> ChunkObjects;
     public ChunkHandler ChunkController;
     public Chunk(int chunkSize, ChunkHandler chunkHandler)
     {
-        ChunkObjects = new ChunkObject[chunkSize, chunkSize, chunkSize];
+        ChunkObjects = new Array3d<ChunkObject>(chunkSize);
         ChunkController = chunkHandler;
     }
 }
@@ -44,9 +44,9 @@ public class ChunkObject
     public void UpdateBlock(GridController gridController, Vector2 ChunkPos, Vector3 ChunkGridPos)
     {
         // TODO: Check if referenced chunkObject still exists before removing
-        if (IsReference && ChunkHolder.ChunkController.Chunks[ReferenceChunkPosition].ChunkObjects[ReferenceObjectPosition.x, ReferenceObjectPosition.y, ReferenceObjectPosition.z] == null)
+        if (IsReference && ChunkHolder.ChunkController.Chunks[ReferenceChunkPosition].ChunkObjects[ReferenceObjectPosition] == null)
         {
-            ChunkHolder.ChunkObjects[SelfObjectPosition.x, SelfObjectPosition.y, SelfObjectPosition.z] = null;
+            ChunkHolder.ChunkObjects[SelfObjectPosition] = null;
             //Debug.Log("Removing reference in chunk " + ReferenceChunkPosition + " from chunkGridPosition " + ReferenceObjectPosition);
         }
 
@@ -56,4 +56,24 @@ public class ChunkObject
         }
     }
 
+}
+
+public class Array3d<T>
+{
+    private T[,,] Objects;
+    public Array3d()
+    {
+        Objects = new T[16, 16, 16];
+    }
+
+    public Array3d(int chunkSize)
+    {
+        Objects = new T[chunkSize, chunkSize, chunkSize];
+    }
+
+    public T this[Vector3Int vector]
+    {
+        get { return this.Objects[vector.x, vector.y, vector.z]; }
+        set { this.Objects[vector.x, vector.y, vector.z] = value; }
+    }
 }
