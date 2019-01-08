@@ -23,7 +23,7 @@ public class ChunkObject
         ChunkHolder = chunk;
     }
 
-    public ChunkObject(Vector2 chunkPos, Vector3 objPos, Vector3 selfObjPos, Chunk chunk)
+    public ChunkObject(Vector2 chunkPos, Vector3Int objPos, Vector3Int selfObjPos, Chunk chunk)
     {
         IsReference = true;
         SelfObjectPosition = selfObjPos;
@@ -36,17 +36,17 @@ public class ChunkObject
     public Chunk ChunkHolder;
     public bool IsReference;
     public Vector2 ReferenceChunkPosition;
-    public Vector3 ReferenceObjectPosition;
-    public Vector3 SelfObjectPosition;
+    public Vector3Int ReferenceObjectPosition;
+    public Vector3Int SelfObjectPosition;
 
     public float LastUpdateTimestamp;
 
     public void UpdateBlock(GridController gridController, Vector2 ChunkPos, Vector3 ChunkGridPos)
     {
         // TODO: Check if referenced chunkObject still exists before removing
-        if (IsReference && ChunkHolder.ChunkController.Chunks[ReferenceChunkPosition].ChunkObjects[(int)ReferenceObjectPosition.x, (int)ReferenceObjectPosition.y, (int)ReferenceObjectPosition.z] == null)
+        if (IsReference && ChunkHolder.ChunkController.Chunks[ReferenceChunkPosition].ChunkObjects[ReferenceObjectPosition.x, ReferenceObjectPosition.y, ReferenceObjectPosition.z] == null)
         {
-            ChunkHolder.ChunkObjects[(int)SelfObjectPosition.x, (int)SelfObjectPosition.y, (int)SelfObjectPosition.z] = null;
+            ChunkHolder.ChunkObjects[SelfObjectPosition.x, SelfObjectPosition.y, SelfObjectPosition.z] = null;
             //Debug.Log("Removing reference in chunk " + ReferenceChunkPosition + " from chunkGridPosition " + ReferenceObjectPosition);
         }
 

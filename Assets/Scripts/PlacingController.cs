@@ -100,13 +100,9 @@ public class PlacingController : MonoBehaviour {
                             {
                                 GridPositionObject anchorGridPositionObject = gridController.GetGridPosition(anchor.position);
                                 Vector2 chunkPosition = gridController.ChunkController.ConvertGridPositionToChunkPosition(anchorGridPositionObject.GridPosition);
-                                Vector3 chunkGridPosition = new Vector3(
-                                        anchorGridPositionObject.GridPosition.x - (chunkPosition.x * gridController.ChunkController.ChunkSize),
-                                        anchorGridPositionObject.GridPosition.y,
-                                        (anchorGridPositionObject.GridPosition.z - (chunkPosition.y * gridController.ChunkController.ChunkSize)) * -1
-                                    );
+                                Vector3Int chunkGridPosition = gridController.ChunkController.ConvertWorldGridPositionToChunkGridPosition(chunkPosition, anchorGridPositionObject.GridPosition);
 
-                                if (gridController.ChunkController.Chunks[chunkPosition].ChunkObjects[(int)chunkGridPosition.x, (int)chunkGridPosition.y, (int)chunkGridPosition.z] != null)
+                                if (gridController.ChunkController.Chunks[chunkPosition].ChunkObjects[chunkGridPosition.x, chunkGridPosition.y, chunkGridPosition.z] != null)
                                 {
                                     objectCantBePlaced = true;
                                 }

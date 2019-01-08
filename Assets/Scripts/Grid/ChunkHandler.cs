@@ -38,12 +38,12 @@ public class ChunkHandler
         }
     }
 
-    public Vector3 ConvertWorldGridPositionToChunkGridPosition(Vector2 chunkPosition, Vector3 gridPosition)
+    public Vector3Int ConvertWorldGridPositionToChunkGridPosition(Vector2 chunkPosition, Vector3 gridPosition)
     {
-        return new Vector3(
-               gridPosition.x - (chunkPosition.x * ChunkSize),
-               gridPosition.y,
-               (gridPosition.z - (chunkPosition.y * ChunkSize)) * -1
+        return new Vector3Int(
+               Mathf.RoundToInt(gridPosition.x - (chunkPosition.x * ChunkSize)),
+               Mathf.RoundToInt(gridPosition.y),
+               Mathf.RoundToInt((gridPosition.z - (chunkPosition.y * ChunkSize)) * -1)
            );
     }
     // Convert the grid position to the chunk position.

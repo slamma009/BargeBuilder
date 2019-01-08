@@ -45,12 +45,12 @@ public class Extractor : PlacableObject
         // Get the chunkPos and chunkGridPos of the object in the output position
         GridPositionObject outputWorldGridPosition = gridController.GetGridPosition(OutputAnchor.position);
         Vector2 outputChunkPosition = gridController.ChunkController.ConvertGridPositionToChunkPosition(outputWorldGridPosition.GridPosition);
-        Vector3 outputChunkGridPosition = gridController.ChunkController.ConvertWorldGridPositionToChunkGridPosition(outputChunkPosition, outputWorldGridPosition.GridPosition);
+        Vector3Int outputChunkGridPosition = gridController.ChunkController.ConvertWorldGridPositionToChunkGridPosition(outputChunkPosition, outputWorldGridPosition.GridPosition);
 
         // Find the output object, and make sure it exists and is a conveyor belt.
         if (gridController.ChunkController.Chunks.ContainsKey(outputChunkPosition))
         {
-            ChunkObject chunkObject = gridController.ChunkController.Chunks[outputChunkPosition].ChunkObjects[(int)outputChunkGridPosition.x, (int)outputChunkGridPosition.y, (int)outputChunkGridPosition.z];
+            ChunkObject chunkObject = gridController.ChunkController.Chunks[outputChunkPosition].ChunkObjects[outputChunkGridPosition.x, outputChunkGridPosition.y, outputChunkGridPosition.z];
             if (chunkObject == null || chunkObject.Object == null)
             {
                 Debug.Log("Nothing found, removing reference.");
