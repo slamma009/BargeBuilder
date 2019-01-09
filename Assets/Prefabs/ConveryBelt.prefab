@@ -240,7 +240,7 @@ GameObject:
   - component: {fileID: 65368549163449852}
   - component: {fileID: 114540239574367624}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: TriggerCube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -337,8 +337,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1417143270634854}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.29107854, y: 1.226, z: -1.9574835}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -8.062247, y: 1.25, z: 2.2360845}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children:
   - {fileID: 4532698908363218}
@@ -1235,4 +1235,5 @@ MonoBehaviour:
   - {fileID: 1798136077704644}
   - {fileID: 1683475565026932}
   - {fileID: 1186037066567230}
+  MaxItemsOnBelt: 3
   ActiveRigidBodies: []
