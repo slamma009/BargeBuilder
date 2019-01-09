@@ -53,7 +53,6 @@ public class Extractor : PlacableObject
             ChunkObject chunkObject = gridController.ChunkController.Chunks[outputChunkPosition].ChunkObjects[outputChunkGridPosition];
             if (chunkObject == null || chunkObject.Object == null)
             {
-                Debug.Log("Nothing found, removing reference.");
                 OutputObject = null;
             }
             else
@@ -61,12 +60,10 @@ public class Extractor : PlacableObject
                 ConveyorBelt newBelt = chunkObject.Object.GetComponent<ConveyorBelt>();
                 if (newBelt == null)
                 {
-                    Debug.Log("Nothing found, removing reference.");
                     OutputObject = null;
                 }
                 else
                 {
-                    Debug.Log("Belt found, adding reference.");
                     OutputObject = newBelt;
                 }
             }

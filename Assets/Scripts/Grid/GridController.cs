@@ -5,8 +5,7 @@ using UnityEngine;
 public class GridController : MonoBehaviour {
 
     public int GridSize = 2;
-
-
+    
     public ChunkHandler ChunkController;
     private Transform PlayerObject;
     private float Scale;
@@ -55,8 +54,8 @@ public class GridController : MonoBehaviour {
             Vector2 anchorChunkPosition = ChunkController.ConvertGridPositionToChunkPosition(anchorGridPositionObject.GridPosition);
             Vector3Int anchorChunkGridPosition = ChunkController.ConvertWorldGridPositionToChunkGridPosition(anchorChunkPosition, anchorGridPositionObject.GridPosition);
             
-            ChunkController.Chunks[anchorChunkPosition].ChunkObjects[anchorChunkGridPosition] = new ChunkObject(chunkPosition, chunkGridPosition, anchorChunkGridPosition, ChunkController.Chunks[chunkPosition]);
-            //Debug.Log(" > Object referenced in chunk " + chunkPosition + "at ChunkGridPosition " + chunkGridPosition);
+            ChunkController.Chunks[anchorChunkPosition].ChunkObjects[anchorChunkGridPosition] = new ChunkObject(chunkPosition, chunkGridPosition, anchorChunkGridPosition, ChunkController.Chunks[anchorChunkPosition]);
+            //Debug.Log(" > Object referenced in chunk " + anchorChunkPosition + "at ChunkGridPosition " + anchorChunkGridPosition);
         }
 
         UpdateBlocks(chunkPosition, chunkGridPosition);
@@ -95,7 +94,7 @@ public class GridController : MonoBehaviour {
         sideChunkObjects.Add(chunkGridPosition - Vector3.forward);
         sideChunkObjects.Add(chunkGridPosition + Vector3.forward);
         sideChunkObjects.Add(chunkGridPosition - Vector3.up);
-        sideChunkObjects.Add(chunkGridPosition + Vector3.down);
+        sideChunkObjects.Add(chunkGridPosition + Vector3.up);
         
         foreach(Vector3 sideChunkGridPosition in sideChunkObjects)
         {
@@ -117,14 +116,16 @@ public class GridController : MonoBehaviour {
                 }
                 if (sideChunkGridPosition.z < 0)
                 {
-                    newChunkPosition -= new Vector2(0, 1);
+                    newChunkPosition += new Vector2(0, 1);
                     newSideChunkGridPosition += new Vector3Int(0, 0, ChunkController.ChunkSize);
                 }
                 else if (sideChunkGridPosition.z >= ChunkController.ChunkSize)
                 {
-                    newChunkPosition += new Vector2(0, 1);
+                    newChunkPosition -= new Vector2(0, 1);
                     newSideChunkGridPosition -= new Vector3Int(0, 0, ChunkController.ChunkSize);
                 }
+                //Debug.Log("Original > Chunk: " + chunkPosition + ", grid: " + chunkGridPosition);
+                //Debug.Log("New > Chunk: " + newChunkPosition + ", grid: " + newSideChunkGridPosition);
 
                 // make sure the chunk and object exists before updating other blocks. Save a timestamp so we don't create an infinite loop of blocks updating each other.
                 if (ChunkController.Chunks.ContainsKey(newChunkPosition))

@@ -32,6 +32,7 @@ public class PlacingController : MonoBehaviour {
     protected EmptyMethod PlayingModeChanged;
 
     private Vector3 SavedGridPosition;
+    private int SavedRotation = 0;
     private bool ObjectCanBePlaced = true;
 
     // Called for initialization
@@ -89,8 +90,9 @@ public class PlacingController : MonoBehaviour {
                     GridPositionObject gridPositionObject = gridController.GetGridPosition(GhostObject.transform.position);
 
                     // Logic for determining if the object can be placed
-                    if (SavedGridPosition != gridPositionObject.Position)
+                    if (SavedGridPosition != gridPositionObject.Position || SavedRotation != Rotation)
                     {
+                        SavedRotation = Rotation;
                         SavedGridPosition = gridPositionObject.Position;
                         bool objectCantBePlaced = false;
                         PlacableObject placableObject = GhostObject.GetComponent<PlacableObject>();
@@ -104,6 +106,10 @@ public class PlacingController : MonoBehaviour {
 
                                 if (gridController.ChunkController.Chunks[chunkPosition].ChunkObjects[chunkGridPosition] != null)
                                 {
+                                    string output = "Error in chunk " + chunkPosition + " from grid " + chunkGridPosition + "\n > " + gridController.ChunkController.Chunks[chunkPosition].ChunkObjects[chunkGridPosition];
+                                    output += "\n > Reference Chunk: " + gridController.ChunkController.Chunks[chunkPosition].ChunkObjects[chunkGridPosition].ReferenceChunkPosition + ", Reference Grid: " + gridController.ChunkController.Chunks[chunkPosition].ChunkObjects[chunkGridPosition].ReferenceObjectPosition;
+                                    Debug.Log(output);
+                                   /// Debug.Log();
                                     objectCantBePlaced = true;
                                 }
                             }
