@@ -14,6 +14,7 @@ public class PlaneBezeir: BezierCurve3D
 
     private MeshFilter meshFilter;
     private Mesh mesh;
+    private MeshRenderer meshRenderer;
     public void Start()
     {
         shape = new ExtrudeShape();
@@ -33,21 +34,19 @@ public class PlaneBezeir: BezierCurve3D
             }
         };
         shape.lines = new int[] { 0, 1 };
-
-        if (ExtrudeMesh)
-        {
-            meshFilter = GetComponent<MeshFilter>();
-            mesh = meshFilter.mesh;
-        } else
-        {
-            GetComponent<MeshRenderer>().enabled = false;
-        }
+        
+        meshFilter = GetComponent<MeshFilter>();
+        mesh = meshFilter.mesh;
+        meshRenderer = GetComponent<MeshRenderer>();
     }
 
     public void FixedUpdate()
     {
         if (!ExtrudeMesh)
         {
+            if (meshRenderer.enabled)
+                meshRenderer.enabled = false;
+
             if (SpawnedPoints.Count < Segments)
             {
                 for (int i = SpawnedPoints.Count; i < Segments; ++i)
@@ -63,6 +62,19 @@ public class PlaneBezeir: BezierCurve3D
                     SpawnedPoints.RemoveAt(i);
                 }
             }
+        } else
+        {
+            if (!meshRenderer.enabled)
+                meshRenderer.enabled = true;
+
+            if (SpawnedPoints.Count > 0)
+            {
+                foreach (GameObject point in SpawnedPoints)
+                {
+                    Destroy(point);
+                }
+                SpawnedPoints.Clear();
+            };
         }
 
         // Generate Curve
