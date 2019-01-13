@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class BezierCurve3D : MonoBehaviour
 {
+    [HideInInspector]
+    public float CurveLength;
+
     protected Vector3 GetPoint ( Vector3[] pts, float t)
     {
         // Calculation of bezier curve point. 
@@ -23,7 +26,7 @@ public class BezierCurve3D : MonoBehaviour
             pts[3] * (t2 * t);
     }
 
-    Vector3 GetPointTangent(Vector3[] pts, float t)
+    public Vector3 GetPointTangent(Vector3[] pts, float t)
     {
         //Calculate the tangent for a pt on the curve
         // e-d
@@ -54,7 +57,13 @@ public class BezierCurve3D : MonoBehaviour
         return Quaternion.LookRotation(tng, nrm);
     }
 
-    public Mesh Extrude(Mesh mesh, ExtrudeShape shape, OrientedPoint[] path)
+    public Vector3 GetPointsBinormal(Vector3[] pts, float t, Vector3 up)
+    {
+        Vector3 tng = GetPointTangent(pts, t); // z axis
+        return Vector3.Cross(up, tng).normalized; // x axis
+    }
+
+    public Mesh Extrude(Mesh mesh, ExtrudeShape shape, OrientedPoint[] path, Vector3[] Points)
     {
         int vertsInShape = shape.verts.Length;
         int segments = path.Length - 1;
@@ -62,6 +71,7 @@ public class BezierCurve3D : MonoBehaviour
         int vertCount = vertsInShape * edgeLoops;
         int triCount = shape.lines.Length * segments;
         int triIndexCount = triCount * 3;
+        float[] LookupTable = CalcLengthTableInto(Points, segments);
 
         int[] triangleIndices = new int[ triIndexCount ];
         Vector3[] vertices  = new Vector3[ vertCount ];
@@ -82,7 +92,7 @@ public class BezierCurve3D : MonoBehaviour
                 int id = offset + j;
                 vertices[id] = path[i].LocalToWorld(shape.verts[j].point); // might break to verts being 2d
                 normals[id] = path[i].LocalToWorldDirection(shape.verts[j].normal);
-                uvs[id] = new Vector2(shape.verts[j].u, i / ((float)edgeLoops));
+                uvs[id] = new Vector2(shape.verts[j].u, LookupTable.Sample((float)i / ((float)edgeLoops) ));
 
             }
         }
@@ -118,8 +128,27 @@ public class BezierCurve3D : MonoBehaviour
         return mesh;
     }
 
+    public float[] CalcLengthTableInto(Vector3[] Points, int Segments)
+    {
+        float[] arr = new float[Segments];
+
+        arr[0] = 0f;
+        float totalLength = 0f;
+        Vector3 prev = Points[0];
+        for (int i = 0; i < arr.Length; ++i)
+        {
+            float t = ((float)i) / (arr.Length - 1);
+            Vector3 pt = GetPoint(Points, t);
+            float diff = (prev - pt).magnitude;
+            totalLength += diff;
+            arr[i] = totalLength;
+            prev = pt;
+        }
+        CurveLength = totalLength;
+        return arr;
+
+    }
 
 
-    
-    
+
 }

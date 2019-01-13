@@ -95,7 +95,7 @@ GameObject:
   - component: {fileID: 114900504692903998}
   - component: {fileID: 54786109397515556}
   m_Layer: 0
-  m_Name: ConveryBelt
+  m_Name: OldConveyorBelt
   m_TagString: Placable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1230,10 +1230,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GridAnchors: []
-  Walls:
-  - {fileID: 1953690021702686}
-  - {fileID: 1798136077704644}
-  - {fileID: 1683475565026932}
-  - {fileID: 1186037066567230}
   MaxItemsOnBelt: 3
   ActiveRigidBodies: []
