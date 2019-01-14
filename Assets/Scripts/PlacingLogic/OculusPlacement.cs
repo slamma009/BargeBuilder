@@ -50,7 +50,7 @@ public class OculusPlacement : PlacingController
         // Make sure both hands are onoccupied
         if (!RightHand.Grabbed && !LeftHand.Grabbed)
         {
-            if (Placing)
+            if (PlacingModeEnabled)
             {
                 // Rotate the ghost avatar above the hand
                 GhostAvatar.transform.Rotate(Vector3.up * Time.deltaTime * 30);
@@ -67,7 +67,7 @@ public class OculusPlacement : PlacingController
                     }
                 }
 
-                RaycastLogic(new Ray(RightHand.transform.position, RightHand.transform.forward), InputControl.GetButton("Oculus_CrossPlatform_SecondaryIndexTrigger"));
+                RaycastLogic(new Ray(RightHand.transform.position, RightHand.transform.forward), InputControl.GetButton("Oculus_CrossPlatform_SecondaryIndexTrigger"), false, false);
 
 
                 if (InputControl.GetButton("Oculus_CrossPlatform_ButtonX"))
@@ -98,14 +98,14 @@ public class OculusPlacement : PlacingController
                 // Check to enter placing mode
                 if (InputControl.GetButton("Oculus_CrossPlatform_ButtonA"))
                 {
-                    Placing = true;
+                    PlacingModeEnabled = true;
                     EnablePlacingMode(true);
                 }
             }
         }
-        else if (Placing)
+        else if (PlacingModeEnabled)
         {
-            Placing = false;
+            PlacingModeEnabled = false;
             EnablePlacingMode(false);
         }
     }

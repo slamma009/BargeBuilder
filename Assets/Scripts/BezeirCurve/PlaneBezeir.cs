@@ -11,15 +11,12 @@ public class PlaneBezeir: BezierCurve3D
     public GameObject PointRepresentation;
     public Material ObjectMaterial;
 
-    public bool ExtrudeMesh = true;
-
-    private List<GameObject> SpawnedPoints = new List<GameObject>();
     private List<GameObject> TriggerBoxes = new List<GameObject>();
 
     private MeshFilter meshFilter;
     private Mesh mesh;
     private MeshRenderer meshRenderer;
-    public void Start()
+    public void Awake()
     {
         shape = GenerateShape(BezeirMesh);
         
@@ -187,28 +184,8 @@ public class PlaneBezeir: BezierCurve3D
                 TriggerBoxes.RemoveAt(i);
             }
         }
-        if (!ExtrudeMesh)
-        {
-            if (meshRenderer.enabled)
-                meshRenderer.enabled = false;
-
-        } else
-        {
-            if (!meshRenderer.enabled)
-                meshRenderer.enabled = true;
-
-            //if (SpawnedPoints.Count > 0)
-            //{
-            //    foreach (GameObject point in SpawnedPoints)
-            //    {
-            //        Destroy(point);
-            //    }
-            //    SpawnedPoints.Clear();
-            //};
-            MeshCollider collider = GetComponent<MeshCollider>();
-            collider.sharedMesh = null;
-            collider.sharedMesh = mesh;
-        }
+        
+        
 
         // Generate Curve
 
@@ -220,37 +197,38 @@ public class PlaneBezeir: BezierCurve3D
         OrientedPoint[] path = new OrientedPoint[(int)Segments];
         for(int i =0; i<Segments; ++i)
         {
-            if (!ExtrudeMesh)
-            {
-                SpawnedPoints[i].transform.position = GetPoint(pointPositions, i / (Segments - 1));
-            }
-            else
-            {
-                float t = i / (Segments - 1);
-                Vector3 curvePoint = GetPoint(pointPositions, t);
+            float t = i / (Segments - 1);
+            Vector3 curvePoint = GetPoint(pointPositions, t);
 
-                Quaternion rotation = GetPointOrientation3d(pointPositions, t, Vector3.up);
-                if ( i != Segments - 1)
-                {
-                    Vector3 nextPoint = GetPoint(pointPositions, (i + 1) / (Segments - 1));
-                    Vector3 average = (nextPoint + curvePoint) * 0.5f;
-                    TriggerBoxes[i].transform.position = average;
-                    TriggerBoxes[i].transform.rotation = Quaternion.LookRotation((nextPoint - curvePoint).normalized, rotation * Vector3.up);
-                    TriggerBoxes[i].transform.localScale = new Vector3(1, 1, Vector3.Distance(curvePoint, nextPoint));
-                }
-                path[i] = new OrientedPoint()
-                {
-                    Position = curvePoint,
-                    Rotation = rotation
-                };
+            Quaternion rotation = GetPointOrientation3d(pointPositions, t, Vector3.up);
+            if ( i != Segments - 1)
+            {
+                Vector3 nextPoint = GetPoint(pointPositions, (i + 1) / (Segments - 1));
+                Vector3 average = (nextPoint + curvePoint) * 0.5f;
+                TriggerBoxes[i].transform.position = average;
+                TriggerBoxes[i].transform.rotation = Quaternion.LookRotation((nextPoint - curvePoint).normalized, rotation * Vector3.up);
+                TriggerBoxes[i].transform.localScale = new Vector3(1, 1, Vector3.Distance(curvePoint, nextPoint));
             }
+            path[i] = new OrientedPoint()
+            {
+                Position = curvePoint,
+                Rotation = rotation
+            };
+            
         }
-        if (ExtrudeMesh)
+
         meshFilter.mesh = Extrude(mesh, shape, path, pointPositions);
         GetComponent<MeshRenderer>().sharedMaterial = null;
         GetComponent<MeshRenderer>().sharedMaterial = ObjectMaterial;
         GetComponent<MeshRenderer>().UpdateGIMaterials();
 
+
+        MeshCollider collider = GetComponent<MeshCollider>();
+        if (collider.enabled)
+        {
+            collider.sharedMesh = null;
+            collider.sharedMesh = mesh;
+        }
 
     }
 

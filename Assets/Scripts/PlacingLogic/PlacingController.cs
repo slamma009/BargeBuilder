@@ -7,7 +7,7 @@ public class PlacingController : MonoBehaviour {
 
 
     public float PlaceDistance = 1000;
-    public GameObject[] Prefabs;
+    public PlacableItemHolder[] PlacableItems;
     public Transform GhostAvatarPoint;
     public GridController gridController;
     public Material GhostMaterial;
@@ -22,7 +22,9 @@ public class PlacingController : MonoBehaviour {
     protected int Rotation = 0;
 
     protected bool DestructionMode;
-    protected bool Placing = false; // In placing mode
+    protected bool PlacingModeEnabled = false; // In placing mode
+    protected bool PlacingHeld;
+    protected bool DragMode;
 
     protected delegate void RaycastConnect(RaycastHit hit);
     protected delegate void EmptyMethod();
@@ -34,6 +36,8 @@ public class PlacingController : MonoBehaviour {
     private Vector3 SavedGridPosition;
     private int SavedRotation = 0;
     private bool ObjectCanBePlaced = true;
+
+    private ConveyorBeltBezeir DraggedObject;
 
     // Called for initialization
     protected void Setup ()
@@ -56,7 +60,7 @@ public class PlacingController : MonoBehaviour {
         GhostObject.transform.rotation = Quaternion.Euler(0, 90 * Rotation, 0);
     }
 
-    protected void RaycastLogic(Ray ray, bool placeObject)
+    protected void RaycastLogic(Ray ray, bool placeObject, bool placeHeld, bool enterDragMode)
     {
         //Raycast out and send the data to the GridController to be placed.
         RaycastHit hit;
@@ -115,6 +119,13 @@ public class PlacingController : MonoBehaviour {
                             }
                         }
 
+                        if (DragMode)
+                        {
+                            bool dragPlacable = DraggedObject.UpdatePosition(gridPositionObject);
+
+                            objectCantBePlaced = objectCantBePlaced || !dragPlacable;
+                        }
+
                         if (objectCantBePlaced)
                         {
                             placableObject.MakeGhost(GhostErrorMaterial);
@@ -129,7 +140,24 @@ public class PlacingController : MonoBehaviour {
 
                     if (placeObject && ObjectCanBePlaced)
                     {
-                        gridController.PlaceObject(Prefabs[SelectedPrefab], gridPositionObject, GhostObject.transform.rotation);
+                        gridController.PlaceObject(PlacableItems[SelectedPrefab].Prefabs[0], gridPositionObject, GhostObject.transform.rotation);
+
+                        if(enterDragMode && PlacableItems[SelectedPrefab].id == "ConveyorCurve")
+                        {
+                            DraggedObject = Instantiate(PlacableItems[SelectedPrefab].Prefabs[2], Vector3.zero, Quaternion.identity).GetComponent<ConveyorBeltBezeir>();
+                            DraggedObject.SetFirstPosition(gridPositionObject, GhostObject.transform.forward);
+                        }
+
+                        if (!DragMode && enterDragMode && PlacableItems[SelectedPrefab].Prefabs.Length > 1)
+                        {
+                            DragMode = true;
+                        }
+                    }
+
+                    if(DragMode && !placeHeld)
+                    {
+                        DragMode = false;
+                        gridController.PlaceObject(PlacableItems[SelectedPrefab].Prefabs[1], gridPositionObject, Quaternion.LookRotation(DraggedObject.SetLastPosition(gridPositionObject)));
                     }
                 }
                 else if (GhostObject.transform.position != GhostObjectHiddenPosition)
@@ -157,11 +185,11 @@ public class PlacingController : MonoBehaviour {
     protected void ChangePrefabs()
     {
         SelectedPrefab += 1;
-        if (SelectedPrefab >= Prefabs.Length)
+        if (SelectedPrefab >= PlacableItems.Length)
             SelectedPrefab = 0;
 
         // Instantiate the ghost avatar above the hand. 
-        GameObject tempAvatar = Instantiate(Prefabs[SelectedPrefab], GhostAvatarPoint.position, (GhostAvatar == null ? GhostAvatarPoint.rotation : GhostAvatar.transform.rotation)) as GameObject;
+        GameObject tempAvatar = Instantiate(PlacableItems[SelectedPrefab].Prefabs[0], GhostAvatarPoint.position, (GhostAvatar == null ? GhostAvatarPoint.rotation : GhostAvatar.transform.rotation)) as GameObject;
         tempAvatar.GetComponent<PlacableObject>().MakeGhost(null);
         tempAvatar.transform.localScale = Vector3.one * 0.03f;
         tempAvatar.transform.parent = GhostAvatarPoint.parent;
@@ -175,7 +203,7 @@ public class PlacingController : MonoBehaviour {
 
 
         // Instantiate the ghost object
-        GameObject tempObject = Instantiate(Prefabs[SelectedPrefab], (GhostObject == null ? Vector3.zero - Vector3.up * 5 : GhostObject.transform.position), Quaternion.identity) as GameObject;
+        GameObject tempObject = Instantiate(PlacableItems[SelectedPrefab].Prefabs[0], (GhostObject == null ? Vector3.zero - Vector3.up * 5 : GhostObject.transform.position), Quaternion.identity) as GameObject;
         tempObject.GetComponent<PlacableObject>().MakeGhost(GhostMaterial);
         tempObject.transform.rotation = Quaternion.Euler(0, 90 * Rotation, 0);
 
@@ -192,14 +220,14 @@ public class PlacingController : MonoBehaviour {
     {
         if (enabling)
         {
-            Placing = true;
+            PlacingModeEnabled = true;
             SelectedPrefab -= 1;
             ChangePrefabs();
 
         }
         else
         {
-            Placing = false;
+            PlacingModeEnabled = false;
 
             if (GhostObject != null)
             {

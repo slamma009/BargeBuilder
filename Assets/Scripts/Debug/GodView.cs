@@ -17,7 +17,7 @@ public class GodView : PlacingController
     // Update is called once per frame
     void Update()
     {
-        if (Placing && !Input.GetKey(KeyCode.Mouse1))
+        if (PlacingModeEnabled && !Input.GetKey(KeyCode.Mouse1))
         {
             // Rotate the ghost avatar above the hand
             GhostAvatar.transform.Rotate(Vector3.up * Time.deltaTime * 30);
@@ -27,7 +27,7 @@ public class GodView : PlacingController
                 RotateGhostItem();
             }
 
-            RaycastLogic(GodCamera.ScreenPointToRay(Input.mousePosition), Input.GetKeyDown(KeyCode.Mouse0));
+            RaycastLogic(GodCamera.ScreenPointToRay(Input.mousePosition), Input.GetKeyDown(KeyCode.Mouse0), Input.GetKey(KeyCode.Mouse0), Input.GetKey(KeyCode.LeftShift));
 
 
             if (Input.GetKeyDown(KeyCode.X))
