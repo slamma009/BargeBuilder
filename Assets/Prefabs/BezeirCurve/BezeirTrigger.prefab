@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 33291201154972606}
   - component: {fileID: 65535079222383146}
   - component: {fileID: 114581714948914204}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: BezeirTrigger
   m_TagString: Untagged
   m_Icon: {fileID: 0}

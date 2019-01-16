@@ -91,7 +91,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 4656129227823864}
-  - component: {fileID: 65449989410333490}
   - component: {fileID: 54347544548830732}
   - component: {fileID: 114376642704981684}
   m_Layer: 0
@@ -113,7 +112,7 @@ GameObject:
   - component: {fileID: 23479076507077892}
   - component: {fileID: 65342565897635776}
   - component: {fileID: 114847928610447054}
-  m_Layer: 0
+  m_Layer: 12
   m_Name: TriggerCube (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -308,7 +307,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1252695883152842}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.4736096, y: -1.5626223e-17, z: 0.7037425}
+  m_LocalPosition: {x: -6.995486, y: 1, z: -6.8499923}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children:
   - {fileID: 4944422591065450}
@@ -916,18 +915,6 @@ BoxCollider:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1491146567059710}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!65 &65449989410333490
-BoxCollider:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1252695883152842}
   m_Material: {fileID: 0}
   m_IsTrigger: 1
   m_Enabled: 1

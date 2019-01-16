@@ -5,7 +5,8 @@ using UnityEngine;
 public class PlacableObject : MonoBehaviour {
 
     public Transform[] GridAnchors;
-    protected bool Placed = false;
+    
+    public bool Placed = false;
 
     public void MakeGhost(Material ghostMaterial)
     {

@@ -6,6 +6,7 @@ using UnityEngine;
 public class ConveyorBelt : PlacableObject
 {
     public int MaxItemsOnBelt = 3;
+    public Transform[] Anchors;
 
     [HideInInspector]
     public List<Rigidbody> ActiveRigidBodies = new List<Rigidbody>();

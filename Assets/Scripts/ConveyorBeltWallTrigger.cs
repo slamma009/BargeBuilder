@@ -7,12 +7,13 @@ public class ConveyorBeltWallTrigger : MonoBehaviour
 
 
     public GameObject FrontWall;
-    private GameObject ActiveWall;
+    public GameObject ActiveWall;
 
     private void OnTriggerEnter(Collider other)
     {
         if (ActiveWall == null && other.tag == "ConveyorWall")
         {
+            Debug.Log(transform.parent.name + ": " + other.gameObject.name + " Enter");
             ActiveWall = other.gameObject;
             ActiveWall.SetActive(false);
             if (other.name != "Wall Front" && FrontWall != null)
@@ -20,10 +21,18 @@ public class ConveyorBeltWallTrigger : MonoBehaviour
 
         }
     }
+    private void OnTriggerExit(Collider other)
+    {
+        Debug.Log(transform.parent.name + ": " + other.gameObject.name + " Left");
+        if(other.gameObject == ActiveWall)
+        {
+            ActiveWall = null;
+        }
+    }
 
     void FixedUpdate()
     {
-        if (ActiveWall == null && FrontWall != null && !FrontWall.activeSelf )
+        if (ActiveWall == null && FrontWall != null && !FrontWall.activeSelf)
         {
             FrontWall.SetActive(true);
         }

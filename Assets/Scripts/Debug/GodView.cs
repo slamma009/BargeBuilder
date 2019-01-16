@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class GodView : PlacingController
+public class GodView : AnchorSystem
 {
     private Camera GodCamera;
 
@@ -22,12 +22,10 @@ public class GodView : PlacingController
             // Rotate the ghost avatar above the hand
             GhostAvatar.transform.Rotate(Vector3.up * Time.deltaTime * 30);
 
-            if (!DestructionMode && Input.GetKeyDown(KeyCode.R))
-            {
-                RotateGhostItem();
-            }
+            float rotateSpeed = Input.GetKey(KeyCode.R) ? 1 : 0;
+            RotateGhostItem(rotateSpeed, Input.GetKeyUp(KeyCode.R));
 
-            RaycastLogic(GodCamera.ScreenPointToRay(Input.mousePosition), Input.GetKeyDown(KeyCode.Mouse0), Input.GetKey(KeyCode.Mouse0), Input.GetKey(KeyCode.LeftShift));
+            RaycastLogic(GodCamera.ScreenPointToRay(Input.mousePosition), Input.GetKeyUp(KeyCode.Mouse0), Input.GetKeyDown(KeyCode.Mouse0));
 
 
             if (Input.GetKeyDown(KeyCode.X))
@@ -35,7 +33,7 @@ public class GodView : PlacingController
                 DestructionMode = !DestructionMode;
 
                 GhostObject.transform.position = GhostObjectHiddenPosition;
-                GhostDeleteMarker.transform.position = GhostObjectHiddenPosition;
+                //GhostDeleteMarker.transform.position = GhostObjectHiddenPosition;
             }
 
             // Check to exit placing mode
