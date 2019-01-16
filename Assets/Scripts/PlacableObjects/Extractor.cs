@@ -19,9 +19,28 @@ public class Extractor : PlacableObject
     {
         SecondsToSpawn = 60 / SpawnRatePerMinute;
     }
-
+    public void AnchorChanged(AnchorObject obj)
+    {
+        if (obj.ConnectAnchor == null)
+            OutputObject = null;
+        else
+        {
+            ConveyorBelt belt = obj.ConnectAnchor.transform.GetTopParent().GetComponent<ConveyorBelt>();
+            Debug.Log(transform.GetTopParent().name + ": " + belt);
+            if(belt != null)
+                OutputObject = belt;
+            else
+                OutputObject = null;
+        }
+    }
+    public override void ObjectPlaced()
+    {
+        Anchors[0].AnchorChanged = AnchorChanged;
+        base.ObjectPlaced();
+    }
     public void FixedUpdate()
     {
+        Debug.Log(Time.time + ": " + (Placed) + (OutputObject.ActiveRigidBodies.Count < OutputObject.MaxItemsOnBelt));
         if (Placed && OutputObject != null && OutputObject.ActiveRigidBodies.Count < OutputObject.MaxItemsOnBelt)
         {
             TimeSinceLastSpawn += Time.deltaTime;
@@ -30,44 +49,6 @@ public class Extractor : PlacableObject
                 TimeSinceLastSpawn = 0;
                 Instantiate(SpawnObject, OreSpawn.position, Quaternion.identity);
             }
-        }
-    }
-
-    public override void UpdateBlock(GridController gridController, Vector2 ChunkPos, Vector3 ChunkGridPos)
-    {
-        FindOutputObject(gridController);
-
-        base.UpdateBlock(gridController, ChunkPos, ChunkGridPos);
-    }
-
-    private void FindOutputObject(GridController gridController)
-    {
-        // Get the chunkPos and chunkGridPos of the object in the output position
-        GridPositionObject outputWorldGridPosition = gridController.GetGridPosition(OutputAnchor.position);
-        Vector2 outputChunkPosition = gridController.ChunkController.ConvertGridPositionToChunkPosition(outputWorldGridPosition.GridPosition);
-        Vector3Int outputChunkGridPosition = gridController.ChunkController.ConvertWorldGridPositionToChunkGridPosition(outputChunkPosition, outputWorldGridPosition.GridPosition);
-
-        // Find the output object, and make sure it exists and is a conveyor belt.
-        if (gridController.ChunkController.Chunks.ContainsKey(outputChunkPosition))
-        {
-            ChunkObject chunkObject = gridController.ChunkController.Chunks[outputChunkPosition].ChunkObjects[outputChunkGridPosition];
-            if (chunkObject == null || chunkObject.Object == null)
-            {
-                OutputObject = null;
-            }
-            else
-            {
-                ConveyorBelt newBelt = chunkObject.Object.GetComponent<ConveyorBelt>();
-                if (newBelt == null)
-                {
-                    OutputObject = null;
-                }
-                else
-                {
-                    OutputObject = newBelt;
-                }
-            }
-
         }
     }
 

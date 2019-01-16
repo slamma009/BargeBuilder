@@ -51,7 +51,6 @@ public class ChunkObject
 
         if (Object != null)
         {
-            Object.UpdateBlock(gridController, ChunkPos, ChunkGridPos);
         }
     }
 

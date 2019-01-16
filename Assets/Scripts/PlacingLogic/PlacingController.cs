@@ -100,24 +100,24 @@ public class PlacingController : MonoBehaviour {
                         SavedGridPosition = gridPositionObject.Position;
                         bool objectCantBePlaced = false;
                         PlacableObject placableObject = GhostObject.GetComponent<PlacableObject>();
-                        foreach (Transform anchor in placableObject.GridAnchors)
-                        {
-                            if (!objectCantBePlaced)
-                            {
-                                GridPositionObject anchorGridPositionObject = gridController.GetGridPosition(anchor.position);
-                                Vector2 chunkPosition = gridController.ChunkController.ConvertGridPositionToChunkPosition(anchorGridPositionObject.GridPosition);
-                                Vector3Int chunkGridPosition = gridController.ChunkController.ConvertWorldGridPositionToChunkGridPosition(chunkPosition, anchorGridPositionObject.GridPosition);
+                        //foreach (Transform anchor in placableObject.GridAnchors)
+                        //{
+                        //    if (!objectCantBePlaced)
+                        //    {
+                        //        GridPositionObject anchorGridPositionObject = gridController.GetGridPosition(anchor.position);
+                        //        Vector2 chunkPosition = gridController.ChunkController.ConvertGridPositionToChunkPosition(anchorGridPositionObject.GridPosition);
+                        //        Vector3Int chunkGridPosition = gridController.ChunkController.ConvertWorldGridPositionToChunkGridPosition(chunkPosition, anchorGridPositionObject.GridPosition);
 
-                                if (gridController.ChunkController.Chunks[chunkPosition].ChunkObjects[chunkGridPosition] != null)
-                                {
-                                    string output = "Error in chunk " + chunkPosition + " from grid " + chunkGridPosition + "\n > " + gridController.ChunkController.Chunks[chunkPosition].ChunkObjects[chunkGridPosition];
-                                    output += "\n > Reference Chunk: " + gridController.ChunkController.Chunks[chunkPosition].ChunkObjects[chunkGridPosition].ReferenceChunkPosition + ", Reference Grid: " + gridController.ChunkController.Chunks[chunkPosition].ChunkObjects[chunkGridPosition].ReferenceObjectPosition;
-                                    Debug.Log(output);
-                                   /// Debug.Log();
-                                    objectCantBePlaced = true;
-                                }
-                            }
-                        }
+                        //        if (gridController.ChunkController.Chunks[chunkPosition].ChunkObjects[chunkGridPosition] != null)
+                        //        {
+                        //            string output = "Error in chunk " + chunkPosition + " from grid " + chunkGridPosition + "\n > " + gridController.ChunkController.Chunks[chunkPosition].ChunkObjects[chunkGridPosition];
+                        //            output += "\n > Reference Chunk: " + gridController.ChunkController.Chunks[chunkPosition].ChunkObjects[chunkGridPosition].ReferenceChunkPosition + ", Reference Grid: " + gridController.ChunkController.Chunks[chunkPosition].ChunkObjects[chunkGridPosition].ReferenceObjectPosition;
+                        //            Debug.Log(output);
+                        //           /// Debug.Log();
+                        //            objectCantBePlaced = true;
+                        //        }
+                        //    }
+                        //}
 
                         if (DragMode)
                         {

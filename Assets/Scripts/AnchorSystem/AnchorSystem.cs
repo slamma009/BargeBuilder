@@ -150,9 +150,9 @@ public class AnchorSystem : MonoBehaviour {
                     if (ObjectCanBePlaced && placeGhost)
                     {
                         GameObject newObj = Instantiate(PlacableItems[SelectedPrefab].Prefabs[0], GhostObject.transform.position, GhostObject.transform.rotation);
+                        newObj.GetComponent<PlacableObject>().ObjectPlaced();
                         if (DraggedObject != null && DragMode)
                         {
-                            Debug.Log("HIT");
                             DraggedObject.ObjectPlaced(newObj.GetComponent<ConveyorBelt>());
                             DraggedObject = null;
                         }
@@ -190,6 +190,7 @@ public class AnchorSystem : MonoBehaviour {
             if (ObjectCanBePlaced)
             {
                 GameObject newObj = Instantiate(PlacableItems[SelectedPrefab].Prefabs[0], GhostObject.transform.position, GhostObject.transform.rotation);
+                newObj.GetComponent<PlacableObject>().ObjectPlaced();
                 if (DraggedObject != null && DragMode)
                 {
                     DraggedObject.ObjectPlaced(newObj.GetComponent<ConveyorBelt>());

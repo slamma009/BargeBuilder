@@ -6,10 +6,41 @@ using UnityEngine;
 public class ConveyorBelt : PlacableObject
 {
     public int MaxItemsOnBelt = 3;
-    public Transform[] Anchors;
+    public GameObject[] Walls;
 
     [HideInInspector]
     public List<Rigidbody> ActiveRigidBodies = new List<Rigidbody>();
+
+
+    public override void ObjectPlaced()
+    {
+        // Set the anchor changed delegate to handle disabling walls
+        for (int i = 0; i < Anchors.Length; ++i)
+        {
+            Anchors[i].AnchorChanged = AnchorChanged;
+        }
+        base.ObjectPlaced();
+    }
+
+    // Disables walls if anchored to an object.
+    public void AnchorChanged(AnchorObject obj)
+    {
+        switch (obj.Anchor.name)
+        {
+            case "AnchorPoint F":
+                Walls[0].SetActive(obj.ConnectAnchor == null);
+                break;
+            case "AnchorPoint R":
+                Walls[1].SetActive(obj.ConnectAnchor == null);
+                break;
+            case "AnchorPoint B":
+                Walls[2].SetActive(obj.ConnectAnchor == null);
+                break;
+            case "AnchorPoint L":
+                Walls[3].SetActive(obj.ConnectAnchor == null);
+                break;
+        }
+    }
 
     private void OnTriggerEnter(Collider other)
     {

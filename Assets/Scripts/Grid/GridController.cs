@@ -48,15 +48,15 @@ public class GridController : MonoBehaviour {
         //Debug.Log("Object placed in chunk " + chunkPosition + "at ChunkGridPosition " + chunkGridPosition);
 
         // For each anchor reference that chunk to the main chunk object.Used for multi - block objects
-        foreach (Transform anchor in placableObject.GridAnchors)
-        {
-            GridPositionObject anchorGridPositionObject = GetGridPosition(anchor.position);
-            Vector2 anchorChunkPosition = ChunkController.ConvertGridPositionToChunkPosition(anchorGridPositionObject.GridPosition);
-            Vector3Int anchorChunkGridPosition = ChunkController.ConvertWorldGridPositionToChunkGridPosition(anchorChunkPosition, anchorGridPositionObject.GridPosition);
+        //foreach (Transform anchor in placableObject.GridAnchors)
+        //{
+        //    GridPositionObject anchorGridPositionObject = GetGridPosition(anchor.position);
+        //    Vector2 anchorChunkPosition = ChunkController.ConvertGridPositionToChunkPosition(anchorGridPositionObject.GridPosition);
+        //    Vector3Int anchorChunkGridPosition = ChunkController.ConvertWorldGridPositionToChunkGridPosition(anchorChunkPosition, anchorGridPositionObject.GridPosition);
             
-            ChunkController.Chunks[anchorChunkPosition].ChunkObjects[anchorChunkGridPosition] = new ChunkObject(chunkPosition, chunkGridPosition, anchorChunkGridPosition, ChunkController.Chunks[anchorChunkPosition]);
-            //Debug.Log(" > Object referenced in chunk " + anchorChunkPosition + "at ChunkGridPosition " + anchorChunkGridPosition);
-        }
+        //    ChunkController.Chunks[anchorChunkPosition].ChunkObjects[anchorChunkGridPosition] = new ChunkObject(chunkPosition, chunkGridPosition, anchorChunkGridPosition, ChunkController.Chunks[anchorChunkPosition]);
+        //    //Debug.Log(" > Object referenced in chunk " + anchorChunkPosition + "at ChunkGridPosition " + anchorChunkGridPosition);
+        //}
 
         UpdateBlocks(chunkPosition, chunkGridPosition);
         

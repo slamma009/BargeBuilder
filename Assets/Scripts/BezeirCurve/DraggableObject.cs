@@ -48,7 +48,7 @@ public class DraggableObject : MonoBehaviour
 
     public void ObjectPlaced(ConveyorBelt Anchor)
     {
-        ObjectPlaced(Anchor.Anchors[2].gameObject);
+        ObjectPlaced(Anchor.Anchors[2].Anchor);
     }
 
     public void ObjectPlaced(GameObject Anchor)

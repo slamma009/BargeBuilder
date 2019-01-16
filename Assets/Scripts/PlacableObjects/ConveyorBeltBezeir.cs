@@ -20,15 +20,7 @@ public class ConveyorBeltBezeir : PlacableObject
         Collider = GetComponent<MeshCollider>();
         Collider.enabled = false;
     }
-
-    public override void UpdateBlock(GridController gridController, Vector2 ChunkPos, Vector3 ChunkGridPos)
-    {
-        if (!Collider.enabled)
-        {
-            Collider.enabled = true;
-        }
-        base.UpdateBlock(gridController, ChunkPos, ChunkGridPos);
-    }
+    
 
     public void SetFirstPosition(GridPositionObject gridPositionObject, Vector3 direction)
     {
