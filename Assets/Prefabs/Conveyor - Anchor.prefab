@@ -1383,7 +1383,7 @@ MonoBehaviour:
   - Anchor: {fileID: 1373692585608922}
   - Anchor: {fileID: 1638194807153300}
   - Anchor: {fileID: 1301348146178428}
-  MaxItemsOnBelt: 3
+  MaxItemsOnBelt: 6
   Walls:
   - {fileID: 1981496554472278}
   - {fileID: 1681857138439768}

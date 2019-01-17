@@ -1573,7 +1573,7 @@ MonoBehaviour:
   Anchors:
   - Anchor: {fileID: 1685782826595438}
   OreSpawn: {fileID: 4377778610695126}
-  SpawnRatePerMinute: 600
+  SpawnRatePerMinute: 60
   SpawnObject: {fileID: 1641428588676470, guid: 7c87e991f85423245bca9ae1136e178c,
     type: 2}
   OutputAnchor: {fileID: 0}

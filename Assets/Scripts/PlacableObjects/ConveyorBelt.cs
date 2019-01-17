@@ -76,14 +76,15 @@ public class ConveyorBelt : PlacableObject, IPushableObject
             ActiveRigidBodies.Remove(rigid);
         }
     }
-
+    
     private void FixedUpdate()
     {
-        for(var i=ActiveRigidBodies.Count - 1; i >= 0; --i)
+        bool canPushObject = AttachechedObject == null || (AttachechedObject.ObjectIsFull());
+        for (var i=ActiveRigidBodies.Count - 1; i >= 0; --i)
         {
             if (ActiveRigidBodies[i] != null)
             {
-                    Vector3 targetForce = AttachechedObject == null || (AttachechedObject.ObjectIsFull()) ? Vector3.zero : transform.forward;
+                    Vector3 targetForce = canPushObject ? Vector3.zero : transform.forward;
                     ActiveRigidBodies[i].velocity = Vector3.Lerp(ActiveRigidBodies[i].velocity, targetForce, Time.deltaTime);
                 
             }
