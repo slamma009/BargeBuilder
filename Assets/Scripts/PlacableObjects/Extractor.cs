@@ -40,7 +40,6 @@ public class Extractor : PlacableObject
     }
     public void FixedUpdate()
     {
-        Debug.Log(Time.time + ": " + (Placed) + (OutputObject.ActiveRigidBodies.Count < OutputObject.MaxItemsOnBelt));
         if (Placed && OutputObject != null && OutputObject.ActiveRigidBodies.Count < OutputObject.MaxItemsOnBelt)
         {
             TimeSinceLastSpawn += Time.deltaTime;

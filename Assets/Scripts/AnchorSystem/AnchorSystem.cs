@@ -118,7 +118,7 @@ public class AnchorSystem : MonoBehaviour {
                     {
                         DragMode = true;
                         GameObject curve = Instantiate(PlacableItems[SelectedPrefab].Prefabs[1], Vector3.zero, Quaternion.identity);
-                        DraggedObject = curve.GetComponent<DraggableObject>();
+                        DraggedObject = curve.GetComponent<ConveyorBeltBezeir>();
                         DraggedObject.Initialize(hit.transform.gameObject, GhostObject);
                     }
                 }

@@ -121,8 +121,8 @@ GameObject:
   - component: {fileID: 23265223282022296}
   - component: {fileID: 114528858337462220}
   - component: {fileID: 64618146854045022}
-  - component: {fileID: 114358174118343922}
   - component: {fileID: 114315832042875942}
+  - component: {fileID: 114252790762758318}
   m_Layer: 0
   m_Name: BezeirCurve
   m_TagString: Untagged
@@ -150,7 +150,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1915915016580594}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -1.7103659, y: 3.822503e-17, z: -1.7215021}
+  m_LocalPosition: {x: -2.0645118, y: -4.5702526e-16, z: 20.582588}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4649069364035986}
@@ -402,7 +402,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56cb01e63f0f444459eb84b399ace44d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FrontWall: {fileID: 0}
 --- !u!114 &114183743443845972
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -414,7 +413,23 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56cb01e63f0f444459eb84b399ace44d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FrontWall: {fileID: 0}
+--- !u!114 &114252790762758318
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1915915016580594}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 660ae10cd6342254ba621eacdec915a6, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  BezeirPoints:
+  - {fileID: 4649069364035986}
+  - {fileID: 4552500295508252}
+  - {fileID: 4503733513037246}
+  - {fileID: 4877880927893860}
+  Anchors: []
 --- !u!114 &114315832042875942
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -431,21 +446,7 @@ MonoBehaviour:
   - {fileID: 4552500295508252}
   - {fileID: 4503733513037246}
   - {fileID: 4877880927893860}
---- !u!114 &114358174118343922
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1915915016580594}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 7ae2e85c0ff10d144be954cca54e45d7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  GridAnchors: []
-  MaxItemsOnBelt: 3
   Anchors: []
-  ActiveRigidBodies: []
 --- !u!114 &114528858337462220
 MonoBehaviour:
   m_ObjectHideFlags: 1

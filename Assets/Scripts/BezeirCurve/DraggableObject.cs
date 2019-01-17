@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 public class DraggableObject : MonoBehaviour
 {
@@ -10,6 +11,8 @@ public class DraggableObject : MonoBehaviour
     private GameObject GhostObject;
     private MeshRenderer Renderer;
     private MeshCollider Collider;
+
+    private GameObject FirstAnchor;
 
     private bool Placed;
 
@@ -26,6 +29,8 @@ public class DraggableObject : MonoBehaviour
         this.GhostObject = ghostObject;
         BezeirPoints[0].position = anchor.transform.position + Anchors[0].transform.forward * 0.01f; 
         BezeirPoints[1].position = anchor.transform.position + anchor.transform.forward * -2;
+        FirstAnchor = anchor;
+        Debug.Log(anchor.name);
     }
 
     public void Update()
@@ -51,10 +56,14 @@ public class DraggableObject : MonoBehaviour
         ObjectPlaced(Anchor.Anchors[2].Anchor);
     }
 
-    public void ObjectPlaced(GameObject Anchor)
+    public virtual void ObjectPlaced(GameObject anchor)
     {
         Placed = true;
-        Anchors[1] = Anchor;
+        Anchors[1] = anchor;
+        AnchorObject obj = anchor.transform.GetTopParent().GetComponent<PlacableObject>().Anchors.SingleOrDefault(x => x.Anchor.name == anchor.name);
+        obj.ConnectAnchor = this.gameObject;
+        AnchorObject firstAnchor = FirstAnchor.transform.GetTopParent().GetComponent<PlacableObject>().Anchors.SingleOrDefault(x => x.Anchor.name == FirstAnchor.name);
+        firstAnchor.ConnectAnchor = this.gameObject;
         SnapToSecondAnchor();
     }
 
@@ -63,7 +72,7 @@ public class DraggableObject : MonoBehaviour
         BezeirPoints[3].position = Anchors[1].transform.position + Anchors[1].transform.forward * 0.01f;
         BezeirPoints[2].position = Anchors[1].transform.position + Anchors[1].transform.forward * -5;
     }
-
+    
 
 
 }

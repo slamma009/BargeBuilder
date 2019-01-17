@@ -121,9 +121,9 @@ public class PlacingController : MonoBehaviour {
 
                         if (DragMode)
                         {
-                            bool dragPlacable = DraggedObject.UpdatePosition(gridPositionObject);
+                           // bool dragPlacable = DraggedObject.UpdatePosition(gridPositionObject);
 
-                            objectCantBePlaced = objectCantBePlaced || !dragPlacable;
+                           // objectCantBePlaced = objectCantBePlaced || !dragPlacable;
                         }
 
                         if (objectCantBePlaced)
@@ -145,7 +145,7 @@ public class PlacingController : MonoBehaviour {
                         if(enterDragMode && PlacableItems[SelectedPrefab].id == "ConveyorCurve")
                         {
                             DraggedObject = Instantiate(PlacableItems[SelectedPrefab].Prefabs[2], Vector3.zero, Quaternion.identity).GetComponent<ConveyorBeltBezeir>();
-                            DraggedObject.SetFirstPosition(gridPositionObject, GhostObject.transform.forward);
+                          //  DraggedObject.SetFirstPosition(gridPositionObject, GhostObject.transform.forward);
                         }
 
                         if (!DragMode && enterDragMode && PlacableItems[SelectedPrefab].Prefabs.Length > 1)
@@ -157,7 +157,7 @@ public class PlacingController : MonoBehaviour {
                     if(DragMode && !placeHeld)
                     {
                         DragMode = false;
-                        gridController.PlaceObject(PlacableItems[SelectedPrefab].Prefabs[1], gridPositionObject, Quaternion.LookRotation(DraggedObject.SetLastPosition(gridPositionObject)));
+                       // gridController.PlaceObject(PlacableItems[SelectedPrefab].Prefabs[1], gridPositionObject, Quaternion.LookRotation(DraggedObject.SetLastPosition(gridPositionObject)));
                     }
                 }
                 else if (GhostObject.transform.position != GhostObjectHiddenPosition)
