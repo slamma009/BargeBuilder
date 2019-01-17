@@ -3,13 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class ConveyorBelt : PlacableObject
+public class ConveyorBelt : PlacableObject, IPushableObject
 {
-    public int MaxItemsOnBelt = 3;
+    public int MaxItemsOnBelt = 6;
     public GameObject[] Walls;
 
     [HideInInspector]
     public List<Rigidbody> ActiveRigidBodies = new List<Rigidbody>();
+
+    public IPushableObject AttachechedObject;
 
 
     public override void ObjectPlaced()
@@ -29,6 +31,21 @@ public class ConveyorBelt : PlacableObject
         {
             case "AnchorPoint F":
                 Walls[0].SetActive(obj.ConnectAnchor == null);
+
+                if(obj.ConnectAnchor == null)
+                    AttachechedObject = null;
+                else
+                {
+                    PlaneBezeir bezier = obj.ConnectAnchor.GetComponent<PlaneBezeir>();
+                    if(bezier != null)
+                    {
+                        AttachechedObject = bezier.FirstTriggerBox;
+                    }
+                    else
+                    {
+                        AttachechedObject = obj.ConnectAnchor.transform.GetTopParent().GetComponent<IPushableObject>();
+                    }
+                }
                 break;
             case "AnchorPoint R":
                 Walls[1].SetActive(obj.ConnectAnchor == null);
@@ -66,14 +83,31 @@ public class ConveyorBelt : PlacableObject
         {
             if (ActiveRigidBodies[i] != null)
             {
-                Vector3 targetForce = transform.forward;
-                ActiveRigidBodies[i].velocity = Vector3.Lerp(ActiveRigidBodies[i].velocity, targetForce, Time.deltaTime);
+                    Vector3 targetForce = AttachechedObject == null || (AttachechedObject.ObjectIsFull()) ? Vector3.zero : transform.forward;
+                    ActiveRigidBodies[i].velocity = Vector3.Lerp(ActiveRigidBodies[i].velocity, targetForce, Time.deltaTime);
+                
             }
             else
             {
                 ActiveRigidBodies.RemoveAt(i);
             }
         }
+    }
+
+    public bool ObjectIsFull(List<IPushableObject> CheckedObjects = null)
+    {
+        if (Anchors.Where(x => x.ConnectAnchor != null).Count<AnchorObject>() > 1)
+        {
+            if (CheckedObjects == null)
+                CheckedObjects = new List<IPushableObject>();
+            else if (CheckedObjects.Contains(this))
+            {
+                return ActiveRigidBodies.Count >= MaxItemsOnBelt;
+            }
+            CheckedObjects.Add(this);
+        }
+
+        return ActiveRigidBodies.Count >= MaxItemsOnBelt && (AttachechedObject == null || AttachechedObject.ObjectIsFull(CheckedObjects));
     }
 }
 

@@ -7,17 +7,40 @@ public class ConveyorBeltBezeir : DraggableObject
 
     MeshRenderer Renderer;
     MeshCollider Collider;
+    PlaneBezeir Bezier;
 
     private void Awake()
     {
         Renderer = GetComponent<MeshRenderer>();
         Collider = GetComponent<MeshCollider>();
+        Bezier = GetComponent<PlaneBezeir>();
         Collider.enabled = false;
     }
 
     public override void ObjectPlaced(GameObject anchor)
     {
         Collider.enabled = true;
+
+        if (anchor == null)
+        {
+            Bezier.SecondTriggerBox.nextObject = null;
+            Debug.Log("BAD THINGS HAPPENING");
+        }
+        else
+        {
+            PlaneBezeir bezier = anchor.GetComponent<PlaneBezeir>();
+            if (bezier != null)
+            {
+                Bezier.SecondTriggerBox.nextObject = bezier.FirstTriggerBox;
+            }
+            else
+            {
+                Bezier.SecondTriggerBox.nextObject = anchor.transform.GetTopParent().GetComponent<IPushableObject>();
+                Debug.Log("Good: " + anchor.transform.GetTopParent().GetComponent<IPushableObject>());
+            }
+
+        }
+
         base.ObjectPlaced(anchor);
     }
 

@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BezeirConveyor : MonoBehaviour {
+public class BezeirConveyor : MonoBehaviour, IPushableObject {
     
-
-    [HideInInspector]
+    
     public List<Rigidbody> ActiveRigidBodies = new List<Rigidbody>();
+    
+    public IPushableObject nextObject;
 
     private void OnTriggerEnter(Collider other)
     {
@@ -32,7 +33,9 @@ public class BezeirConveyor : MonoBehaviour {
         {
             if (ActiveRigidBodies[i] != null)
             {
-                Vector3 targetForce = transform.forward;
+                if (nextObject == null)
+                    Debug.Log(transform.name + ": OH SHIT");
+                Vector3 targetForce = nextObject == null || nextObject.ObjectIsFull() ?  Vector3.zero : transform.forward;
                 ActiveRigidBodies[i].velocity = Vector3.Lerp(ActiveRigidBodies[i].velocity, targetForce * 2, Time.deltaTime * 2);
             }
             else
@@ -40,5 +43,10 @@ public class BezeirConveyor : MonoBehaviour {
                 ActiveRigidBodies.RemoveAt(i);
             }
         }
+    }
+
+    public bool ObjectIsFull(List<IPushableObject> CheckedObjects = null)
+    {
+        return ActiveRigidBodies.Count >= 1 && (nextObject == null || nextObject.ObjectIsFull(CheckedObjects));
     }
 }

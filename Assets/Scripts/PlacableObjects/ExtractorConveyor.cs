@@ -9,7 +9,6 @@ public class ExtractorConveyor : MonoBehaviour {
 
     private void OnTriggerEnter(Collider other)
     {
-        Debug.Log(Ramp.up);
         Rigidbody rigid = other.GetComponent<Rigidbody>();
         if (rigid != null && !rigid.isKinematic)
         {

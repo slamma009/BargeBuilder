@@ -30,7 +30,6 @@ public class DraggableObject : MonoBehaviour
         BezeirPoints[0].position = anchor.transform.position + Anchors[0].transform.forward * 0.01f; 
         BezeirPoints[1].position = anchor.transform.position + anchor.transform.forward * -2;
         FirstAnchor = anchor;
-        Debug.Log(anchor.name);
     }
 
     public void Update()

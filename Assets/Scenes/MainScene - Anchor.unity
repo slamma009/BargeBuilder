@@ -113,11 +113,6 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
---- !u!4 &147486966 stripped
-Transform:
-  m_CorrespondingSourceObject: {fileID: 4516760049463632, guid: 74cb8450ed1a1a14ea1c5982b8be51ad,
-    type: 2}
-  m_PrefabInternal: {fileID: 1121224925}
 --- !u!1 &170076733
 GameObject:
   m_ObjectHideFlags: 0
@@ -719,73 +714,6 @@ MonoBehaviour:
   GhostAvatarPoint: {fileID: 1308038657}
   GhostMaterial: {fileID: 2100000, guid: 598331a39c1a64447805d314c1546b3a, type: 2}
   GhostErrorMaterial: {fileID: 2100000, guid: 7661056798a119549a3a82ea3b699535, type: 2}
---- !u!1 &1873755403
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 1827446630473356, guid: 74cb8450ed1a1a14ea1c5982b8be51ad,
-    type: 2}
-  m_PrefabInternal: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1873755404}
-  - component: {fileID: 1873755407}
-  - component: {fileID: 1873755406}
-  - component: {fileID: 1873755405}
-  m_Layer: 0
-  m_Name: Cube (2)
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1873755404
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 4936310827253554, guid: 74cb8450ed1a1a14ea1c5982b8be51ad,
-    type: 2}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1873755403}
-  m_LocalRotation: {x: 0.00000013047506, y: 0.7172821, z: -0.69678295, w: -0.0000001343136}
-  m_LocalPosition: {x: 0, y: 0.003, z: -0.117}
-  m_LocalScale: {x: 1.0101041, y: 0.7451595, z: 1.0413121}
-  m_Children: []
-  m_Father: {fileID: 147486966}
-  m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1873755405
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1873755403}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 099393c8d08be7747ae0c0f9dd57762a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ActiveRigidBodies: []
-  Ramp: {fileID: 147486966}
---- !u!65 &1873755406
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 65183756352983134, guid: 74cb8450ed1a1a14ea1c5982b8be51ad,
-    type: 2}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1873755403}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!33 &1873755407
-MeshFilter:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 33751783169632234, guid: 74cb8450ed1a1a14ea1c5982b8be51ad,
-    type: 2}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 1873755403}
-  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!1001 &2106778904
 Prefab:
   m_ObjectHideFlags: 0

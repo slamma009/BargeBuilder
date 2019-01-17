@@ -16,6 +16,12 @@ public class PlaneBezeir: BezierCurve3D
     private MeshFilter meshFilter;
     private Mesh mesh;
     private MeshRenderer meshRenderer;
+
+    [HideInInspector]
+    public IPushableObject FirstTriggerBox;
+    [HideInInspector]
+    public BezeirConveyor SecondTriggerBox;
+
     public void Awake()
     {
         shape = GenerateShape(BezeirMesh);
@@ -174,6 +180,19 @@ public class PlaneBezeir: BezierCurve3D
             {
                 TriggerBoxes.Add(Instantiate(TriggerBox, Vector3.zero, Quaternion.identity));
                 TriggerBoxes[TriggerBoxes.Count - 1].transform.parent = gameObject.transform;
+                TriggerBoxes[TriggerBoxes.Count - 1].name += i;
+
+                if (i == 0)
+                {
+                    FirstTriggerBox = TriggerBoxes[0].GetComponent<IPushableObject>();
+                }
+                else
+                    TriggerBoxes[TriggerBoxes.Count - 2].GetComponent<BezeirConveyor>().nextObject = TriggerBoxes[TriggerBoxes.Count - 1].GetComponent<IPushableObject>();
+
+                if (i == Segments - 2)
+                {
+                    SecondTriggerBox = TriggerBoxes[i].GetComponent<BezeirConveyor>();
+                }
             }
         }
         else if (TriggerBoxes.Count >= Segments - 1)
