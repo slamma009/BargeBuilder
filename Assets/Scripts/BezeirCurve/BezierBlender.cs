@@ -151,6 +151,7 @@ public class BezierBlender: BezierCurve3D
         }
         return returnList.ToArray();
     }
+
     public ExtrudeShape GenerateShape(Mesh mesh)
     {
         ExtrudeShape newShape = new ExtrudeShape();

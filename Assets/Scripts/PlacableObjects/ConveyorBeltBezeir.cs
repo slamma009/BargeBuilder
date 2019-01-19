@@ -36,7 +36,7 @@ public class ConveyorBeltBezeir : DraggableObject
 
         base.ObjectPlaced(anchor);
 
-
+        Collider.enabled = true;
         BezierLogic.CreateCurve();
 
     }

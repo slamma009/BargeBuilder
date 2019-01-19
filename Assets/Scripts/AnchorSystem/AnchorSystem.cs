@@ -41,13 +41,17 @@ public class AnchorSystem : MonoBehaviour {
     private DraggableObject DraggedObject;
 
 
-    // Called for initialization
+    /// <summary>
+    /// Initializes the class
+    /// </summary>
     protected void Setup ()
     {
         GhostObjectHiddenPosition = Vector3.zero + Vector3.up * -100;
     }
 
-    // Rotates the item the user is trying to place by 90 degrees
+    /// <summary>
+    /// Rotates the item the user is trying to place
+    /// </summary>
     protected void RotateGhostItem(float rawInput, bool buttonUp)
     {
         if (!AnchorMode)
@@ -60,6 +64,9 @@ public class AnchorSystem : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Main Method to handle placing objects in the world.
+    /// </summary>
     protected void RaycastLogic(Ray ray, bool buttonUp, bool buttonDown)
     {
         //Raycast out and send the data to the GridController to be placed.
@@ -123,7 +130,7 @@ public class AnchorSystem : MonoBehaviour {
                     if (AnchorMode)
                         AnchorMode = !AnchorMode;
 
-                    HitPlacable(hit, buttonUp);
+                    HitTerrain(hit, buttonUp);
                 }
                 else
                 {
@@ -158,6 +165,9 @@ public class AnchorSystem : MonoBehaviour {
     }
 
 
+    /// <summary>
+    /// Raycast has hit an anchor object
+    /// </summary>
     private void HitAnchor(GameObject anchor, bool buttonUp, bool buttonDown)
     {
 
@@ -246,7 +256,10 @@ public class AnchorSystem : MonoBehaviour {
         }
     }
 
-    private void HitPlacable(RaycastHit hit, bool placeObject)
+    /// <summary>
+    /// Raycast has hit the terrain
+    /// </summary>
+    private void HitTerrain(RaycastHit hit, bool placeObject)
     {
         // Set the Ghost Object Position
         GhostObject.transform.position = hit.point + Vector3.up;
@@ -329,7 +342,9 @@ public class AnchorSystem : MonoBehaviour {
 
     }
 
-    // Cycles through placable prefabs
+    /// <summary>
+    /// Cycles through placable prefabs
+    /// </summary>
     protected void ChangePrefabs()
     {
         SelectedPrefab += 1;
@@ -373,7 +388,9 @@ public class AnchorSystem : MonoBehaviour {
 
     }
 
-    // Returns all the colliders for the object where their layer matches the provided mask.
+    /// <summary>
+    /// Returns all the colliders for the object where their layer matches the provided mask.
+    /// </summary>
     public List<Collider> GetAllChildCollider(GameObject obj, LayerMask? mask = null)
     {
         List<Collider> colliders = new List<Collider>();
@@ -393,7 +410,10 @@ public class AnchorSystem : MonoBehaviour {
         return colliders;
     }
 
-    public bool GhostObjectIsColliding()
+    /// <summary>
+    /// Checks the Ghost Object for any collisions to prevent placement
+    /// </summary>
+    private bool GhostObjectIsColliding()
     {
         PlacableObject placableObject = GhostObject.GetComponent<PlacableObject>();
 
@@ -428,6 +448,10 @@ public class AnchorSystem : MonoBehaviour {
         placableObject.MakeGhost(GhostMaterial);
         return false;
     }
+
+    /// <summary>
+    /// Checks the dragged object for any collisions to prevent placement
+    /// </summary>
     private bool DraggableIsColliding()
     {
         if (DraggedObject == null || !DraggedObject.gameObject.activeSelf)
