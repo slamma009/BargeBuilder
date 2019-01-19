@@ -8,7 +8,7 @@ public class BezierTrigger : MonoBehaviour
     private void OnTriggerEnter(Collider other)
     {
         Transform t = other.transform.GetTopParent();
-        if (other.gameObject.layer == LayerMask.NameToLayer("Placable") || t.tag == "Draggable") {
+        if (other.gameObject.layer == LayerMask.NameToLayer("PlacementCollider") || t.tag == "Draggable") {
             if (t != dObj.Anchors[0].transform.GetTopParent() 
                 && t != dObj.GhostObject.transform.GetTopParent() 
                 && (dObj.Anchors[1] == null || t != dObj.Anchors[1].transform.GetTopParent()))
@@ -18,7 +18,7 @@ public class BezierTrigger : MonoBehaviour
     private void OnTriggerExit(Collider other)
     {
         Transform t = other.transform.GetTopParent();
-        if (other.gameObject.layer == LayerMask.NameToLayer("Placable") || t.tag == "Draggable")
+        if (other.gameObject.layer == LayerMask.NameToLayer("PlacementCollider") || t.tag == "Draggable")
         {
             AnchorSys.DraggableCollidedObjects.Remove(other.gameObject);
         }

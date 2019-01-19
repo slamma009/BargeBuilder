@@ -73,7 +73,7 @@ public class PlacableObject : MonoBehaviour {
             if (!turnOfColliders)
             {
                 // If it's not a Placable layer, then we shouldn't check for collisn, so disable it.
-                if (collider.gameObject.layer != LayerMask.NameToLayer("Placable"))
+                if (collider.gameObject.layer != LayerMask.NameToLayer("PlacementCollider"))
                 {
                     collider.enabled = false;
                 }

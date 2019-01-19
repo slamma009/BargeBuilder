@@ -121,7 +121,6 @@ GameObject:
   - component: {fileID: 23265223282022296}
   - component: {fileID: 114528858337462220}
   - component: {fileID: 64618146854045022}
-  - component: {fileID: 114315832042875942}
   - component: {fileID: 114252790762758318}
   m_Layer: 0
   m_Name: BezeirCurve
@@ -430,26 +429,6 @@ MonoBehaviour:
   - {fileID: 4503733513037246}
   - {fileID: 4877880927893860}
   Anchors: []
-  PlacementCollider: {fileID: 0}
-  GhostObject: {fileID: 0}
---- !u!114 &114315832042875942
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1915915016580594}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2e6a8e81db24a084c8eb96522818d0a0, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  BezeirPoints:
-  - {fileID: 4649069364035986}
-  - {fileID: 4552500295508252}
-  - {fileID: 4503733513037246}
-  - {fileID: 4877880927893860}
-  Anchors: []
-  PlacementCollider: {fileID: 0}
   GhostObject: {fileID: 0}
 --- !u!114 &114528858337462220
 MonoBehaviour:

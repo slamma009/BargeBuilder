@@ -47,6 +47,6 @@ public class BezeirConveyor : MonoBehaviour, IPushableObject {
 
     public bool ObjectIsFull(List<IPushableObject> CheckedObjects = null)
     {
-        return ActiveRigidBodies.Count >= 1 && (nextObject == null || nextObject.ObjectIsFull(CheckedObjects));
+        return ActiveRigidBodies.Count >= 2 && (nextObject == null || nextObject.ObjectIsFull(CheckedObjects));
     }
 }

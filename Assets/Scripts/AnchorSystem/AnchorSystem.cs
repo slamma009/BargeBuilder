@@ -71,7 +71,7 @@ public class AnchorSystem : MonoBehaviour {
     {
         //Raycast out and send the data to the GridController to be placed.
         RaycastHit hit;
-        LayerMask layerMask = ~((1 << LayerMask.NameToLayer("Trigger")) | 1 << LayerMask.NameToLayer("Placable"));
+        LayerMask layerMask = ~((1 << LayerMask.NameToLayer("Trigger")) | 1 << LayerMask.NameToLayer("PlacementCollider"));
         if (Physics.Raycast(ray, out hit, PlaceDistance, layerMask))
         {
             if (RaycastHitTarget != null)
@@ -79,7 +79,7 @@ public class AnchorSystem : MonoBehaviour {
 
             //if (DestructionMode)
             //{
-            //    if (hit.collider.tag == "Placable")
+            //    if (hit.collider.tag == "PlacementCollider")
             //    {
             //        //GhostDeleteMarker.transform.position = hit.collider.transform.position;
             //        // Check for the right hand trigger
@@ -384,7 +384,7 @@ public class AnchorSystem : MonoBehaviour {
         colliderObject.name = "COLLIDEROBJECT";
         colliderObject.transform.localScale = colliderObject.transform.localScale * 0.95f;
         colliderObject.transform.parent = tempObject.transform;
-        GhostColliders = GetAllChildCollider(colliderObject, LayerMask.NameToLayer("Placable"));
+        GhostColliders = GetAllChildCollider(colliderObject, LayerMask.NameToLayer("PlacementCollider"));
 
     }
 
@@ -426,7 +426,7 @@ public class AnchorSystem : MonoBehaviour {
             }
         }
         // Get all colliders within 10 units of our ghost object.
-        Collider[] others = Physics.OverlapSphere(GhostObject.transform.position, 10, LayerMask.GetMask("Placable"));
+        Collider[] others = Physics.OverlapSphere(GhostObject.transform.position, 10, LayerMask.GetMask("PlacementCollider"));
         foreach (Collider other in others)
         {
             // Make sure it's not a collider on the ghost object.
