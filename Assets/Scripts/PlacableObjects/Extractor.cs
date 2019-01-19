@@ -17,7 +17,6 @@ public class Extractor : PlacableObject
 
     public void Start()
     {
-        SecondsToSpawn = 60 / SpawnRatePerMinute;
     }
     public void AnchorChanged(AnchorObject obj)
     {
@@ -43,7 +42,7 @@ public class Extractor : PlacableObject
         if (Placed && OutputObject != null && OutputObject.ActiveRigidBodies.Count < OutputObject.MaxItemsOnBelt)
         {
             TimeSinceLastSpawn += Time.deltaTime;
-            if (TimeSinceLastSpawn > SecondsToSpawn)
+            if (TimeSinceLastSpawn > 60 / SpawnRatePerMinute)
             {
                 TimeSinceLastSpawn = 0;
                 Instantiate(SpawnObject, OreSpawn.position, Quaternion.identity);

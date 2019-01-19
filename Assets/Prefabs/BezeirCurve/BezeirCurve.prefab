@@ -125,7 +125,7 @@ GameObject:
   - component: {fileID: 114252790762758318}
   m_Layer: 0
   m_Name: BezeirCurve
-  m_TagString: Untagged
+  m_TagString: Draggable
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -430,6 +430,8 @@ MonoBehaviour:
   - {fileID: 4503733513037246}
   - {fileID: 4877880927893860}
   Anchors: []
+  PlacementCollider: {fileID: 0}
+  GhostObject: {fileID: 0}
 --- !u!114 &114315832042875942
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -447,6 +449,8 @@ MonoBehaviour:
   - {fileID: 4503733513037246}
   - {fileID: 4877880927893860}
   Anchors: []
+  PlacementCollider: {fileID: 0}
+  GhostObject: {fileID: 0}
 --- !u!114 &114528858337462220
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -469,3 +473,4 @@ MonoBehaviour:
   TriggerBox: {fileID: 1058717118783798, guid: fbb366a0afc615e46b59c7a64f4f51ee, type: 2}
   PointRepresentation: {fileID: 0}
   ObjectMaterial: {fileID: 2100000, guid: 0a6a3c7953667a04086cdc933df017cc, type: 2}
+  SecondTriggerBox: {fileID: 0}

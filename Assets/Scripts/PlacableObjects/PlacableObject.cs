@@ -36,31 +36,68 @@ public class PlacableObject : MonoBehaviour {
 
 
 
-    public void MakeGhost(Material ghostMaterial)
+    public void MakeGhost(Material ghostMaterial, bool turnOfColliders = true)
     {
-        disableChildren(transform, ghostMaterial);
+        disableChildren(transform, ghostMaterial, turnOfColliders);
     }
 
 
 
-    void disableChildren(Transform childTransform, Material ghostMaterial)
+    void disableChildren(Transform childTransform, Material ghostMaterial, bool turnOfColliders = true)
     {
+        // Don't change collider object
+        if(childTransform.name == "COLLIDEROBJECT")
+        {
+            return;
+        }
 
-        if(ghostMaterial != null)
+        // If there's no ghost material then we cant change our renderer. If we have a sys then we are a collider object and need to turn off our renderer
+        if(ghostMaterial != null || !turnOfColliders)
         {
             Renderer renderer = childTransform.GetComponent<Renderer>();
             if (renderer != null)
-                renderer.material = ghostMaterial;
+            {
+                if (turnOfColliders)
+                    renderer.material = ghostMaterial;
+                else
+                    renderer.enabled = false;
+            }
+
         }
 
-        Collider collider = childTransform.GetComponent<Collider>();
 
-        if(collider != null)
-            collider.enabled = false;
+        Collider collider = childTransform.GetComponent<Collider>();
+        // If we have a sys then we are a collider object and need to do a lot of stuff
+        if (collider != null)
+        {
+            if (!turnOfColliders)
+            {
+                // If it's not a Placable layer, then we shouldn't check for collisn, so disable it.
+                if (collider.gameObject.layer != LayerMask.NameToLayer("Placable"))
+                {
+                    collider.enabled = false;
+                }
+                else
+                {
+                    // Make sure all mesh colliders are convex to be triggers.
+                    MeshCollider mesh = childTransform.GetComponent<MeshCollider>();
+                    if (mesh != null)
+                        mesh.convex = true;
+
+                    collider.isTrigger = true;
+                }
+            }
+            else
+            {
+                collider.enabled = false;
+            }
+        }
+            
+
       
         for(var i=0; i< childTransform.childCount; ++i)
         {
-            disableChildren(childTransform.GetChild(i), ghostMaterial);
+            disableChildren(childTransform.GetChild(i), ghostMaterial, turnOfColliders);
         }
     }
 }

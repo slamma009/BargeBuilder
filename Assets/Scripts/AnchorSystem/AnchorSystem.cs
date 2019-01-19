@@ -14,8 +14,12 @@ public class AnchorSystem : MonoBehaviour {
     public Material GhostErrorMaterial;
 
     protected GameObject GhostObject;
+    protected PlacableObject GhostPlacable;
     protected GameObject GhostAvatar;
     protected Vector3 GhostObjectHiddenPosition;
+
+    protected List<Collider> GhostColliders = new List<Collider>();
+    public List<GameObject> DraggableCollidedObjects = new List<GameObject>();
 
     protected int SelectedPrefab = 0;
 
@@ -32,10 +36,10 @@ public class AnchorSystem : MonoBehaviour {
 
     private Vector3 SavedGridPosition;
     private int SavedRotation = 0;
-    private bool ObjectCanBePlaced = true;
     private bool AnchorMode = true;
 
     private DraggableObject DraggedObject;
+
 
     // Called for initialization
     protected void Setup ()
@@ -60,7 +64,7 @@ public class AnchorSystem : MonoBehaviour {
     {
         //Raycast out and send the data to the GridController to be placed.
         RaycastHit hit;
-        LayerMask layerMask = ~(1 << LayerMask.NameToLayer("Trigger"));
+        LayerMask layerMask = ~((1 << LayerMask.NameToLayer("Trigger")) | 1 << LayerMask.NameToLayer("Placable"));
         if (Physics.Raycast(ray, out hit, PlaceDistance, layerMask))
         {
             if (RaycastHitTarget != null)
@@ -86,78 +90,51 @@ public class AnchorSystem : MonoBehaviour {
 
             if (hit.transform.tag == "Placable")
             {
-                if (AnchorMode)
-                    AnchorMode = !AnchorMode;
+                GhostObject.transform.position = hit.point + Vector3.up;
 
-                HitPlacable(hit, buttonUp);
+                // Try snapping to nearby anchors first
+                GameObject closestAnchor = null;
+                float closestDistance = 1;
+                foreach(AnchorObject anchor in GhostPlacable.Anchors)
+                {
+                    // Find all colliders within 1 unit of the center of the anchor
+                    Collider[] colliders = Physics.OverlapSphere(anchor.Anchor.transform.position, 1, LayerMask.GetMask("Anchor"));
+                    foreach(Collider c in colliders)
+                    {
+                        // Make sure it's not 1 of our own anchors, should be impossible though
+                        if(c.transform.GetTopParent() != GhostObject.transform)
+                        {
+                            // Calculate the distance between the 2 points
+                            // TODO: Use DistanceUnsquared
+                            float distance = Vector3.Distance(c.transform.position, GhostObject.transform.position);
+
+                            // If the new anchor is closer then our last one, save it.
+                            if(distance < closestDistance)
+                            {
+                                closestDistance = distance;
+                                closestAnchor = c.gameObject;
+                            }
+                        }
+                    }
+                }
+
+                if (closestAnchor == null)
+                {
+                    if (AnchorMode)
+                        AnchorMode = !AnchorMode;
+
+                    HitPlacable(hit, buttonUp);
+                }
+                else
+                {
+
+                    HitAnchor(closestAnchor, buttonUp, buttonDown);
+                }
+                
             } 
             else if(hit.transform.tag == "Anchor")
             {
-                if (!AnchorMode)
-                {
-                    AnchorMode = !AnchorMode;
-
-                    // Snap the ghost objects rotation to our anchors rotation
-                    float angle = Vector3.SignedAngle(hit.transform.forward, GhostObject.transform.forward, Vector3.up);
-                    angle = angle / 90f;
-                    angle = Mathf.Round(angle) * 90f;
-                    GhostObject.transform.rotation = Quaternion.LookRotation(Quaternion.AngleAxis(angle, Vector3.up) * hit.transform.forward, Vector3.up);
-                }
-
-                if(!DragMode || DraggedObject == null || DraggedObject.Anchors[0] == hit.transform.gameObject || hit.transform.parent.tag != "ConveyorBelt")
-                    GhostObject.transform.position = hit.transform.position + hit.transform.forward * -0.99f;
-                else
-                {
-                    GhostObject.transform.position = GhostObjectHiddenPosition;
-                    DraggedObject.Anchors[1] = hit.transform.gameObject;
-                }
-
-                if (buttonDown)
-                {
-                    if (PlacableItems[SelectedPrefab].id == "ConveyorBelt" && hit.transform.parent.tag == "ConveyorBelt")
-                    {
-                        DragMode = true;
-                        GameObject curve = Instantiate(PlacableItems[SelectedPrefab].Prefabs[1], Vector3.zero, Quaternion.identity);
-                        DraggedObject = curve.GetComponent<ConveyorBeltBezeir>();
-                        DraggedObject.Initialize(hit.transform.gameObject, GhostObject);
-                    }
-                }
-
-                if (buttonUp)
-                {
-                    // Bezier curve logic
-                    bool placeGhost = true;
-                    if (DragMode)
-                    {
-                        if(DraggedObject != null)
-                        {
-                            if(DraggedObject.Anchors[0] == hit.collider.gameObject)
-                            {
-                                Destroy(DraggedObject.gameObject);
-                                DragMode = false;
-                            }
-                            else if(hit.transform.parent.tag == "ConveyorBelt")
-                            {
-                                placeGhost = false;
-                                DraggedObject.ObjectPlaced(hit.transform.gameObject);
-                                DraggedObject = null;
-                                DragMode = false;
-                            }
-                        }
-                    }
-
-
-                    if (ObjectCanBePlaced && placeGhost)
-                    {
-                        GameObject newObj = Instantiate(PlacableItems[SelectedPrefab].Prefabs[0], GhostObject.transform.position, GhostObject.transform.rotation);
-                        newObj.GetComponent<PlacableObject>().ObjectPlaced();
-                        if (DraggedObject != null && DragMode)
-                        {
-                            DraggedObject.ObjectPlaced(newObj.GetComponent<ConveyorBelt>());
-                            DraggedObject = null;
-                        }
-                    }
-                }
+                HitAnchor(hit.collider.gameObject, buttonUp, buttonDown);
             }
             else if (GhostObject.transform.position != GhostObjectHiddenPosition)
             {
@@ -180,60 +157,146 @@ public class AnchorSystem : MonoBehaviour {
         }
     }
 
-    public void HitPlacable(RaycastHit hit, bool placeObject)
+
+    private void HitAnchor(GameObject anchor, bool buttonUp, bool buttonDown)
     {
-        GhostObject.transform.position = hit.point + Vector3.up;
 
-        if (placeObject)
+        if (!AnchorMode)
         {
+            AnchorMode = !AnchorMode;
 
-            if (ObjectCanBePlaced)
+            // Snap the ghost objects rotation to our anchors rotation
+            float angle = Vector3.SignedAngle(anchor.transform.forward, GhostObject.transform.forward, Vector3.up);
+            angle = angle / 90f;
+            angle = Mathf.Round(angle) * 90f;
+            GhostObject.transform.rotation = Quaternion.LookRotation(Quaternion.AngleAxis(angle, Vector3.up) * anchor.transform.forward, Vector3.up);
+        }
+        // If we're not dragging something. Otherwise check if it's the same point we're dragging from. Otherwise make sure it's not a conveyor belt.
+        if (!DragMode || DraggedObject == null || DraggedObject.Anchors[0] == anchor || anchor.transform.parent.tag != "ConveyorBelt")
+        {
+            GhostObject.transform.position = anchor.transform.position + anchor.transform.forward * -0.99f;
+            if(DragMode && DraggedObject != null && DraggedObject.Anchors[0] == anchor)
+            {
+                if (DraggedObject.gameObject.activeSelf)
+                    DraggedObject.gameObject.SetActive(false);
+            }
+        }
+        else
+        {
+            if (DragMode && DraggedObject != null)
+            {
+                if (!DraggedObject.gameObject.activeSelf)
+                    DraggedObject.gameObject.SetActive(true);
+            }
+            // Since we have to be hitting a different conveyor belt then our first anchor, hide the ghost object and snap the dragged object to it.
+            GhostObject.transform.position = GhostObjectHiddenPosition;
+            DraggedObject.Anchors[1] = anchor;
+        }
+
+        // Call collision logic
+        bool ObjectCanBePlaced = !GhostObjectIsColliding();
+
+        if (ObjectCanBePlaced && buttonDown)
+        {
+            if (PlacableItems[SelectedPrefab].id == "ConveyorBelt" && anchor.transform.parent.tag == "ConveyorBelt")
+            {
+                DragMode = true;
+                GameObject curve = Instantiate(PlacableItems[SelectedPrefab].Prefabs[1], Vector3.zero, Quaternion.identity);
+                DraggedObject = curve.GetComponent<ConveyorBeltBezeir>();
+                DraggedObject.Initialize(anchor, GhostObject);
+
+                BezierTrigger colliderStuff = DraggedObject.gameObject.AddComponent<BezierTrigger>();
+                colliderStuff.dObj = DraggedObject;
+                colliderStuff.AnchorSys = this;
+            }
+        }
+
+        if (buttonUp)
+        {
+            // Bezier curve logic
+            bool placeGhost = true;
+            if (DragMode)
+            {
+                if (DraggedObject != null)
+                {
+                    if (DraggedObject.Anchors[0] == anchor)
+                    {
+                        ExitDragMode(true);
+                    }
+                    else if (anchor.transform.parent.tag == "ConveyorBelt")
+                    {
+                        placeGhost = false;
+                        DraggedObject.ObjectPlaced(anchor);
+                        ExitDragMode(false);
+                    }
+                }
+            }
+
+
+            if (ObjectCanBePlaced && placeGhost)
             {
                 GameObject newObj = Instantiate(PlacableItems[SelectedPrefab].Prefabs[0], GhostObject.transform.position, GhostObject.transform.rotation);
                 newObj.GetComponent<PlacableObject>().ObjectPlaced();
                 if (DraggedObject != null && DragMode)
                 {
                     DraggedObject.ObjectPlaced(newObj.GetComponent<ConveyorBelt>());
-                    DraggedObject = null;
+                    ExitDragMode(false);
                 }
             }
-            DragMode = false;
         }
     }
 
-    // Cycles through placable prefabs
-    protected void ChangePrefabs()
+    private void HitPlacable(RaycastHit hit, bool placeObject)
     {
-        SelectedPrefab += 1;
-        if (SelectedPrefab >= PlacableItems.Length)
-            SelectedPrefab = 0;
-
-        // Instantiate the ghost avatar above the hand. 
-        GameObject tempAvatar = Instantiate(PlacableItems[SelectedPrefab].Prefabs[0], GhostAvatarPoint.position, (GhostAvatar == null ? GhostAvatarPoint.rotation : GhostAvatar.transform.rotation)) as GameObject;
-        tempAvatar.GetComponent<PlacableObject>().MakeGhost(null);
-        tempAvatar.transform.localScale = Vector3.one * 0.03f;
-        tempAvatar.transform.parent = GhostAvatarPoint.parent;
-
-        if (GhostAvatar != null)
+        // Set the Ghost Object Position
+        GhostObject.transform.position = hit.point + Vector3.up;
+        if(DraggedObject != null && !DraggedObject.gameObject.activeSelf)
+                DraggedObject.gameObject.SetActive(true);
+        // If the dragged object is still anchoring to the last anchor, switch it to follow the ghost object again.
+        if (DraggedObject != null && DraggedObject.Anchors[1] != null)
         {
-            Destroy(GhostAvatar);
+            
+            DraggedObject.Anchors[1] = null;
         }
 
-        GhostAvatar = tempAvatar;
+        // Call collision logic
+        bool ObjectCanBePlaced = !GhostObjectIsColliding();
 
-
-        // Instantiate the ghost object
-        GameObject tempObject = Instantiate(PlacableItems[SelectedPrefab].Prefabs[0], (GhostObject == null ? Vector3.zero - Vector3.up * 5 : GhostObject.transform.position), Quaternion.identity) as GameObject;
-        tempObject.GetComponent<PlacableObject>().MakeGhost(GhostMaterial);
-        tempObject.transform.rotation = GhostObject == null ? Quaternion.identity : GhostObject.transform.rotation;
-
-        if (GhostObject != null)
+        // Attempt ot place the item.
+        if (placeObject)
         {
-            Destroy(GhostObject);
+
+            if (ObjectCanBePlaced)
+            {
+                // Place the item we have selected
+                GameObject newObj = Instantiate(PlacableItems[SelectedPrefab].Prefabs[0], GhostObject.transform.position, GhostObject.transform.rotation);
+                newObj.GetComponent<PlacableObject>().ObjectPlaced();
+
+                // Check if we are draging an item and place it too
+                if (DraggedObject != null && DragMode)
+                {
+                    DraggedObject.ObjectPlaced(newObj.GetComponent<ConveyorBelt>());
+                    ExitDragMode(false);
+                }
+            }
+            else
+            {
+                // Just in case we have an item that's being dragged, lets exit
+                ExitDragMode(true);
+            }
         }
+    }
 
-        GhostObject = tempObject;
+    private void ExitDragMode(bool destroyObject)
+    {
+        DraggableCollidedObjects.Clear();
+        Destroy(DraggedObject.GetComponent<BezierTrigger>());
 
+        DragMode = false;
+        if(destroyObject)
+            Destroy(DraggedObject.gameObject);
+        else 
+            DraggedObject = null;
     }
 
     protected void EnablePlacingMode(bool enabling)
@@ -263,6 +326,118 @@ public class AnchorSystem : MonoBehaviour {
 
         if (PlayingModeChanged != null)
             PlayingModeChanged();
-        
+
     }
+
+    // Cycles through placable prefabs
+    protected void ChangePrefabs()
+    {
+        SelectedPrefab += 1;
+        if (SelectedPrefab >= PlacableItems.Length)
+            SelectedPrefab = 0;
+
+        // Instantiate the ghost avatar above the hand. 
+        GameObject tempAvatar = Instantiate(PlacableItems[SelectedPrefab].Prefabs[0], GhostAvatarPoint.position, (GhostAvatar == null ? GhostAvatarPoint.rotation : GhostAvatar.transform.rotation)) as GameObject;
+        tempAvatar.GetComponent<PlacableObject>().MakeGhost(null);
+        tempAvatar.transform.localScale = Vector3.one * 0.03f;
+        tempAvatar.transform.parent = GhostAvatarPoint.parent;
+
+        if (GhostAvatar != null)
+        {
+            Destroy(GhostAvatar);
+        }
+
+        GhostAvatar = tempAvatar;
+
+
+        // Instantiate the ghost object
+        GameObject tempObject = Instantiate(PlacableItems[SelectedPrefab].Prefabs[0], (GhostObject == null ? Vector3.zero - Vector3.up * 5 : GhostObject.transform.position), Quaternion.identity) as GameObject;
+        
+        tempObject.GetComponent<PlacableObject>().MakeGhost(GhostMaterial);
+        tempObject.transform.rotation = GhostObject == null ? Quaternion.identity : GhostObject.transform.rotation;
+
+
+        if (GhostObject != null)
+        {
+            Destroy(GhostObject);
+        }
+
+        GhostObject = tempObject;
+        GhostPlacable = GhostObject.GetComponent<PlacableObject>();
+        GameObject colliderObject = Instantiate(PlacableItems[SelectedPrefab].Prefabs[0], GhostObject.transform.position, GhostObject.transform.rotation) as GameObject;
+        colliderObject.GetComponent<PlacableObject>().MakeGhost(null, false);
+        colliderObject.name = "COLLIDEROBJECT";
+        colliderObject.transform.localScale = colliderObject.transform.localScale * 0.95f;
+        colliderObject.transform.parent = tempObject.transform;
+        GhostColliders = GetAllChildCollider(colliderObject, LayerMask.NameToLayer("Placable"));
+
+    }
+
+    // Returns all the colliders for the object where their layer matches the provided mask.
+    public List<Collider> GetAllChildCollider(GameObject obj, LayerMask? mask = null)
+    {
+        List<Collider> colliders = new List<Collider>();
+        if (mask == null || obj.layer == mask.Value)
+        {
+            Collider c = obj.GetComponent<Collider>();
+            if (c != null)
+                colliders.Add(c);
+        }
+        int count = obj.transform.childCount;
+        for (var i = 0; i < count; ++i)
+        {
+            Transform child = obj.transform.GetChild(i);
+            colliders.AddRange(GetAllChildCollider(child.gameObject, mask));
+        }
+
+        return colliders;
+    }
+
+    public bool GhostObjectIsColliding()
+    {
+        PlacableObject placableObject = GhostObject.GetComponent<PlacableObject>();
+
+        if(DragMode && DraggedObject != null)
+        {
+            if (DraggableIsColliding())
+            {
+                placableObject.MakeGhost(GhostErrorMaterial);
+                return true;
+            }
+        }
+        // Get all colliders within 10 units of our ghost object.
+        Collider[] others = Physics.OverlapSphere(GhostObject.transform.position, 10, LayerMask.GetMask("Placable"));
+        foreach (Collider other in others)
+        {
+            // Make sure it's not a collider on the ghost object.
+            if (other.transform.GetTopParent() != GhostObject.transform)
+            {
+                // Loop through all colliders on the ghost object and determine if anything is intersecting.
+                foreach (Collider c in GhostColliders)
+                {
+                    Vector3 direction;
+                    float distance;
+                    if (Physics.ComputePenetration(other, other.transform.position, other.transform.rotation, c, c.transform.position, c.transform.rotation, out direction, out distance))
+                    {
+                        placableObject.MakeGhost(GhostErrorMaterial);
+                        return true;
+                    }
+                }
+            }
+        }
+        placableObject.MakeGhost(GhostMaterial);
+        return false;
+    }
+    private bool DraggableIsColliding()
+    {
+        if (DraggedObject == null || !DraggedObject.gameObject.activeSelf)
+            return false;
+        if (DraggableCollidedObjects.Count > 0)
+        {
+            return true;
+        } 
+        return false;
+    }
+
+
 }

@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 
-public class PlaneBezeir: BezierCurve3D
+public class BezierBlender: BezierCurve3D
 {
     public Mesh BezeirMesh;
     public ExtrudeShape shape;
@@ -17,6 +17,8 @@ public class PlaneBezeir: BezierCurve3D
     private Mesh mesh;
     private MeshRenderer meshRenderer;
 
+    private ConveyorBeltBezeir BezierController;
+
     [HideInInspector]
     public IPushableObject FirstTriggerBox;
     [HideInInspector]
@@ -29,6 +31,8 @@ public class PlaneBezeir: BezierCurve3D
         meshFilter = GetComponent<MeshFilter>();
         mesh = meshFilter.mesh;
         meshRenderer = GetComponent<MeshRenderer>();
+
+        BezierController = GetComponent<ConveyorBeltBezeir>();
     }
 
     public int[] GetLinesFromVerts(List<ExtrudeShapeVert> verts)
@@ -171,9 +175,11 @@ public class PlaneBezeir: BezierCurve3D
         return newShape;
 
     }
-    public void FixedUpdate()
+
+    public void CreateCurve()
     {
-        
+
+
         if (TriggerBoxes.Count < Segments - 1)
         {
             for (int i = TriggerBoxes.Count; i < Segments - 1; ++i)
@@ -203,24 +209,24 @@ public class PlaneBezeir: BezierCurve3D
                 TriggerBoxes.RemoveAt(i);
             }
         }
-        
-        
+
+
 
         // Generate Curve
 
         Vector3[] pointPositions = new Vector3[4];
-        for (int i= 0; i< Points.Length; ++i)
+        for (int i = 0; i < Points.Length; ++i)
         {
             pointPositions[i] = Points[i].position;
         }
         OrientedPoint[] path = new OrientedPoint[(int)Segments];
-        for(int i =0; i<Segments; ++i)
+        for (int i = 0; i < Segments; ++i)
         {
             float t = i / (Segments - 1);
             Vector3 curvePoint = GetPoint(pointPositions, t);
 
             Quaternion rotation = GetPointOrientation3d(pointPositions, t, Vector3.up);
-            if ( i != Segments - 1)
+            if (i != Segments - 1)
             {
                 Vector3 nextPoint = GetPoint(pointPositions, (i + 1) / (Segments - 1));
                 Vector3 average = (nextPoint + curvePoint) * 0.5f;
@@ -233,7 +239,7 @@ public class PlaneBezeir: BezierCurve3D
                 Position = curvePoint,
                 Rotation = rotation
             };
-            
+
         }
 
         meshFilter.mesh = Extrude(mesh, shape, path, pointPositions);
@@ -248,7 +254,6 @@ public class PlaneBezeir: BezierCurve3D
             collider.sharedMesh = null;
             collider.sharedMesh = mesh;
         }
-
     }
 
 

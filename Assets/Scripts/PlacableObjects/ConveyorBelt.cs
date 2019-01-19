@@ -36,7 +36,7 @@ public class ConveyorBelt : PlacableObject, IPushableObject
                     AttachechedObject = null;
                 else
                 {
-                    PlaneBezeir bezier = obj.ConnectAnchor.GetComponent<PlaneBezeir>();
+                    BezierBlender bezier = obj.ConnectAnchor.GetComponent<BezierBlender>();
                     if(bezier != null)
                     {
                         AttachechedObject = bezier.FirstTriggerBox;

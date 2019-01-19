@@ -56,7 +56,7 @@ GameObject:
   - component: {fileID: 33111959523283168}
   - component: {fileID: 23861477577480856}
   - component: {fileID: 64967412041453148}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Corner
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -89,7 +89,7 @@ GameObject:
   - component: {fileID: 4581047115071610}
   - component: {fileID: 114948436069152984}
   - component: {fileID: 65728708628161808}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Conveyor - Anchor
   m_TagString: ConveyorBelt
   m_Icon: {fileID: 0}
@@ -124,7 +124,7 @@ GameObject:
   - component: {fileID: 23425393549038608}
   - component: {fileID: 64150518338305710}
   - component: {fileID: 54007311311306656}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Wall Back
   m_TagString: ConveyorWall
   m_Icon: {fileID: 0}
@@ -159,7 +159,7 @@ GameObject:
   - component: {fileID: 23154945355972598}
   - component: {fileID: 64022416710143112}
   - component: {fileID: 54785351086976472}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Wall Right
   m_TagString: ConveyorWall
   m_Icon: {fileID: 0}
@@ -177,7 +177,7 @@ GameObject:
   - component: {fileID: 33291972779866452}
   - component: {fileID: 23319879609202486}
   - component: {fileID: 64072946783572928}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Corner.003
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -196,7 +196,7 @@ GameObject:
   - component: {fileID: 23847098058758236}
   - component: {fileID: 64444721605420810}
   - component: {fileID: 54698862797295834}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Wall Left
   m_TagString: ConveyorWall
   m_Icon: {fileID: 0}
@@ -214,7 +214,7 @@ GameObject:
   - component: {fileID: 33735047586003460}
   - component: {fileID: 23857313006760970}
   - component: {fileID: 65086952558817108}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -249,7 +249,7 @@ GameObject:
   - component: {fileID: 33976526037700946}
   - component: {fileID: 23062440239338816}
   - component: {fileID: 64735171916552346}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Corner.002
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -285,7 +285,7 @@ GameObject:
   - component: {fileID: 23277862774057550}
   - component: {fileID: 64059160924699466}
   - component: {fileID: 54173047454724326}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Wall Front
   m_TagString: ConveyorWall
   m_Icon: {fileID: 0}
@@ -303,7 +303,7 @@ GameObject:
   - component: {fileID: 33197762672748234}
   - component: {fileID: 23417149251878860}
   - component: {fileID: 64907453664850148}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Corner.001
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -480,7 +480,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1359610701922662}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.942909, y: 2.9359972e-16, z: -13.222556}
+  m_LocalPosition: {x: -5.942909, y: 1, z: -13.222556}
   m_LocalScale: {x: 2, y: 2, z: 2}
   m_Children:
   - {fileID: 4578664989039774}
