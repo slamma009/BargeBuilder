@@ -28,6 +28,7 @@ public class ConveyorBeltBezeir : DraggableObject
     public override void ObjectPlaced(GameObject anchor)
     {
         Anchors[1] = anchor;
+        BezierLogic.SecondTriggerBox.nextObject = anchor.transform.GetTopParent().GetComponent<IPushableObject>();
         AnchorObject obj = anchor.transform.GetTopParent().GetComponent<PlacableObject>().Anchors.SingleOrDefault(x => x.Anchor.name == anchor.name);
         obj.ConnectAnchor = this.gameObject;
         AnchorObject firstAnchor = FirstAnchor.transform.GetTopParent().GetComponent<PlacableObject>().Anchors.SingleOrDefault(x => x.Anchor.name == FirstAnchor.name);
