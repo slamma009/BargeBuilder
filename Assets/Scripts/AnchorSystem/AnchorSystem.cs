@@ -181,6 +181,7 @@ public class AnchorSystem : MonoBehaviour {
             angle = Mathf.Round(angle) * 90f;
             GhostObject.transform.rotation = Quaternion.LookRotation(Quaternion.AngleAxis(angle, Vector3.up) * anchor.transform.forward, Vector3.up);
         }
+
         // If we're not dragging something. Otherwise check if it's the same point we're dragging from. Otherwise make sure it's not a conveyor belt.
         if (!DragMode || DraggedObject == null || DraggedObject.Anchors[0] == anchor || anchor.transform.parent.tag != "ConveyorBelt")
         {
@@ -229,7 +230,7 @@ public class AnchorSystem : MonoBehaviour {
             {
                 if (DraggedObject != null)
                 {
-                    if (DraggedObject.Anchors[0] == anchor)
+                    if (!ObjectCanBePlaced || DraggedObject.Anchors[0] == anchor)
                     {
                         ExitDragMode(true);
                     }
@@ -456,6 +457,12 @@ public class AnchorSystem : MonoBehaviour {
     {
         if (DraggedObject == null || !DraggedObject.gameObject.activeSelf)
             return false;
+
+        if (!DraggedObject.ObjectIsValid())
+        {
+            return true;
+        }
+
         if (DraggableCollidedObjects.Count > 0)
         {
             return true;

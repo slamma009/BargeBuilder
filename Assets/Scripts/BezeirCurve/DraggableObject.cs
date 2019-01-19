@@ -40,6 +40,11 @@ public class DraggableObject : MonoBehaviour
         Placed = true;
     }
 
+    public virtual bool ObjectIsValid()
+    {
+        return true;
+    }
+
     
 
 

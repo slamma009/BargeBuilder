@@ -19,6 +19,9 @@ public class BezierBlender: BezierCurve3D
 
     private ConveyorBeltBezeir BezierController;
 
+    private int MeshLeftIndex;
+    private int MeshRightIndex;
+
     [HideInInspector]
     public IPushableObject FirstTriggerBox;
     [HideInInspector]
@@ -156,11 +159,25 @@ public class BezierBlender: BezierCurve3D
     {
         ExtrudeShape newShape = new ExtrudeShape();
         List<ExtrudeShapeVert> verts = new List<ExtrudeShapeVert>();
+        MeshLeftIndex = -1;
+        float minX = 100;
+        MeshRightIndex = -1;
+        float maxX = 0;
         for(var i=0; i<mesh.vertexCount; ++i)
         {
             // Blender flips the z and y axis's. checking if the vertex y == 0 removes all depth from the object.
             if (mesh.vertices[i].y == 0)
             {
+                if(mesh.vertices[i].x < minX)
+                {
+                    minX = mesh.vertices[i].x;
+                    MeshLeftIndex = i;
+                }
+                if (mesh.vertices[i].x > maxX)
+                {
+                    maxX = mesh.vertices[i].x;
+                    MeshRightIndex = i;
+                }
                 verts.Add(new ExtrudeShapeVert()
                 {
                     normal = new Vector2(mesh.normals[i].x, mesh.normals[i].z),
@@ -177,7 +194,7 @@ public class BezierBlender: BezierCurve3D
 
     }
 
-    public void CreateCurve()
+    public bool CreateCurve()
     {
 
 
@@ -242,8 +259,9 @@ public class BezierBlender: BezierCurve3D
             };
 
         }
+        bool intersecting = false;
+        meshFilter.mesh = Extrude(mesh, shape, path, pointPositions, out intersecting, MeshLeftIndex, MeshRightIndex);
 
-        meshFilter.mesh = Extrude(mesh, shape, path, pointPositions);
         GetComponent<MeshRenderer>().sharedMaterial = null;
         GetComponent<MeshRenderer>().sharedMaterial = ObjectMaterial;
         GetComponent<MeshRenderer>().UpdateGIMaterials();
@@ -255,9 +273,9 @@ public class BezierBlender: BezierCurve3D
             collider.sharedMesh = null;
             collider.sharedMesh = mesh;
         }
+
+        return intersecting;
     }
-
-
 
 
 }

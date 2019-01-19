@@ -6,6 +6,8 @@ using UnityEngine;
 public class ConveyorBeltBezeir : DraggableObject
 {
     private BezierBlender BezierLogic;
+
+    private bool IsValid = true;
     private void Start()
     {
         BezierLogic = GetComponent<BezierBlender>();
@@ -58,7 +60,7 @@ public class ConveyorBeltBezeir : DraggableObject
                 {
                     SnapToSecondAnchor();
                 }
-                BezierLogic.CreateCurve();
+                IsValid = !BezierLogic.CreateCurve();
             }
         }
 
@@ -92,5 +94,10 @@ public class ConveyorBeltBezeir : DraggableObject
         float z = (A1 * C2 - A2 * C1) / det;
 
         return new Vector3(x, this.transform.position.y , z);
+    }
+
+    public override bool ObjectIsValid()
+    {
+        return IsValid;
     }
 }

@@ -7,6 +7,8 @@ public class BezierCurve3D : MonoBehaviour
     [HideInInspector]
     public float CurveLength;
 
+    public float MinAngle = 5;
+
     protected Vector3 GetPoint ( Vector3[] pts, float t)
     {
         // Calculation of bezier curve point. 
@@ -63,7 +65,7 @@ public class BezierCurve3D : MonoBehaviour
         return Vector3.Cross(up, tng).normalized; // x axis
     }
 
-    public Mesh Extrude(Mesh mesh, ExtrudeShape shape, OrientedPoint[] path, Vector3[] Points)
+    public Mesh Extrude(Mesh mesh, ExtrudeShape shape, OrientedPoint[] path, Vector3[] Points, out bool validLine, int leftIndex, int rightIndex)
     {
         int vertsInShape = shape.verts.Length;
         int segments = path.Length - 1;
@@ -79,7 +81,7 @@ public class BezierCurve3D : MonoBehaviour
         Vector2[] uvs        = new Vector2[ vertCount ];
 
         /* Generation Code */
-
+        validLine = false;
         // Loop through each point on the path
         for(int i=0; i<path.Length; ++i)
         {
@@ -90,12 +92,36 @@ public class BezierCurve3D : MonoBehaviour
             for(int j=0; j<vertsInShape; ++j)
             {
                 int id = offset + j;
-                vertices[id] = path[i].LocalToWorld(shape.verts[j].point); // might break to verts being 2d
+                vertices[id] = path[i].LocalToWorld(shape.verts[j].point); 
                 normals[id] = path[i].LocalToWorldDirection(shape.verts[j].normal);
                 uvs[id] = new Vector2(shape.verts[j].u, LookupTable.Sample((float)i / ((float)edgeLoops) ));
 
             }
+
+            // Check to see if the mesh is valid
+            if (i > 0)
+            {
+                if (!validLine)
+                {
+                    // Make sure the angle from the previous segment to the next is not greater then 5
+                    validLine = Vector3.Angle(path[i - 1].LocalToWorldDirection(Vector3.forward), path[i].LocalToWorldDirection(Vector3.forward)) > MinAngle;
+
+                    if (!validLine)
+                    {
+                        // Make sure the segments do not cross eachother
+                        validLine = DoLinesCross(
+                            convert(vertices[offset + leftIndex]), convert(vertices[offset + rightIndex]),
+                            convert(vertices[offset - vertsInShape + leftIndex]), convert(vertices[offset - vertsInShape + rightIndex])
+                            );
+
+                    }
+                }
+
+                
+            }
+
         }
+        
 
         int ti = 0;
         // Loop through each segment to make triangles
@@ -151,4 +177,58 @@ public class BezierCurve3D : MonoBehaviour
 
 
 
+    private Vector2 convert(Vector3 v)
+    {
+        return new Vector2(v.x, v.z);
+    }
+
+    private bool DoLinesCross(Vector2 p1, Vector2 p2, Vector2 p3, Vector2 p4)
+    {
+
+        Vector2 a = p2 - p1;
+        Vector2 b = p3 - p4;
+        Vector2 c = p1 - p3;
+
+        float alphaNumerator = b.y * c.x - b.x * c.y;
+        float alphaDenominator = a.y * b.x - a.x * b.y;
+        float betaNumerator = a.x * c.y - a.y * c.x;
+        float betaDenominator = a.y * b.x - a.x * b.y;
+
+        bool doIntersect = true;
+
+        if (alphaDenominator == 0 || betaDenominator == 0)
+        {
+            doIntersect = false;
+        }
+        else
+        {
+
+            if (alphaDenominator > 0)
+            {
+                if (alphaNumerator < 0 || alphaNumerator > alphaDenominator)
+                {
+                    doIntersect = false;
+
+                }
+            }
+            else if (alphaNumerator > 0 || alphaNumerator < alphaDenominator)
+            {
+                doIntersect = false;
+            }
+
+            if (doIntersect || betaDenominator > 0)
+            {
+                if (betaNumerator < 0 || betaNumerator > betaDenominator)
+                {
+                    doIntersect = false;
+                }
+            }
+            else if (betaNumerator > 0 || betaNumerator < betaDenominator)
+            {
+                doIntersect = false;
+            }
+        }
+
+        return doIntersect;
+    }
 }

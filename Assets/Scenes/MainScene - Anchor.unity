@@ -182,6 +182,48 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 50, y: -30, z: 0}
+--- !u!1001 &651476213
+Prefab:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 4581047115071610, guid: 4abce2f3714d6e44ba082af15d12ec39, type: 2}
+      propertyPath: m_LocalPosition.x
+      value: -5.942909
+      objectReference: {fileID: 0}
+    - target: {fileID: 4581047115071610, guid: 4abce2f3714d6e44ba082af15d12ec39, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4581047115071610, guid: 4abce2f3714d6e44ba082af15d12ec39, type: 2}
+      propertyPath: m_LocalPosition.z
+      value: -13.222556
+      objectReference: {fileID: 0}
+    - target: {fileID: 4581047115071610, guid: 4abce2f3714d6e44ba082af15d12ec39, type: 2}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4581047115071610, guid: 4abce2f3714d6e44ba082af15d12ec39, type: 2}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4581047115071610, guid: 4abce2f3714d6e44ba082af15d12ec39, type: 2}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4581047115071610, guid: 4abce2f3714d6e44ba082af15d12ec39, type: 2}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4581047115071610, guid: 4abce2f3714d6e44ba082af15d12ec39, type: 2}
+      propertyPath: m_RootOrder
+      value: 2
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 4abce2f3714d6e44ba082af15d12ec39, type: 2}
+  m_IsPrefabAsset: 0
 --- !u!1 &718813965
 GameObject:
   m_ObjectHideFlags: 0
@@ -440,48 +482,6 @@ MeshFilter:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1308038656}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
---- !u!1001 &1386892970
-Prefab:
-  m_ObjectHideFlags: 0
-  serializedVersion: 2
-  m_Modification:
-    m_TransformParent: {fileID: 0}
-    m_Modifications:
-    - target: {fileID: 4581047115071610, guid: 4abce2f3714d6e44ba082af15d12ec39, type: 2}
-      propertyPath: m_LocalPosition.x
-      value: -5.942909
-      objectReference: {fileID: 0}
-    - target: {fileID: 4581047115071610, guid: 4abce2f3714d6e44ba082af15d12ec39, type: 2}
-      propertyPath: m_LocalPosition.y
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4581047115071610, guid: 4abce2f3714d6e44ba082af15d12ec39, type: 2}
-      propertyPath: m_LocalPosition.z
-      value: -13.222556
-      objectReference: {fileID: 0}
-    - target: {fileID: 4581047115071610, guid: 4abce2f3714d6e44ba082af15d12ec39, type: 2}
-      propertyPath: m_LocalRotation.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4581047115071610, guid: 4abce2f3714d6e44ba082af15d12ec39, type: 2}
-      propertyPath: m_LocalRotation.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4581047115071610, guid: 4abce2f3714d6e44ba082af15d12ec39, type: 2}
-      propertyPath: m_LocalRotation.z
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4581047115071610, guid: 4abce2f3714d6e44ba082af15d12ec39, type: 2}
-      propertyPath: m_LocalRotation.w
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 4581047115071610, guid: 4abce2f3714d6e44ba082af15d12ec39, type: 2}
-      propertyPath: m_RootOrder
-      value: 2
-      objectReference: {fileID: 0}
-    m_RemovedComponents: []
-  m_SourcePrefab: {fileID: 100100000, guid: 4abce2f3714d6e44ba082af15d12ec39, type: 2}
-  m_IsPrefabAsset: 0
 --- !u!1 &1598954951
 GameObject:
   m_ObjectHideFlags: 0
@@ -714,6 +714,7 @@ MonoBehaviour:
   GhostAvatarPoint: {fileID: 1308038657}
   GhostMaterial: {fileID: 2100000, guid: 598331a39c1a64447805d314c1546b3a, type: 2}
   GhostErrorMaterial: {fileID: 2100000, guid: 7661056798a119549a3a82ea3b699535, type: 2}
+  DraggableCollidedObjects: []
 --- !u!1001 &2106778904
 Prefab:
   m_ObjectHideFlags: 0

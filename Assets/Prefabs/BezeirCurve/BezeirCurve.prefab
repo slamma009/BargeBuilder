@@ -122,7 +122,7 @@ GameObject:
   - component: {fileID: 114528858337462220}
   - component: {fileID: 64618146854045022}
   - component: {fileID: 114252790762758318}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: BezeirCurve
   m_TagString: Draggable
   m_Icon: {fileID: 0}
