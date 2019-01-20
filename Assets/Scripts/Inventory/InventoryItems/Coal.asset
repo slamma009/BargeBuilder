@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0a9017ad1b9e9d49ade9d79707e474c, type: 3}
+  m_Name: Coal
+  m_EditorClassIdentifier: 
+  ID: 1
+  StackSize: 5
+  Image: {fileID: 0}
+  Prefab: {fileID: 1879209391492952, guid: d2117ca14ca754c4b8827efc9077312d, type: 2}
