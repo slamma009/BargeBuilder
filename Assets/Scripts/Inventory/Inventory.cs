@@ -120,6 +120,23 @@ public class Inventory : MonoBehaviour
         return amountToAdd;
     }
 
+    public int Remove(int index, int amount = 1)
+    {
+        if (_InventorySlots[index].Amount <= 0 || _InventorySlots[index].Item == null)
+            return amount;
+
+        int amountToRemove = amount;
+        if (_InventorySlots[index].Amount - amountToRemove < 0)
+            amountToRemove = _InventorySlots[index].Amount;
+
+        _InventorySlots[index].Amount -= amountToRemove;
+        if(_InventorySlots[index].Amount == 0)
+            _InventorySlots[index].Item = null;
+
+        return amount - amountToRemove;
+        
+    }
+
 }
 
 [Serializable]

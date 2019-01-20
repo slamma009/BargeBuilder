@@ -31,7 +31,9 @@ public class ExtractorConveyor : MonoBehaviour {
         {
             if (ActiveRigidBodies[i] != null)
             {
-                Vector3 targetForce = Ramp.up * 2;
+                Vector3 targetForce = transform.forward;
+                if (Ramp != null)
+                    targetForce = Ramp.up * 2;
                 ActiveRigidBodies[i].velocity = Vector3.Lerp(ActiveRigidBodies[i].velocity, targetForce, Time.deltaTime);
             }
             else

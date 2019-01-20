@@ -25,7 +25,6 @@ public class Extractor : PlacableObject
         else
         {
             ConveyorBelt belt = obj.ConnectAnchor.transform.GetTopParent().GetComponent<ConveyorBelt>();
-            Debug.Log(transform.GetTopParent().name + ": " + belt);
             if(belt != null)
                 OutputObject = belt;
             else
