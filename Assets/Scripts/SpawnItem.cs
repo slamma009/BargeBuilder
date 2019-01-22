@@ -12,11 +12,11 @@ public class SpawnItem : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (Input.GetKeyUp(KeyCode.A))
+        if (Input.GetKeyUp(KeyCode.Alpha1))
         {
             Instantiate(prefab[0], spawnpoint.position, Quaternion.identity);
         }
-        if (Input.GetKeyUp(KeyCode.D))
+        if (Input.GetKeyUp(KeyCode.Alpha2))
         {
             Instantiate(prefab[1], spawnpoint.position, Quaternion.identity);
         }
