@@ -42,7 +42,7 @@ public class OculusPlacement : AnchorSystem
         GhostLine.SetPosition(0, GhostObjectHiddenPosition);
         GhostLine.SetPosition(1, GhostObjectHiddenPosition);
     }
-
+    bool RotatingObject = false;
     // Update is called once per frame
     void Update()
     {
@@ -56,12 +56,25 @@ public class OculusPlacement : AnchorSystem
 
                 if (!DestructionMode)
                 {
-                RotateGhostItem(SteamVR_Input._default.inActions.ThumbStick.GetAxis(SteamVR_Input_Sources.RightHand).x, false);
-            }
 
-            Vector3 rayDir = RightHand.transform.forward;
-            rayDir = Quaternion.AngleAxis(35, RightHand.transform.right) * rayDir;
-            Ray ray = new Ray(RightHand.transform.position, rayDir);
+                float axisInput = SteamVR_Input._default.inActions.ThumbStick.GetAxis(SteamVR_Input_Sources.RightHand).x;
+                bool rotate = false;
+                if (RotatingObject && Mathf.Abs(axisInput) < 0.9f)
+                {
+                    RotatingObject = false;
+                }
+                else if(!RotatingObject && Mathf.Abs(axisInput) > 0.9f)
+                {
+                    rotate = true;
+                    RotatingObject = true;
+                }
+
+                    RotateGhostItem(axisInput, rotate);
+                }
+
+                Vector3 rayDir = RightHand.transform.forward;
+                rayDir = Quaternion.AngleAxis(35, RightHand.transform.right) * rayDir;
+                Ray ray = new Ray(RightHand.transform.position, rayDir);
                 RaycastLogic(ray, SteamVR_Input._default.inActions.GrabPinch.GetStateUp(SteamVR_Input_Sources.RightHand), SteamVR_Input._default.inActions.GrabPinch.GetStateDown(SteamVR_Input_Sources.RightHand));
 
 

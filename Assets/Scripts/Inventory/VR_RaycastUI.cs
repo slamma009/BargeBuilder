@@ -11,8 +11,8 @@ public class VR_RaycastUI : MonoBehaviour
 {
     public Camera MainCamera;
     public Transform RayOrigin;
-    public Transform Test;
-    public float AngleCorrection = 15;
+    public SteamVR_Input_Sources Hand = SteamVR_Input_Sources.LeftHand;
+
     [SerializeField]
     private LayerMask RaycastLayermask;
 
@@ -54,31 +54,28 @@ public class VR_RaycastUI : MonoBehaviour
 
         //the canvas needs to have a box collider 
         //on the correct layer for it to be hit by the raycast
-        RaycastHit hit;
+        RaycastHit firstHit;
 
-        Vector3 rayDir = RayOrigin.transform.right;
+        Vector3 rayDir = RayOrigin.transform.right * (Hand == SteamVR_Input_Sources.LeftHand ? - 1 : 1) ;
 
-        //Finger correction. 30 on x, 15 on y. 0.035 distance.
-        rayDir = Quaternion.AngleAxis(30, RayOrigin.transform.forward) * rayDir; 
-        rayDir = Quaternion.AngleAxis(15, RayOrigin.transform.up) * rayDir;
-        
         Ray ray = new Ray(RayOrigin.position, rayDir); //this.GetComponent<Camera>().ScreenPointToRay(Input.mousePosition);
-        if (Physics.Raycast(ray, out hit, castDistance, RaycastLayermask))
+
+        if (Physics.Raycast(ray, out  firstHit, castDistance * 2f, RaycastLayermask))
         {
             //for mouse emulation
-            Vector2 screenPoint = MainCamera.WorldToScreenPoint(hit.point);
-            
+            Vector2 screenPoint = MainCamera.WorldToScreenPoint(firstHit.point);
+
             //filling in the curstor data for the canvas
             currentPointerData.button = PointerEventData.InputButton.Left;
             currentPointerData.delta = (screenPoint - lastpointerData.position);
             currentPointerData.position = screenPoint;
-            
+
             //if it was not hitting last frame instantiate the cursor at the hit position
             if (lastState == false)
             {
                 // slacking last hit on the starting hit point
-                lastHitPoint = hit.point;
-                var parentCanvas = hit.collider.GetComponentInParent<Canvas>().transform;
+                lastHitPoint = firstHit.point;
+                var parentCanvas = firstHit.collider.GetComponentInParent<Canvas>().transform;
 
                 //creating the prefab
                 if (uiCursor)
@@ -91,117 +88,125 @@ public class VR_RaycastUI : MonoBehaviour
 
             //if there is a cursor, update it
             if (cursorInstance)
-                cursorInstance.transform.position = hit.point + hit.normal * .01f;
+                cursorInstance.transform.position = firstHit.point + firstHit.normal * .01f;
 
-            //Debug.DrawRay(hit.point, hit.normal * .05f, Color.blue);
-            //Debug.DrawLine(lastHitPoint, hit.point, Color.red);
-
-            //after all that, using the generated mouse pointer event data to raycast onto the UI canvas
-            List<RaycastResult> uiHits = new List<RaycastResult>();
-            EventSystem.current.RaycastAll(currentPointerData, uiHits);
-
-            //getting input states for passing to the UIBehavior
-            //var hand = GetComponent<Hand>(); // interactUIAction.GetState(hand.handType);
-           
-
-            //print(currentPointerData);
-
-            //loop though all the items hit by the UI raycast
-            foreach (RaycastResult hitUi in uiHits)
+            RaycastHit hit;
+            if (Physics.Raycast(ray, out hit, castDistance, RaycastLayermask))
             {
-                bool interactDown = false;
-                bool interactHeld = false;
-                if (PreviouElements.Contains(hitUi.gameObject))
-                {
-                    interactHeld = true;
-                } else
-                {
-                    PreviouElements.Add(hitUi.gameObject);
-                    interactDown = true;
-                }
-                currentPointerData.pointerCurrentRaycast = hitUi;
-                currentPointerData.pointerPressRaycast = hitUi;
 
-                //getting the base class for all the interactable UI behaviors
-                //using componentsInParent so that you get the button when clicking the label
-                var uiBehaviours = hitUi.gameObject.GetComponentsInParent<UIBehaviour>();
 
-                foreach (UIBehaviour behaviour in uiBehaviours)
+                //Debug.DrawRay(hit.point, hit.normal * .05f, Color.blue);
+                //Debug.DrawLine(lastHitPoint, hit.point, Color.red);
+
+                //after all that, using the generated mouse pointer event data to raycast onto the UI canvas
+                List<RaycastResult> uiHits = new List<RaycastResult>();
+                EventSystem.current.RaycastAll(currentPointerData, uiHits);
+
+                //getting input states for passing to the UIBehavior
+                //var hand = GetComponent<Hand>(); // interactUIAction.GetState(hand.handType);
+
+
+                //print(currentPointerData);
+
+                //loop though all the items hit by the UI raycast
+                foreach (RaycastResult hitUi in uiHits)
                 {
-                    if (interactDown && selected == null)
+                    bool interactDown = false;
+                    bool interactHeld = false;
+                    if (PreviouElements.Contains(hitUi.gameObject))
                     {
-                        //if it can cast to a click handler, call the handler function
-                        IPointerClickHandler pointerClickHandler = behaviour as IPointerClickHandler;
-                        if(pointerClickHandler != null)
-                            pointerClickHandler.OnPointerClick(currentPointerData);
+                        interactHeld = true;
+                    }
+                    else
+                    {
+                        PreviouElements.Add(hitUi.gameObject);
+                        interactDown = true;
+                    }
+                    currentPointerData.pointerCurrentRaycast = hitUi;
+                    currentPointerData.pointerPressRaycast = hitUi;
 
-                        //if it's a goggle swap the value and call it's submit
-                        if (behaviour is Toggle)
+                    //getting the base class for all the interactable UI behaviors
+                    //using componentsInParent so that you get the button when clicking the label
+                    var uiBehaviours = hitUi.gameObject.GetComponentsInParent<UIBehaviour>();
+
+                    foreach (UIBehaviour behaviour in uiBehaviours)
+                    {
+                        if (interactDown && selected == null)
                         {
-                            Toggle toggle = behaviour as Toggle;
-                            toggle.isOn = !toggle.isOn;
-                            toggle.OnSubmit(currentPointerData);
-                        }
-                        //(behaviour as ICancelHandler)?.OnCancel(currentPointerData);
+                            //if it can cast to a click handler, call the handler function
+                            IPointerClickHandler pointerClickHandler = behaviour as IPointerClickHandler;
+                            if (pointerClickHandler != null)
+                                pointerClickHandler.OnPointerClick(currentPointerData);
 
-                        //handlers for pointer down, selection, and updating the selection
-                        if (behaviour is IPointerDownHandler)
-                        {
-                            IPointerDownHandler handler = behaviour as IPointerDownHandler;
-                            handler.OnPointerDown(currentPointerData);
-
-                            if (behaviour is ISelectHandler )
+                            //if it's a goggle swap the value and call it's submit
+                            if (behaviour is Toggle)
                             {
-                                ISelectHandler sHandler = behaviour as ISelectHandler;
-                                sHandler.OnSelect(currentPointerData);
-                                if (behaviour is IUpdateSelectedHandler )
-                                {
-                                    IUpdateSelectedHandler ush = behaviour as IUpdateSelectedHandler;
-                                    ush.OnUpdateSelected(currentPointerData);
-                                }
-                                selected = sHandler as MonoBehaviour;
+                                Toggle toggle = behaviour as Toggle;
+                                toggle.isOn = !toggle.isOn;
+                                toggle.OnSubmit(currentPointerData);
                             }
+                            //(behaviour as ICancelHandler)?.OnCancel(currentPointerData);
+
+                            //handlers for pointer down, selection, and updating the selection
+                            if (behaviour is IPointerDownHandler)
+                            {
+                                IPointerDownHandler handler = behaviour as IPointerDownHandler;
+                                handler.OnPointerDown(currentPointerData);
+
+                                if (behaviour is ISelectHandler)
+                                {
+                                    ISelectHandler sHandler = behaviour as ISelectHandler;
+                                    sHandler.OnSelect(currentPointerData);
+                                    if (behaviour is IUpdateSelectedHandler)
+                                    {
+                                        IUpdateSelectedHandler ush = behaviour as IUpdateSelectedHandler;
+                                        ush.OnUpdateSelected(currentPointerData);
+                                    }
+                                    selected = sHandler as MonoBehaviour;
+                                }
+                            }
+
+                            //(behaviour as ISubmitHandler)?.OnSubmit(currentPointerData);
+
                         }
 
-                        //(behaviour as ISubmitHandler)?.OnSubmit(currentPointerData);
+                        //(behaviour as IPointerEnterHandler)?.OnPointerEnter(currentPointerData);
+                        //(behaviour as IPointerExitHandler)?.OnPointerExit(currentPointerData);
 
                     }
 
-                    //(behaviour as IPointerEnterHandler)?.OnPointerEnter(currentPointerData);
-                    //(behaviour as IPointerExitHandler)?.OnPointerExit(currentPointerData);
+                    //handling sliders and other dragable controls
+                    if (interactHeld)
+                    {
+                        IDragHandler dragHandler = selected as IDragHandler;
+                        if (dragHandler != null)
+                            dragHandler.OnDrag(currentPointerData);
+                    }
 
                 }
 
-                //handling sliders and other dragable controls
-                if (interactHeld)
+                GameObject[] excluded = PreviouElements.Where(x => uiHits.Where(y => y.gameObject != x).Count() == 0).ToArray();
+                foreach (GameObject obj in excluded)
                 {
-                    IDragHandler dragHandler = selected as IDragHandler;
-                    if(dragHandler != null)
-                        dragHandler.OnDrag(currentPointerData);
+                    //for when they need a point up event
+                    if (selected != null && selected.gameObject == obj)
+                    {
+                        IPointerUpHandler pointerHandler = selected as IPointerUpHandler;
+                        if (pointerHandler != null)
+                            pointerHandler.OnPointerUp(currentPointerData);
+                        selected = null;
+                    }
+                    PreviouElements.Remove(obj);
                 }
 
             }
-
-            GameObject[] excluded = PreviouElements.Where(x => uiHits.Where(y => y.gameObject != x).Count() == 0).ToArray();
-            foreach (GameObject obj in excluded)
-            {
-                //for when they need a point up event
-                if (selected != null && selected.gameObject == obj)
-                {
-                    IPointerUpHandler pointerHandler = selected as IPointerUpHandler;
-                    if (pointerHandler != null)
-                        pointerHandler.OnPointerUp(currentPointerData);
-                    selected = null;
-                }
-                PreviouElements.Remove(obj);
-            }
-
             //updating state variables for the next itteration
             lastHitPoint = hit.point;
             lastState = true;
         }
         else //no physics hit
         {
+            Debug.Log("STOP");
             lastState = false;
             Destroy(cursorInstance);
             GameObject[] excluded = PreviouElements.ToArray();
@@ -221,5 +226,6 @@ public class VR_RaycastUI : MonoBehaviour
 
         lastpointerData = currentPointerData;
     }
+    
 
 }

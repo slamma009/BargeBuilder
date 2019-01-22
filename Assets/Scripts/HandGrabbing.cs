@@ -5,15 +5,14 @@ using Valve.VR;
 using Valve.VR.InteractionSystem;
 
 public class HandGrabbing : MonoBehaviour {
-
-    public bool RightHand = true;
+    
     public float HitRadius = 1;
     public LayerMask LayerMask;
-    
+    public SteamVR_Input_Sources hand;
+
 
     private GameObject GrabbedObject;
     private GrabbableObject GrabbedScript;
-    public SteamVR_Input_Sources hand;
 
 
     void Grab()
@@ -41,7 +40,7 @@ public class HandGrabbing : MonoBehaviour {
 
             if(GrabbedScript != null)
             {
-                GrabbedScript.Grabbed(gameObject, RightHand);
+                GrabbedScript.Grabbed(gameObject, hand == SteamVR_Input_Sources.RightHand);
             }
 
             Rigidbody rb = GrabbedObject.transform.GetComponent<Rigidbody>();

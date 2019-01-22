@@ -60,7 +60,7 @@ public class AnchorSystem : MonoBehaviour {
         }
         else if(buttonUp)
         {
-            GhostObject.transform.Rotate(new Vector3(0, 90, 0));
+            GhostObject.transform.Rotate(new Vector3(0, 90 * (rawInput > 0 ? 1 : -1), 0));
         }
     }
 
