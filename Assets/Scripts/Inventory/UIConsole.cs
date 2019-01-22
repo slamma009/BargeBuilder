@@ -17,10 +17,6 @@ public class UIConsole : MonoBehaviour
     }
     public void SlotChanged(int index, InventoryCanvas canvas)
     {
-        string extra = "";
-        if (SelectedIndex > -1)
-            extra = "\n" + SelectedCanvas.name + " - " + SelectedIndex;
-        Debug.Log(canvas.name + " - " + index + extra);
 
         if (SelectedIndex < 0)
         {
@@ -36,12 +32,35 @@ public class UIConsole : MonoBehaviour
         {
             if (index != SelectedIndex || SelectedCanvas != canvas)
             {
-                InventoryItem tempItem = canvas.AttachedInventory.InventorySlots[index].Item;
-                int tempAmount = canvas.AttachedInventory.InventorySlots[index].Amount;
-                canvas.AttachedInventory.InventorySlots[index].Item = SelectedCanvas.AttachedInventory.InventorySlots[SelectedIndex].Item;
-                canvas.AttachedInventory.InventorySlots[index].Amount = SelectedCanvas.AttachedInventory.InventorySlots[SelectedIndex].Amount;
-                SelectedCanvas.AttachedInventory.InventorySlots[SelectedIndex].Item = tempItem;
-                SelectedCanvas.AttachedInventory.InventorySlots[SelectedIndex].Amount = tempAmount;
+
+                int amount = SelectedCanvas.AttachedInventory.InventorySlots[SelectedIndex].Amount;
+                InventoryItem item = SelectedCanvas.AttachedInventory.InventorySlots[SelectedIndex].Item;
+
+                if(canvas.AttachedInventory.InventorySlots[index].Amount > 0 
+                    && canvas.AttachedInventory.InventorySlots[index].Item != null
+                    && item.ID == canvas.AttachedInventory.InventorySlots[index].Item.ID && 
+                    canvas.AttachedInventory.InventorySlots[index].Amount < item.StackSize)
+                {
+                    int amountToAdd = amount;
+                    if (amountToAdd + canvas.AttachedInventory.InventorySlots[index].Amount > item.StackSize)
+                        amountToAdd = item.StackSize - canvas.AttachedInventory.InventorySlots[index].Amount;
+
+                    canvas.AttachedInventory.InventorySlots[index].Amount += amountToAdd;
+                    SelectedCanvas.AttachedInventory.InventorySlots[SelectedIndex].Amount -= amountToAdd;
+                    if (SelectedCanvas.AttachedInventory.InventorySlots[SelectedIndex].Amount == 0)
+                        SelectedCanvas.AttachedInventory.InventorySlots[SelectedIndex].Item = null;
+                }
+                else
+                {
+                    SelectedCanvas.AttachedInventory.InventorySlots[SelectedIndex].Item = canvas.AttachedInventory.InventorySlots[index].Item;
+                    SelectedCanvas.AttachedInventory.InventorySlots[SelectedIndex].Amount = canvas.AttachedInventory.InventorySlots[index].Amount;
+                    canvas.AttachedInventory.InventorySlots[index].Item = item;
+                    canvas.AttachedInventory.InventorySlots[index].Amount = amount;
+                }
+
+
+                //InventoryItem tempItem = canvas.AttachedInventory.InventorySlots[index].Item;
+                //int tempAmount = canvas.AttachedInventory.InventorySlots[index].Amount;
             }
             SelectedCanvas.currentSlots[SelectedIndex].OutlineImage.color = OriginalSlotColor;
             SelectedIndex = -1;
