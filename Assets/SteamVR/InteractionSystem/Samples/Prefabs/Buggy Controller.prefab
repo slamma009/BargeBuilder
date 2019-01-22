@@ -402,11 +402,11 @@ MonoBehaviour:
   ui_steerangle: 60
   ui_fillAngles: {x: 0.29, y: 0.7}
   resetToPoint: {fileID: 0}
-  actionSet: {fileID: 0}
-  a_steering: {fileID: 0}
-  a_trigger: {fileID: 0}
-  a_brake: {fileID: 0}
-  a_reset: {fileID: 0}
+  actionSet: {fileID: 11400000, guid: ce48ca9a2cf7f7a409bb38d56ede3db7, type: 2}
+  a_steering: {fileID: 11400000, guid: 8ece2888140069d4793a4f4a9c9414f1, type: 2}
+  a_trigger: {fileID: 11400000, guid: 070a6ce9535806147ac4ca2ad639ca41, type: 2}
+  a_brake: {fileID: 11400000, guid: be8de87e459beb148a57c99db4a59ff5, type: 2}
+  a_reset: {fileID: 11400000, guid: a468b680121dc834ab7098f51d8c0bdc, type: 2}
 --- !u!114 &114379823079474456
 MonoBehaviour:
   m_ObjectHideFlags: 0

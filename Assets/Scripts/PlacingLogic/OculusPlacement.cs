@@ -1,113 +1,108 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Valve.VR;
 
-public class OculusPlacement : PlacingController
+public class OculusPlacement : AnchorSystem
 {
     
     public HandGrabbing RightHand;
     public HandGrabbing LeftHand;
     
     private LineRenderer GhostLine;
-    private OculusInputControl InputControl;
+    
+    private void Start()
+    {
 
-    //private void Start()
-    //{
-    //    InputControl = GameObject.Find("InputObject").GetComponent<OculusInputControl>();
+        GhostLine = transform.GetComponent<LineRenderer>();
 
-    //    GhostLine = transform.GetComponent<LineRenderer>();
+        RaycastHitTarget = GhostLineToHit;
+        RaycastMissTarget = GhostLineRay;
+        PlayingModeChanged = HideGhostLine;
 
-    //    RaycastHitTarget = GhostLineToHit;
-    //    RaycastMissTarget = GhostLineRay;
-    //    PlayingModeChanged = HideGhostLine;
+        Setup();
+    }
 
-    //    Setup();
-    //}
+    private void GhostLineToHit(RaycastHit hit)
+    {
+        // Draw the ghost line from the hand to the hit point
+        GhostLine.SetPosition(0, RightHand.transform.position);
+        GhostLine.SetPosition(1, hit.point);
+    }
 
-    //private void GhostLineToHit(RaycastHit hit)
-    //{
-    //    // Draw the ghost line from the hand to the hit point
-    //    GhostLine.SetPosition(0, RightHand.transform.position);
-    //    GhostLine.SetPosition(1, hit.point);
-    //}
+    private void GhostLineRay()
+    {
+        // Draw the ghost line from the hand to it's max distance
+        GhostLine.SetPosition(0, RightHand.transform.position);
+        GhostLine.SetPosition(1, RightHand.transform.position + RightHand.transform.forward * PlaceDistance);
+    }
 
-    //private void GhostLineRay()
-    //{
-    //    // Draw the ghost line from the hand to it's max distance
-    //    GhostLine.SetPosition(0, RightHand.transform.position);
-    //    GhostLine.SetPosition(1, RightHand.transform.position + RightHand.transform.forward * PlaceDistance);
-    //}
+    private void HideGhostLine()
+    {
+        GhostLine.SetPosition(0, GhostObjectHiddenPosition);
+        GhostLine.SetPosition(1, GhostObjectHiddenPosition);
+    }
 
-    //private void HideGhostLine()
-    //{
-    //    GhostLine.SetPosition(0, GhostObjectHiddenPosition);
-    //    GhostLine.SetPosition(1, GhostObjectHiddenPosition);
-    //}
+    // Update is called once per frame
+    void Update()
+    {
+        // Make sure both hands are onoccupied
+        //if (!RightHand.Grabbed && !LeftHand.Grabbed)
+        //{
+            if (PlacingModeEnabled)
+            {
+                // Rotate the ghost avatar above the hand
+                GhostAvatar.transform.Rotate(Vector3.up * Time.deltaTime * 30);
 
-    //// Update is called once per frame
-    //void Update()
-    //{
-    //    // Make sure both hands are onoccupied
-    //    if (!RightHand.Grabbed && !LeftHand.Grabbed)
-    //    {
-    //        if (PlacingModeEnabled)
-    //        {
-    //            // Rotate the ghost avatar above the hand
-    //            GhostAvatar.transform.Rotate(Vector3.up * Time.deltaTime * 30);
+                if (!DestructionMode)
+                {
+                RotateGhostItem(SteamVR_Input._default.inActions.ThumbStick.GetAxis(SteamVR_Input_Sources.RightHand).x, false);
+            }
 
-    //            if (!DestructionMode)
-    //            {
-    //                if (InputControl.GetButton("RightJoystickRight"))
-    //                {
-    //                    RotateGhostItem(true);
-    //                }
-    //                if (InputControl.GetButton("RightJoystickLeft"))
-    //                {
-    //                    RotateGhostItem(false);
-    //                }
-    //            }
-
-    //            RaycastLogic(new Ray(RightHand.transform.position, RightHand.transform.forward), InputControl.GetButton("Oculus_CrossPlatform_SecondaryIndexTrigger"), false, false);
+            Vector3 rayDir = RightHand.transform.forward;
+            rayDir = Quaternion.AngleAxis(35, RightHand.transform.right) * rayDir;
+            Ray ray = new Ray(RightHand.transform.position, rayDir);
+                RaycastLogic(ray, SteamVR_Input._default.inActions.GrabPinch.GetStateUp(SteamVR_Input_Sources.RightHand), SteamVR_Input._default.inActions.GrabPinch.GetStateDown(SteamVR_Input_Sources.RightHand));
 
 
-    //            if (InputControl.GetButton("Oculus_CrossPlatform_ButtonX"))
-    //            {
-    //                DestructionMode = !DestructionMode;
+                if (SteamVR_Input._default.inActions.XButton.GetStateDown(SteamVR_Input_Sources.RightHand))
+                {
+                    DestructionMode = !DestructionMode;
 
-    //                GhostObject.transform.position = GhostObjectHiddenPosition;
-    //                GhostDeleteMarker.transform.position = GhostObjectHiddenPosition;
+                    GhostObject.transform.position = GhostObjectHiddenPosition;
+                    //GhostDeleteMarker.transform.position = GhostObjectHiddenPosition;
 
 
-    //            }
+                }
 
-    //            // Check to exit placing mode
-    //            if (InputControl.GetButton("Oculus_CrossPlatform_ButtonA"))
-    //            {
-    //                EnablePlacingMode(false);
-    //            }
-                
+                // Check to exit placing mode
+                if (SteamVR_Input._default.inActions.AButton.GetStateDown(SteamVR_Input_Sources.RightHand))
+                {
+                    EnablePlacingMode(false);
+                }
 
-    //            if(InputControl.GetButton("Oculus_CrossPlatform_ButtonB"))
-    //            {
-    //                ChangePrefabs();
-                    
-    //            }
-    //        }
-    //        else
-    //        {
-    //            // Check to enter placing mode
-    //            if (InputControl.GetButton("Oculus_CrossPlatform_ButtonA"))
-    //            {
-    //                PlacingModeEnabled = true;
-    //                EnablePlacingMode(true);
-    //            }
-    //        }
-    //    }
-    //    else if (PlacingModeEnabled)
-    //    {
-    //        PlacingModeEnabled = false;
-    //        EnablePlacingMode(false);
-    //    }
-    //}
+
+                if (SteamVR_Input._default.inActions.BButton.GetStateDown(SteamVR_Input_Sources.RightHand))
+                {
+                    ChangePrefabs();
+
+                }
+            }
+            else
+            {
+                // Check to enter placing mode
+                if (SteamVR_Input._default.inActions.AButton.GetStateDown(SteamVR_Input_Sources.RightHand))
+                {
+                    PlacingModeEnabled = true;
+                    EnablePlacingMode(true);
+                }
+            }
+        //}
+        //else if (PlacingModeEnabled)
+        //{
+        //    PlacingModeEnabled = false;
+        //    EnablePlacingMode(false);
+        //}
+    }
 
 }

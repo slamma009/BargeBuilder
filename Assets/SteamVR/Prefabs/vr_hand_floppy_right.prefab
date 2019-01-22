@@ -2233,7 +2233,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 158d046322c150348bfed00c688d3142, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  squeezyAction: {fileID: 11400000, guid: 5c8876fc39da91d4bafd731104d71a7a, type: 2}
+  squeezyAction: {fileID: 0}
   inputSource: 2
   fingers:
   - mass: 1

@@ -1,23 +1,23 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Valve.VR;
+using Valve.VR.InteractionSystem;
 
 public class HandGrabbing : MonoBehaviour {
 
     public bool RightHand = true;
     public float HitRadius = 1;
     public LayerMask LayerMask;
-
-    [HideInInspector]
-    public bool Grabbed = false;
+    
 
     private GameObject GrabbedObject;
     private GrabbableObject GrabbedScript;
+    public SteamVR_Input_Sources hand;
 
 
     void Grab()
     {
-        Grabbed = true;
         RaycastHit[] hits;
 
         hits = Physics.SphereCastAll(transform.position, HitRadius, transform.forward, 0, LayerMask);
@@ -54,8 +54,7 @@ public class HandGrabbing : MonoBehaviour {
 
     void Drop()
     {
-        Grabbed = false;
-
+        
         if(GrabbedObject != null)
         {
             Rigidbody rb = GrabbedObject.transform.GetComponent<Rigidbody>();
@@ -75,29 +74,13 @@ public class HandGrabbing : MonoBehaviour {
     // Update is called once per frame
     void Update ()
     {
-
-        if (!RightHand)
+        if ( SteamVR_Input._default.inActions.GrabGrip.GetStateDown(hand))
         {
-            if (!Grabbed && Input.GetAxis("Oculus_CrossPlatform_PrimaryHandTrigger") == 1)
-            {
-                Grab();
-            }
-            if (Grabbed && Input.GetAxis("Oculus_CrossPlatform_PrimaryHandTrigger") < 1)
-            {
-                Drop();
-            }
+            Grab();
         }
-
-        if (RightHand)
+        if (SteamVR_Input._default.inActions.GrabGrip.GetStateUp(hand))
         {
-            if (!Grabbed && Input.GetAxis("Oculus_CrossPlatform_SecondaryHandTrigger") == 1)
-            {
-                Grab();
-            }
-            if (Grabbed && Input.GetAxis("Oculus_CrossPlatform_SecondaryHandTrigger") < 1)
-            {
-                Drop();
-            }
+            Drop();
         }
     }
 

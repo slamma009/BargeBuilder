@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Valve.VR;
 
 public class HoverEngineStatic : MonoBehaviour
 {
@@ -37,8 +38,8 @@ public class HoverEngineStatic : MonoBehaviour
 
     private void Update()
     {
-        Vector2 leftInput = new Vector2(Input.GetAxis("Oculus_CrossPlatform_PrimaryThumbstickHorizontal"), Input.GetAxis("Oculus_CrossPlatform_PrimaryThumbstickVertical"));
-        Vector2 rightInput = new Vector2(Input.GetAxis("Oculus_CrossPlatform_SecondaryThumbstickHorizontal"), Input.GetAxis("Oculus_CrossPlatform_SecondaryThumbstickVertical"));
+        Vector2 leftInput = SteamVR_Input._default.inActions.ThumbStick.GetAxis(SteamVR_Input_Sources.LeftHand);
+        Vector2 rightInput = SteamVR_Input._default.inActions.ThumbStick.GetAxis(SteamVR_Input_Sources.RightHand);
         if (EnableEngine) 
         {
             PowerInput = EngineIsRightHand ? rightInput.y :leftInput.y;

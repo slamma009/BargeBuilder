@@ -10,9 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7c3d755cf6cc936488afcb037b69341e, type: 3}
-  m_Name: __actions_default_in_Squeeze
+  m_Name: __actions_default_in_AButton
   m_EditorClassIdentifier: 
   changeTolerance: 0.000001
-  fullPath: /actions/default/in/Squeeze
+  fullPath: /actions/default/in/AButton
   actionSet: {fileID: 11400000, guid: f8816922fdc60474b82ba6bf0d0b0406, type: 2}
   direction: 0

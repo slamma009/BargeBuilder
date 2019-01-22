@@ -32,8 +32,28 @@
     },
     {
       "name": "/actions/default/in/Squeeze",
-      "type": "vector1",
-      "requirement": "optional"
+      "type": "boolean",
+      "requirement": "mandatory"
+    },
+    {
+      "name": "/actions/default/in/ThumbStick",
+      "type": "vector2"
+    },
+    {
+      "name": "/actions/default/in/AButton",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/BButton",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/XButton",
+      "type": "boolean"
+    },
+    {
+      "name": "/actions/default/in/YButton",
+      "type": "boolean"
     },
     {
       "name": "/actions/default/out/Haptic",

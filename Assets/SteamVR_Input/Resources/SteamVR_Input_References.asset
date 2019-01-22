@@ -29,6 +29,11 @@ MonoBehaviour:
   - __actions_default_in_SkeletonLeftHand
   - __actions_default_in_SkeletonRightHand
   - __actions_default_in_Squeeze
+  - __actions_default_in_ThumbStick
+  - __actions_default_in_AButton
+  - __actions_default_in_BButton
+  - __actions_default_in_XButton
+  - __actions_default_in_YButton
   - __actions_default_out_Haptic
   - __actions_platformer_in_Move
   - __actions_platformer_in_Jump
@@ -45,6 +50,11 @@ MonoBehaviour:
   - {fileID: 11400000, guid: 75c80e304a56335429829ee845ec5645, type: 2}
   - {fileID: 11400000, guid: 78e04f7fa8fed0246964e3f9c48236ac, type: 2}
   - {fileID: 11400000, guid: 5c8876fc39da91d4bafd731104d71a7a, type: 2}
+  - {fileID: 11400000, guid: 024e10f97c0ca6d49b211d430cb189a3, type: 2}
+  - {fileID: 11400000, guid: 9f25217d08fb2cc4597b1acee2fe18e0, type: 2}
+  - {fileID: 11400000, guid: ecff4a71dd34df94c8da00db784734ba, type: 2}
+  - {fileID: 11400000, guid: 2c6c04337fe100848b0ecaea4d4f8761, type: 2}
+  - {fileID: 11400000, guid: d15b9082f5b809d4e9ac5e254ed10e44, type: 2}
   - {fileID: 11400000, guid: 826a83eb9b1403c4d96b7cda0bc709fc, type: 2}
   - {fileID: 11400000, guid: 4309c409b49e60049beb92dcd1ff8283, type: 2}
   - {fileID: 11400000, guid: fcd08bbf18b8f934cb1b7fc3731c4280, type: 2}

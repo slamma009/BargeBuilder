@@ -31,6 +31,16 @@ namespace Valve.VR
         
         public Valve.VR.SteamVR_Action_Skeleton SkeletonRightHand;
         
-        public Valve.VR.SteamVR_Action_Single Squeeze;
+        public Valve.VR.SteamVR_Action_Boolean Squeeze;
+        
+        public Valve.VR.SteamVR_Action_Vector2 ThumbStick;
+        
+        public Valve.VR.SteamVR_Action_Boolean AButton;
+        
+        public Valve.VR.SteamVR_Action_Boolean BButton;
+        
+        public Valve.VR.SteamVR_Action_Boolean XButton;
+        
+        public Valve.VR.SteamVR_Action_Boolean YButton;
     }
 }

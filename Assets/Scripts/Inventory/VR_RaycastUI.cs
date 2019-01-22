@@ -99,6 +99,9 @@ public class VR_RaycastUI : MonoBehaviour
             //after all that, using the generated mouse pointer event data to raycast onto the UI canvas
             List<RaycastResult> uiHits = new List<RaycastResult>();
             EventSystem.current.RaycastAll(currentPointerData, uiHits);
+
+            //getting input states for passing to the UIBehavior
+            //var hand = GetComponent<Hand>(); // interactUIAction.GetState(hand.handType);
            
 
             //print(currentPointerData);
