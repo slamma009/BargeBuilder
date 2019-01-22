@@ -101,7 +101,7 @@ public class AnchorSystem : MonoBehaviour {
 
                 // Try snapping to nearby anchors first
                 GameObject closestAnchor = null;
-                float closestDistance = 1;
+                float closestDistance = 100;
                 foreach(AnchorObject anchor in GhostPlacable.Anchors)
                 {
                     // Find all colliders within 1 unit of the center of the anchor
@@ -113,7 +113,7 @@ public class AnchorSystem : MonoBehaviour {
                         {
                             // Calculate the distance between the 2 points
                             // TODO: Use DistanceUnsquared
-                            float distance = Vector3.Distance(c.transform.position, GhostObject.transform.position);
+                            float distance = Vector3.Distance(c.transform.position, anchor.Anchor.transform.position);
 
                             // If the new anchor is closer then our last one, save it.
                             if(distance < closestDistance)

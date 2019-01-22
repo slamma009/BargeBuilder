@@ -34,7 +34,9 @@ public class OculusPlacement : AnchorSystem
     {
         // Draw the ghost line from the hand to it's max distance
         GhostLine.SetPosition(0, RightHand.transform.position);
-        GhostLine.SetPosition(1, RightHand.transform.position + RightHand.transform.forward * PlaceDistance);
+        Vector3 rayDir = RightHand.transform.forward;
+        rayDir = Quaternion.AngleAxis(35, RightHand.transform.right) * rayDir;
+        GhostLine.SetPosition(1, RightHand.transform.position + rayDir * PlaceDistance);
     }
 
     private void HideGhostLine()
