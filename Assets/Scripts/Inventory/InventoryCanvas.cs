@@ -42,13 +42,24 @@ public class InventoryCanvas : MonoBehaviour
     {
         if (_AttachedInv != null)
         {
-            for(var i=0; i < _AttachedInv.InventorySize; ++i)
+            if (!Panel.gameObject.activeSelf)
+            {
+                Panel.gameObject.SetActive(true);
+                ChangeSlots(_AttachedInv.InventorySize);
+            }
+
+
+            for (var i=0; i < _AttachedInv.InventorySize; ++i)
             {
                 bool isEmpty = _AttachedInv.InventorySlots[i].Item == null || _AttachedInv.InventorySlots[i].Amount == 0;
                 currentSlots[i].ItemAmount.text = isEmpty ? " " : _AttachedInv.InventorySlots[i].Amount.ToString();
                 currentSlots[i].ItemImage.sprite = isEmpty ? null : _AttachedInv.InventorySlots[i].Item.Image;
                 currentSlots[i].ItemImage.color = isEmpty ? new Color(1,1,1,0) : Color.white;
             }
+        }
+        else if (Panel.gameObject.activeSelf)
+        {
+            Panel.gameObject.SetActive(false);
         }
     }
 

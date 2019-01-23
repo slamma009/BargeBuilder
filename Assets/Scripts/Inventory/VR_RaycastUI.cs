@@ -206,7 +206,6 @@ public class VR_RaycastUI : MonoBehaviour
         }
         else //no physics hit
         {
-            Debug.Log("STOP");
             lastState = false;
             Destroy(cursorInstance);
             GameObject[] excluded = PreviouElements.ToArray();
