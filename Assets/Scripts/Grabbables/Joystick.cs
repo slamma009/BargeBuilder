@@ -10,9 +10,9 @@ public class Joystick : GrabbableObject {
     [SerializeField]
     JoystickType Type;
 
-    public override void Grabbed(GameObject grabber, bool isRighthand)
+    public override void ItemGrabbed(GameObject grabber, bool isRighthand)
     {
-        base.Grabbed(grabber, isRighthand);
+        base.ItemGrabbed(grabber, isRighthand);
         //while (grabber.tag != "Player")
         //{
         //    grabber = grabber.transform.parent.gameObject;
@@ -34,9 +34,9 @@ public class Joystick : GrabbableObject {
         }
 
     }
-    public override void Dropped()
+    public override void ItemDropped()
     {
-        base.Dropped();
+        base.ItemDropped();
         //PlayerController.EnableLinearMovement = true;
         //PlayerController.EnableRotation = true;
         if (Type == JoystickType.Engine)

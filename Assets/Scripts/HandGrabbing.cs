@@ -40,7 +40,7 @@ public class HandGrabbing : MonoBehaviour {
 
             if(GrabbedScript != null)
             {
-                GrabbedScript.Grabbed(gameObject, hand == SteamVR_Input_Sources.RightHand);
+                GrabbedScript.ItemGrabbed(gameObject, hand == SteamVR_Input_Sources.RightHand);
             }
 
             Rigidbody rb = GrabbedObject.transform.GetComponent<Rigidbody>();
@@ -63,7 +63,7 @@ public class HandGrabbing : MonoBehaviour {
             }
             if (GrabbedScript != null)
             {
-                GrabbedScript.Dropped();
+                GrabbedScript.ItemDropped();
             }
             GrabbedObject = null;
             GrabbedScript = null;
