@@ -26,7 +26,7 @@ public class TerrainSpawner : MonoBehaviour
                 obj.transform.parent = this.transform;
                 //obj.transform.GetComponent<TerrainGeneration>().Offset = new Vector2Int(x * 16, y * 16);
                 obj.transform.GetComponent<TerrainGeneration>().Ores = Ores;
-                obj.transform.GetComponent<TerrainGeneration>().Seed = Seed;
+                //obj.transform.GetComponent<TerrainGeneration>().Seed = Seed;
                 obj.transform.GetComponent<TerrainGeneration>().Initiate();
             }
         }

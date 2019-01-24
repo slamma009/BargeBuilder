@@ -11,13 +11,16 @@ public class TerrainGeneration : MonoBehaviour
     public int GridSize = 64;
     public float GridScale = 2;
     public float PerlinScale = 1;
+    public int Octives = 4;
+    public float Persistance = 0.5f;
+    public float Lacurarity = 2;
     public float HeightScale = 20;
     public Vector2Int MeshOffset;
     public Material MeshMaterial;
 
     public AnimationCurve MeshHeightCurve;
 
-    public float Seed;
+    public int Seed;
     
     public Ore[] Ores;
     float[,] HeightGrid;
@@ -34,8 +37,8 @@ public class TerrainGeneration : MonoBehaviour
             {
                 TerrainMesh meshObj = new GameObject().AddComponent<TerrainMesh>();
                 meshObj.transform.position = new Vector3(x * GridSize, 0, z * GridSize);
-                Vector2 newOffset = new Vector2(x * GridSize, z * GridSize);
-                meshObj.gameObject.AddComponent<MeshFilter>().mesh = meshObj.GenerateMesh(Seed, PerlinScale, MeshHeightCurve, HeightScale, GridSize, newOffset);
+                Vector2 newOffset = new Vector2(x * (GridSize + 1), z * (GridSize + 1));
+                meshObj.gameObject.AddComponent<MeshFilter>().mesh = meshObj.GenerateMesh(Octives, Persistance, Lacurarity, PerlinScale, MeshHeightCurve, HeightScale, GridSize, newOffset, Seed);
                 meshObj.gameObject.AddComponent<MeshRenderer>().material = MeshMaterial;
             }
         }
