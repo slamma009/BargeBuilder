@@ -24,7 +24,7 @@ public class TerrainSpawner : MonoBehaviour
                 Transform obj = Instantiate(Terrain, new Vector3(32 * x, 0, 32 * y), Quaternion.identity).transform;
 
                 obj.transform.parent = this.transform;
-                obj.transform.GetComponent<TerrainGeneration>().Offset = new Vector2Int(x * 16, y * 16);
+                //obj.transform.GetComponent<TerrainGeneration>().Offset = new Vector2Int(x * 16, y * 16);
                 obj.transform.GetComponent<TerrainGeneration>().Ores = Ores;
                 obj.transform.GetComponent<TerrainGeneration>().Seed = Seed;
                 obj.transform.GetComponent<TerrainGeneration>().Initiate();
