@@ -10,17 +10,19 @@ public class TerrainChunk
     private readonly MeshFilter Filter;
     private readonly Vector2 Offset;
     private readonly int GridSize;
+    public OreData[] Ores;
     public int SetLevelOfDetail = 0;
 
     private Dictionary<int, LODMesh> LevelOfDetailMeshes = new Dictionary<int, LODMesh>();
 
-    public TerrainChunk(TerrainMesh mesh, MeshRenderer renderer, MeshFilter filter, Vector2 position, int gridSize)
+    public TerrainChunk(TerrainMesh mesh, MeshRenderer renderer, MeshFilter filter, Vector2 position, int gridSize, OreData[] ores)
     {
         this.MeshLogic = mesh;
         this.Renderer = renderer;
         this.Filter = filter;
         this.Offset = position;
         this.GridSize = gridSize;
+        this.Ores = ores;
         this.ChunkBounds = new Bounds(position, Vector2.one * GridSize);
     }
 
@@ -57,12 +59,12 @@ public class TerrainChunk
 
     public void GenerateMesh(int octaves, float persistance, float lacunarity, float perlinScale, AnimationCurve meshHeightCurve, float heightScale, int seed, int levelOfDetail)
     {
-        MeshLogic.RequestHeight(NoiseCallback, octaves, persistance, lacunarity, perlinScale, meshHeightCurve, heightScale, GridSize, Offset, seed, levelOfDetail);
+        MeshLogic.RequestHeight(NoiseCallback, octaves, persistance, lacunarity, perlinScale, meshHeightCurve, heightScale, GridSize, Offset, seed, levelOfDetail, Ores);
     }
 
     void NoiseCallback(NoiseData noiseData)
     {
-        MeshLogic.RequestMeshData(MeshCallBack, GridSize, noiseData.HeightGrid, noiseData.LevelOfDetail);
+        MeshLogic.RequestMeshData(MeshCallBack, GridSize, noiseData.HeightGrid, noiseData.LevelOfDetail, Ores, noiseData.OreHeightGrids);
     }
 
     void MeshCallBack(MeshData data)

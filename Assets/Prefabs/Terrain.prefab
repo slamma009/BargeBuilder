@@ -44,10 +44,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   Seed: 5
-  detailLevels:
+  DetailLevels:
   - lod: 1
-    visibleDstThreshold: 64
-  PerlinScale: 60
+    visibleDstThreshold: 96
+  - lod: 8
+    visibleDstThreshold: 160
+  - lod: 8
+    visibleDstThreshold: 192
+  PerlinScale: 120
   HeightScale: 20
   MeshHeightCurve:
     serializedVersion: 2
@@ -159,5 +163,8 @@ MonoBehaviour:
   Persistance: 0.5
   Lacurarity: 2
   MeshOffset: {x: 0, y: 0}
+  Viewer: {fileID: 0}
   Ores:
   - {fileID: 11400000, guid: 2b4c966c908a81242980289635e4838f, type: 2}
+  - {fileID: 11400000, guid: 38c056a011cdacb4eb3116523ef4f018, type: 2}
+  ViewerPosition: {x: 0, y: 0}

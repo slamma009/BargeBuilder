@@ -12,6 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d1c05632c05e14544be8a1386324ce3a, type: 3}
   m_Name: Coal
   m_EditorClassIdentifier: 
-  PerlinScale: 1
-  Chance: 0.7
-  Seed: 741.40045
+  PerlinScale: 200
+  Octavies: 2
+  Persistance: 0.5
+  Lacunarity: 2
+  Chance: 0.9

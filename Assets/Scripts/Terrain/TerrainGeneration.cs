@@ -23,8 +23,8 @@ public class TerrainGeneration : MonoBehaviour
 
     private readonly int GridSize = 64;
 
-    public Ore[] Ores;
-
+    public ScriptableOre[] Ores;
+    private OreData[] OreData;
 
     public Vector2 ViewerPosition;
     Vector2 ViewerPositionOld;
@@ -48,6 +48,14 @@ public class TerrainGeneration : MonoBehaviour
         MaxViewDistance = DetailLevels[DetailLevels.Length - 1].visibleDstThreshold;
         ChunkSize = GridSize;
         ChunksVisibleInViewDst = Mathf.RoundToInt(MaxViewDistance / ChunkSize);
+
+        OreData = new OreData[Ores.Length];
+        System.Random prng = new System.Random(Seed);
+        for(int i=0; i<Ores.Length; ++i)
+        {
+            Debug.Log(i + " : " + Ores.Length);
+            OreData[i] = new OreData(Ores[i], prng.Next(-1000, 1000));
+        }
  
     }
 
@@ -118,7 +126,7 @@ public class TerrainGeneration : MonoBehaviour
                     renderer.material = MeshMaterial; ;
 
                     Vector2 newOffset = new Vector2(viewedChunkCoord.x * GridSize, viewedChunkCoord.y * GridSize);
-                    TerrainChunkDictionary.Add(viewedChunkCoord, new TerrainChunk(meshObj, renderer, meshObj.gameObject.AddComponent<MeshFilter>(), newOffset, GridSize));
+                    TerrainChunkDictionary.Add(viewedChunkCoord, new TerrainChunk(meshObj, renderer, meshObj.gameObject.AddComponent<MeshFilter>(), newOffset, GridSize, OreData));
                 }
 
             }
@@ -134,10 +142,22 @@ public class TerrainGeneration : MonoBehaviour
 
     private void OnValidate()
     {
+        EditorUpdateMesh();
+    }
+
+    public void EditorUpdateMesh()
+    {
         if (PerlinScale < 0.001f)
             PerlinScale = 0.001f;
+        OreData = new OreData[Ores.Length];
+        System.Random prng = new System.Random(Seed);
+        for (int i = 0; i < Ores.Length; ++i)
+        {
+            OreData[i] = new OreData(Ores[i], prng.Next(-1000, 1000));
+        }
         foreach (Vector2 key in TerrainChunkDictionary.Keys)
         {
+            TerrainChunkDictionary[key].Ores = OreData;
             TerrainChunkDictionary[key].ClearMesh(TerrainChunkDictionary[key].SetLevelOfDetail);
             TerrainChunkDictionary[key].SetLevelOfDetail = 0;
             TerrainChunkDictionary[key].UpdateChunk(Octives, Persistance, Lacurarity, PerlinScale, MeshHeightCurve, HeightScale, Seed, TerrainChunkDictionary[key].SetLevelOfDetail);

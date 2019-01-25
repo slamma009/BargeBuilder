@@ -9,19 +9,29 @@ public class TerrainMesh : MonoBehaviour
     Queue<MapThreadInfo<MeshData>> ThreadMeshQueue = new Queue<MapThreadInfo<MeshData>>();
 
     #region Threading
-    public void RequestHeight(Action<NoiseData> callback, int octaves, float persistance, float lacunarity, float perlinScale, AnimationCurve meshHeightCurve, float heightScale, int gridSize, Vector2 offset, int seed, int levelOfDetail)
+    public void RequestHeight(Action<NoiseData> callback, int octaves, float persistance, float lacunarity, float perlinScale, AnimationCurve meshHeightCurve, float heightScale, int gridSize, Vector2 offset, int seed, int levelOfDetail, OreData[] ores)
     {
         ThreadStart threadStart = delegate
         {
-            GetHeight(callback, octaves, persistance, lacunarity, perlinScale, meshHeightCurve, heightScale, gridSize, offset, seed, levelOfDetail);
+            GetHeight(callback, octaves, persistance, lacunarity, perlinScale, meshHeightCurve, heightScale, gridSize, offset, seed, levelOfDetail, ores);
         };
 
         new Thread(threadStart).Start();
     }
-    void GetHeight(Action<NoiseData> callback, int octaves, float persistance, float lacunarity, float perlinScale, AnimationCurve meshHeightCurve, float heightScale, int gridSize, Vector2 offset, int seed, int levelOfDetail)
+    void GetHeight(Action<NoiseData> callback, int octaves, float persistance, float lacunarity, float perlinScale, AnimationCurve meshHeightCurve, float heightScale, int gridSize, Vector2 offset, int seed, int levelOfDetail, OreData[] ores)
     {
+        List<float[,]> oreHeightGrids = new List<float[,]>();
+        foreach(OreData ore in ores)
+        {
+            oreHeightGrids.Add(NoiseGenerator.Generate(ore.Octaves, ore.Persistance, ore.Lacunarity, ore.PerlinScale, null, 1, gridSize, offset, ore.Seed));
+        }
+        
 
-        NoiseData mapData = new NoiseData(GetHeight(octaves, persistance, lacunarity, perlinScale, meshHeightCurve, heightScale, gridSize, offset, seed), levelOfDetail);
+        NoiseData mapData = new NoiseData(
+            NoiseGenerator.Generate(octaves, persistance, lacunarity, perlinScale, meshHeightCurve, heightScale, gridSize, offset, seed),
+            levelOfDetail, 
+            oreHeightGrids
+            );
 
         lock (ThreadHeightQueue)
         {
@@ -29,18 +39,18 @@ public class TerrainMesh : MonoBehaviour
         }
     }
     
-    public void RequestMeshData(Action<MeshData> callback, int gridSize, float[,] noise, int levelOfDetail)
+    public void RequestMeshData(Action<MeshData> callback, int gridSize, float[,] noise, int levelOfDetail, OreData[] ores, List<float[,]> oreHeightData)
     {
         ThreadStart threadStart = delegate
         {
-            MeshDataThread(callback, gridSize,  noise, levelOfDetail);
+            MeshDataThread(callback, gridSize,  noise, levelOfDetail, ores, oreHeightData );
         };
         new Thread(threadStart).Start();
     }
 
-    void MeshDataThread(Action<MeshData> callback, int gridSize, float[,] noise, int levelOfDetail)
+    void MeshDataThread(Action<MeshData> callback, int gridSize, float[,] noise, int levelOfDetail, OreData[] ores, List<float[,]> oreHeightData)
     {
-        MeshData meshData = GenerateMesh(gridSize, noise, levelOfDetail);
+        MeshData meshData = GenerateMesh(gridSize, noise, levelOfDetail, ores, oreHeightData);
         lock (ThreadMeshQueue)
         {
             ThreadMeshQueue.Enqueue(new MapThreadInfo<MeshData>(callback, meshData));
@@ -69,7 +79,7 @@ public class TerrainMesh : MonoBehaviour
         }
     }
 
-    MeshData GenerateMesh(int gridSize, float[,] heightGrid, int levelOfDetail)
+    MeshData GenerateMesh(int gridSize, float[,] heightGrid, int levelOfDetail, OreData[] ores, List<float[,]> oreHeightData)
     {
 
         List<Vector3> Verticies = new List<Vector3>();
@@ -119,14 +129,14 @@ public class TerrainMesh : MonoBehaviour
         {
 
             float textureOffset = 0;
-            //for (var j = 0; j < Ores.Length; ++j)
-            //{
-            //    if (Ores[j].GetOreChance(xPos, y, Offset, gridSize) > Ores[j].Chance)
-            //    {
-            //        offset = (j + 1) * 0.25f;
-            //        break;
-            //    }
-            //}
+            for (var j = 0; j < ores.Length; ++j)
+            {
+                if (oreHeightData[j][xPos, y] > ores[j].Chance)
+                {
+                    textureOffset = (j + 1) * 0.25f;
+                    break;
+                }
+            }
             uvs.Add(new Vector2(textureOffset, 0.75f));
             uvs.Add(new Vector2(textureOffset, 1));
             uvs.Add(new Vector2(textureOffset + 0.25f, 0.75f));
@@ -145,76 +155,7 @@ public class TerrainMesh : MonoBehaviour
         return new MeshData(Verticies.ToArray(), Normals.ToArray(), triangles.ToArray(), uvs.ToArray(), levelOfDetail);
     }
 
-    float[,] GetHeight(int octaves, float persistance, float lacunarity, float perlinScale, AnimationCurve animationCurve, float heightScale, int gridSize, Vector2 offset, int seed)
-    {
-        AnimationCurve meshHeightCurve = new AnimationCurve(animationCurve.keys);
-        float[,] heightGrid = new float[gridSize + 1, gridSize + 1];
-
-        float maxPossibleHeight = 0;
-        System.Random prng = new System.Random(seed);
-        Vector2[] octaveOffsets = new Vector2[octaves];
-
-        float amplitude = 1;
-        for (var i=0; i<octaves; ++i)
-        {
-            float offsetX = prng.Next(-100000, 100000) + offset.x;
-            float offsetY = prng.Next(-100000, 100000) + offset.y;
-            octaveOffsets[i] = new Vector2(offsetX, offsetY);
-
-            maxPossibleHeight += amplitude;
-            amplitude *= persistance;
-        }
-        float maxLocalNoiseHeight = float.MinValue;
-        float minLocalNoiseHeight = float.MaxValue;
-
-        float halfWidth = (gridSize + 1) / 2f;
-        float halfHeight = (gridSize + 1) / 2f;
-
-        
-        for (int z = 0; z <= gridSize; ++z)
-        {
-            for (var x = 0; x <= gridSize; ++x)
-            {
-                amplitude = 1;
-                float frequency = 1;
-                float noiseHeight = 0;
-
-                for (var i = 0; i < octaves; ++i)
-                {
-                    float sampleX = (x + octaveOffsets[i].x) / perlinScale * frequency;
-                    float sampleY = (z + octaveOffsets[i].y) / perlinScale * frequency;
-
-                    float height = Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1;
-                    noiseHeight += height * amplitude;
-
-                    amplitude *= persistance;
-                    frequency *= lacunarity;
-                }
-
-                if(noiseHeight > maxLocalNoiseHeight)
-                    maxLocalNoiseHeight = noiseHeight;
-                else if(noiseHeight < minLocalNoiseHeight)
-                    minLocalNoiseHeight = noiseHeight;
-
-                heightGrid[x, z] = noiseHeight;
-            }
-        }
-
-
-        for (int z = 0; z <= gridSize; ++z)
-        {
-            for (var x = 0; x <= gridSize; ++x)
-            {
-                float normalizedHeight = (heightGrid[x, z] + 1) / (maxPossibleHeight / 0.9f);
-                heightGrid[x, z] = meshHeightCurve.Evaluate(Mathf.Clamp(normalizedHeight, 0, int.MaxValue)) * heightScale;
-                //heightGrid[x, z] = heightGrid[x, z] * heightScale;
-                //heightGrid[x, z] = meshHeightCurve.Evaluate( Mathf.InverseLerp(minLocalNoiseHeight, maxLocalNoiseHeight, heightGrid[x, z])) * heightScale;
-            }
-
-        }
-        return heightGrid;
-    }
- 
+    
 
 
     struct MapThreadInfo<T>
@@ -253,11 +194,13 @@ public struct MeshData
 public struct NoiseData
 {
     public float[,] HeightGrid;
+    public List<float[,]> OreHeightGrids;
     public int LevelOfDetail;
 
-    public NoiseData(float[,] heightGrid, int levelOfDetail)
+    public NoiseData(float[,] heightGrid, int levelOfDetail, List<float[,]> oreHeightGrids)
     {
         this.HeightGrid = heightGrid;
         this.LevelOfDetail = levelOfDetail;
+        this.OreHeightGrids = oreHeightGrids;
     }
 }
