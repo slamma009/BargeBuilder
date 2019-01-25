@@ -28,27 +28,60 @@ public class TerrainGeneration : MonoBehaviour
     {
         Initiate();
     }
+    List<EditorTerrainMeshData> CreatedMeshes = new List<EditorTerrainMeshData>();
     public void Initiate()
     {
 
-        for(var z = 0; z < 4; ++z)
+        for(var z = -2; z < 2; ++z)
         {
-            for(var x = 0; x < 4; ++x)
+            for(var x = -2; x < 2; ++x)
             {
                 TerrainMesh meshObj = new GameObject().AddComponent<TerrainMesh>();
+
                 meshObj.transform.position = new Vector3(x * GridSize, 0, z * GridSize);
-                Vector2 newOffset = new Vector2(x * (GridSize + 1), z * (GridSize + 1));
-                meshObj.gameObject.AddComponent<MeshFilter>().mesh = meshObj.GenerateMesh(Octives, Persistance, Lacurarity, PerlinScale, MeshHeightCurve, HeightScale, GridSize, newOffset, Seed);
+
                 meshObj.gameObject.AddComponent<MeshRenderer>().material = MeshMaterial;
+
+                Vector2 newOffset = new Vector2(x * (GridSize), z * (GridSize));
+                CreatedMeshes.Add(new EditorTerrainMeshData(meshObj, meshObj.gameObject.AddComponent<MeshFilter>(), newOffset));
+                CreatedMeshes[CreatedMeshes.Count - 1].GenerateMesh(Octives, Persistance, Lacurarity, PerlinScale, MeshHeightCurve, HeightScale, GridSize, Seed);
             }
         }
 
     }
 
 
+    private void OnValidate()
+    {
+        foreach(EditorTerrainMeshData data in CreatedMeshes)
+        {
+            data.GenerateMesh(Octives, Persistance, Lacurarity, PerlinScale, MeshHeightCurve, HeightScale, GridSize, Seed);
+        }
+    }
 
 
-    
+    struct EditorTerrainMeshData
+    {
+        public TerrainMesh Mesh;
+        private MeshFilter Filter;
+        private Vector2 Offset; 
+
+        public EditorTerrainMeshData(TerrainMesh mesh, MeshFilter filter, Vector2 position)
+        {
+            this.Mesh = mesh;
+            this.Filter = filter;
+            this.Offset = position;
+        }
+
+        public void GenerateMesh(int octaves, float persistance, float lacunarity, float perlinScale, AnimationCurve meshHeightCurve, float heightScale, int gridSize, int seed)
+        {
+            Filter.mesh = Mesh.GenerateMesh(octaves, persistance, lacunarity, perlinScale, meshHeightCurve, heightScale, gridSize, Offset, seed);
+        }
+    }
+
+
+
+
 }
 
 // n1, n3, n2, n4

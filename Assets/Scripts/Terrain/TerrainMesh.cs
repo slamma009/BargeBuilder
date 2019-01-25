@@ -91,32 +91,38 @@ public class TerrainMesh : MonoBehaviour
     {
         float[,] heightGrid = new float[gridSize + 1, gridSize + 1];
 
+        float maxPossibleHeight = 0;
         System.Random prng = new System.Random(seed);
         Vector2[] octaveOffsets = new Vector2[octaves];
         float octaveFreq = 1;
-        for(var i=0; i<octaves; ++i)
+        float amplitude = 1;
+        for (var i=0; i<octaves; ++i)
         {
-            float offsetX = offset.x;//prng.Next(-100000, 100000) + offset.x;
-            float offsetY = offset.y;// prng.Next(-100000, 100000) + offset.y;
+            float offsetX = prng.Next(-100000, 100000) + offset.x;
+            float offsetY = prng.Next(-100000, 100000) + offset.y;
             octaveOffsets[i] = new Vector2(offsetX, offsetY);
-            octaveFreq *= lacunarity;
+
+            maxPossibleHeight += amplitude;
+            amplitude *= persistance;
         }
-        float maxNoiseHeight = float.MinValue;
-        float minNoiseHeight = float.MaxValue;
+        float maxLocalNoiseHeight = float.MinValue;
+        float minLocalNoiseHeight = float.MaxValue;
+
         float halfWidth = (gridSize + 1) / 2f;
         float halfHeight = (gridSize + 1) / 2f;
+
         for (int z = 0; z <= gridSize; ++z)
         {
             for (var x = 0; x <= gridSize; ++x)
             {
-                float amplitude = 1;
+                amplitude = 1;
                 float frequency = 1;
                 float noiseHeight = 0;
 
                 for (var i = 0; i < octaves; ++i)
                 {
-                    float sampleX = (x) / perlinScale * frequency + octaveOffsets[i].x;
-                    float sampleY = (z) / perlinScale * frequency + octaveOffsets[i].y;
+                    float sampleX = (x + octaveOffsets[i].x) / perlinScale * frequency;
+                    float sampleY = (z + octaveOffsets[i].y) / perlinScale * frequency;
 
                     float height = Mathf.PerlinNoise(sampleX, sampleY) * 2 - 1;
                     noiseHeight += height * amplitude;
@@ -125,10 +131,10 @@ public class TerrainMesh : MonoBehaviour
                     frequency *= lacunarity;
                 }
 
-                if(noiseHeight > maxNoiseHeight)
-                    maxNoiseHeight = noiseHeight;
-                else if(noiseHeight < minNoiseHeight)
-                    minNoiseHeight = noiseHeight;
+                if(noiseHeight > maxLocalNoiseHeight)
+                    maxLocalNoiseHeight = noiseHeight;
+                else if(noiseHeight < minLocalNoiseHeight)
+                    minLocalNoiseHeight = noiseHeight;
 
                 heightGrid[x, z] = noiseHeight;
             }
@@ -139,8 +145,10 @@ public class TerrainMesh : MonoBehaviour
         {
             for (var x = 0; x <= gridSize; ++x)
             {
+                float normalizedHeight = (heightGrid[x, z] + 1) / (maxPossibleHeight / 0.9f);
+                heightGrid[x, z] = meshHeightCurve.Evaluate(Mathf.Clamp(normalizedHeight, 0, int.MaxValue)) * heightScale;
                 //heightGrid[x, z] = heightGrid[x, z] * heightScale;
-                heightGrid[x, z] = meshHeightCurve.Evaluate( Mathf.InverseLerp(minNoiseHeight, maxNoiseHeight, heightGrid[x, z])) * heightScale;
+                //heightGrid[x, z] = meshHeightCurve.Evaluate( Mathf.InverseLerp(minLocalNoiseHeight, maxLocalNoiseHeight, heightGrid[x, z])) * heightScale;
             }
 
         }
