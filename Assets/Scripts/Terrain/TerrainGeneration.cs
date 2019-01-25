@@ -7,27 +7,28 @@ public class TerrainGeneration : MonoBehaviour
 {
     Mesh TerrainMesh;
     // Start is called before the first frame update
-    
-    public int GridSize = 64;
-    public float GridScale = 2;
+
+    public int Seed;
     public float PerlinScale = 1;
+    public float HeightScale = 20;
+    public AnimationCurve MeshHeightCurve;
+    public Material MeshMaterial;
     public int Octives = 4;
     public float Persistance = 0.5f;
     public float Lacurarity = 2;
-    public float HeightScale = 20;
     public Vector2Int MeshOffset;
-    public Material MeshMaterial;
 
-    public AnimationCurve MeshHeightCurve;
 
-    public int Seed;
-    
+    private readonly int GridSize = 64;
+
     public Ore[] Ores;
     float[,] HeightGrid;
+
     public void Start()
     {
         Initiate();
     }
+
     List<EditorTerrainMeshData> CreatedMeshes = new List<EditorTerrainMeshData>();
     public void Initiate()
     {
@@ -43,8 +44,8 @@ public class TerrainGeneration : MonoBehaviour
                 meshObj.gameObject.AddComponent<MeshRenderer>().material = MeshMaterial;
 
                 Vector2 newOffset = new Vector2(x * (GridSize), z * (GridSize));
-                CreatedMeshes.Add(new EditorTerrainMeshData(meshObj, meshObj.gameObject.AddComponent<MeshFilter>(), newOffset));
-                CreatedMeshes[CreatedMeshes.Count - 1].GenerateMesh(Octives, Persistance, Lacurarity, PerlinScale, MeshHeightCurve, HeightScale, GridSize, Seed);
+                CreatedMeshes.Add(new EditorTerrainMeshData(meshObj, meshObj.gameObject.AddComponent<MeshFilter>(), newOffset, GridSize));
+                CreatedMeshes[CreatedMeshes.Count - 1].GenerateMesh(Octives, Persistance, Lacurarity, PerlinScale, MeshHeightCurve, HeightScale, Seed);
             }
         }
 
@@ -55,27 +56,46 @@ public class TerrainGeneration : MonoBehaviour
     {
         foreach(EditorTerrainMeshData data in CreatedMeshes)
         {
-            data.GenerateMesh(Octives, Persistance, Lacurarity, PerlinScale, MeshHeightCurve, HeightScale, GridSize, Seed);
+            data.GenerateMesh(Octives, Persistance, Lacurarity, PerlinScale, MeshHeightCurve, HeightScale, Seed);
         }
     }
 
 
     struct EditorTerrainMeshData
     {
-        public TerrainMesh Mesh;
-        private MeshFilter Filter;
-        private Vector2 Offset; 
+        private readonly TerrainMesh MeshLogic;
+        private readonly MeshFilter Filter;
+        private readonly Vector2 Offset;
+        public int LevelOfDetail;
+        private readonly int GridSize;
 
-        public EditorTerrainMeshData(TerrainMesh mesh, MeshFilter filter, Vector2 position)
+        public EditorTerrainMeshData(TerrainMesh mesh, MeshFilter filter, Vector2 position, int gridSize, int levelOfDetail = 1)
         {
-            this.Mesh = mesh;
+            this.MeshLogic = mesh;
             this.Filter = filter;
             this.Offset = position;
+            this.LevelOfDetail = levelOfDetail;
+            this.GridSize = gridSize;
         }
 
-        public void GenerateMesh(int octaves, float persistance, float lacunarity, float perlinScale, AnimationCurve meshHeightCurve, float heightScale, int gridSize, int seed)
+        public void GenerateMesh(int octaves, float persistance, float lacunarity, float perlinScale, AnimationCurve meshHeightCurve, float heightScale, int seed)
         {
-            Filter.mesh = Mesh.GenerateMesh(octaves, persistance, lacunarity, perlinScale, meshHeightCurve, heightScale, gridSize, Offset, seed);
+            MeshLogic.RequestHeight(NoiseCallback, octaves, persistance, lacunarity, perlinScale, meshHeightCurve, heightScale, GridSize, Offset, seed);
+        }
+
+        void NoiseCallback(float[,] heightGrid)
+        {
+            MeshLogic.RequestMeshData(MeshCallBack , GridSize, heightGrid);
+        }
+
+        void MeshCallBack(MeshData data)
+        {
+            Mesh mesh = new Mesh();
+            mesh.vertices = data.Verticies;
+            mesh.normals = data.Normals;
+            mesh.triangles = data.Triangles;
+            mesh.uv = data.UVs;
+            Filter.mesh = mesh;
         }
     }
 
