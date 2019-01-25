@@ -5,7 +5,7 @@ using UnityEngine;
 public class TerrainChunk
 {
     public readonly Bounds ChunkBounds;
-    private readonly MeshRenderer Renderer;
+    public readonly MeshRenderer Renderer;
     private readonly TerrainMesh MeshLogic;
     private readonly MeshFilter Filter;
     private readonly Vector2 Offset;
@@ -28,14 +28,17 @@ public class TerrainChunk
     {
         Renderer.enabled = visible;
     }
-
+    
+    public void ClearMesh(int lodKey)
+    {
+        if (LevelOfDetailMeshes.ContainsKey(lodKey))
+        {
+            LevelOfDetailMeshes.Remove(lodKey);
+        }
+    }
 
     public void UpdateChunk(int octaves, float persistance, float lacunarity, float perlinScale, AnimationCurve meshHeightCurve, float heightScale, int seed, int levelOfDetail)
     {
-        if (!Renderer.enabled)
-        {
-            SetVisible(true);
-        }
         if (levelOfDetail != SetLevelOfDetail)
         {
             if (!LevelOfDetailMeshes.ContainsKey(levelOfDetail))

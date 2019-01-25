@@ -11,8 +11,8 @@ public class Ore : ScriptableObject
     [HideInInspector]
     public float Seed;
 
-    public float GetOreChance(int x, int z, Vector2Int Offset, Vector2Int GridSize)
+    public float GetOreChance(int x, int z, Vector2Int Offset)
     {
-        return Mathf.PerlinNoise(((Seed + Offset.x + x) / (float)(GridSize.x + 1)) * PerlinScale, ((Seed + Offset.y + z) / (float)(GridSize.y + 1)) * PerlinScale);
+        return Mathf.PerlinNoise((Seed + Offset.x + x) /  PerlinScale, (Seed + Offset.y + z) / PerlinScale);
     }
 }

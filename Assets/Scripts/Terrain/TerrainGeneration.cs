@@ -99,6 +99,10 @@ public class TerrainGeneration : MonoBehaviour
                         }
                     }
 
+                    if (!TerrainChunkDictionary[viewedChunkCoord].Renderer.enabled)
+                    {
+                        TerrainChunkDictionary[viewedChunkCoord].SetVisible(true);
+                    }
                     TerrainChunkDictionary[viewedChunkCoord].UpdateChunk(Octives, Persistance, Lacurarity, PerlinScale, MeshHeightCurve, HeightScale, Seed, DetailLevels[lodIndex].lod);
                     TerrainChunksVisibleLastUpdate.Add(TerrainChunkDictionary[viewedChunkCoord]);
                 }
@@ -130,8 +134,12 @@ public class TerrainGeneration : MonoBehaviour
 
     private void OnValidate()
     {
+        if (PerlinScale < 0.001f)
+            PerlinScale = 0.001f;
         foreach (Vector2 key in TerrainChunkDictionary.Keys)
         {
+            TerrainChunkDictionary[key].ClearMesh(TerrainChunkDictionary[key].SetLevelOfDetail);
+            TerrainChunkDictionary[key].SetLevelOfDetail = 0;
             TerrainChunkDictionary[key].UpdateChunk(Octives, Persistance, Lacurarity, PerlinScale, MeshHeightCurve, HeightScale, Seed, TerrainChunkDictionary[key].SetLevelOfDetail);
         }
     }
