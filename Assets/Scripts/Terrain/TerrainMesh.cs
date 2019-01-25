@@ -5,41 +5,42 @@ using UnityEngine;
 
 public class TerrainMesh : MonoBehaviour
 {
-    Queue<MapThreadInfo<float[,]>> ThreadHeightQueue = new Queue<MapThreadInfo<float[,]>>();
+    Queue<MapThreadInfo<NoiseData>> ThreadHeightQueue = new Queue<MapThreadInfo<NoiseData>>();
     Queue<MapThreadInfo<MeshData>> ThreadMeshQueue = new Queue<MapThreadInfo<MeshData>>();
 
     #region Threading
-    public void RequestHeight(Action<float[,]> callback, int octaves, float persistance, float lacunarity, float perlinScale, AnimationCurve meshHeightCurve, float heightScale, int gridSize, Vector2 offset, int seed)
+    public void RequestHeight(Action<NoiseData> callback, int octaves, float persistance, float lacunarity, float perlinScale, AnimationCurve meshHeightCurve, float heightScale, int gridSize, Vector2 offset, int seed, int levelOfDetail)
     {
         ThreadStart threadStart = delegate
         {
-            GetHeight(callback, octaves, persistance, lacunarity, perlinScale, meshHeightCurve, heightScale, gridSize, offset, seed);
+            GetHeight(callback, octaves, persistance, lacunarity, perlinScale, meshHeightCurve, heightScale, gridSize, offset, seed, levelOfDetail);
         };
 
         new Thread(threadStart).Start();
     }
-    void GetHeight(Action<float[,]> callback, int octaves, float persistance, float lacunarity, float perlinScale, AnimationCurve meshHeightCurve, float heightScale, int gridSize, Vector2 offset, int seed)
+    void GetHeight(Action<NoiseData> callback, int octaves, float persistance, float lacunarity, float perlinScale, AnimationCurve meshHeightCurve, float heightScale, int gridSize, Vector2 offset, int seed, int levelOfDetail)
     {
-        float[,] mapData = GetHeight(octaves, persistance, lacunarity, perlinScale, meshHeightCurve, heightScale, gridSize, offset, seed);
+
+        NoiseData mapData = new NoiseData(GetHeight(octaves, persistance, lacunarity, perlinScale, meshHeightCurve, heightScale, gridSize, offset, seed), levelOfDetail);
 
         lock (ThreadHeightQueue)
         {
-            ThreadHeightQueue.Enqueue(new MapThreadInfo<float[,]>(callback, mapData));
+            ThreadHeightQueue.Enqueue(new MapThreadInfo<NoiseData>(callback, mapData));
         }
     }
     
-    public void RequestMeshData(Action<MeshData> callback, int gridSize, float[,] noise)
+    public void RequestMeshData(Action<MeshData> callback, int gridSize, float[,] noise, int levelOfDetail)
     {
         ThreadStart threadStart = delegate
         {
-            MeshDataThread(callback, gridSize,  noise);
+            MeshDataThread(callback, gridSize,  noise, levelOfDetail);
         };
         new Thread(threadStart).Start();
     }
 
-    void MeshDataThread(Action<MeshData> callback, int gridSize, float[,] noise)
+    void MeshDataThread(Action<MeshData> callback, int gridSize, float[,] noise, int levelOfDetail)
     {
-        MeshData meshData = GenerateMesh(gridSize, noise);
+        MeshData meshData = GenerateMesh(gridSize, noise, levelOfDetail);
         lock (ThreadMeshQueue)
         {
             ThreadMeshQueue.Enqueue(new MapThreadInfo<MeshData>(callback, meshData));
@@ -54,7 +55,7 @@ public class TerrainMesh : MonoBehaviour
         {
             for (var i = 0; i < ThreadHeightQueue.Count; i++)
             {
-                MapThreadInfo<float[,]> threadInfo = ThreadHeightQueue.Dequeue();
+                MapThreadInfo<NoiseData> threadInfo = ThreadHeightQueue.Dequeue();
                 threadInfo.callback(threadInfo.parameter);
             }
         }
@@ -68,13 +69,13 @@ public class TerrainMesh : MonoBehaviour
         }
     }
 
-    MeshData GenerateMesh(int gridSize, float[,] heightGrid)
+    MeshData GenerateMesh(int gridSize, float[,] heightGrid, int levelOfDetail)
     {
 
         List<Vector3> Verticies = new List<Vector3>();
         List<Vector3> Normals = new List<Vector3>();
         List<int> triangles = new List<int>();
-        int meshSimplificationIncrement =  1;
+        int meshSimplificationIncrement = levelOfDetail;
         for (int z = 0, i = 0; z < gridSize; z+= meshSimplificationIncrement)
         {
             for (var x = 0; x < gridSize; x+= meshSimplificationIncrement)
@@ -141,7 +142,7 @@ public class TerrainMesh : MonoBehaviour
             }
         }
 
-        return new MeshData(Verticies.ToArray(), Normals.ToArray(), triangles.ToArray(), uvs.ToArray());
+        return new MeshData(Verticies.ToArray(), Normals.ToArray(), triangles.ToArray(), uvs.ToArray(), levelOfDetail);
     }
 
     float[,] GetHeight(int octaves, float persistance, float lacunarity, float perlinScale, AnimationCurve animationCurve, float heightScale, int gridSize, Vector2 offset, int seed)
@@ -236,13 +237,27 @@ public struct MeshData
     public readonly Vector3[] Normals;
     public readonly int[] Triangles;
     public readonly Vector2[] UVs;
+    public int LevelOfDetail;
 
-    public MeshData(Vector3[] verticies, Vector3[] normals, int[] triangles, Vector2[] uvs)
+    public MeshData(Vector3[] verticies, Vector3[] normals, int[] triangles, Vector2[] uvs, int levelOfDetail)
     {
         this.Verticies = verticies;
         this.Normals = normals;
         this.Triangles = triangles;
         this.UVs = uvs;
+        this.LevelOfDetail = levelOfDetail;
     }
 
+}
+
+public struct NoiseData
+{
+    public float[,] HeightGrid;
+    public int LevelOfDetail;
+
+    public NoiseData(float[,] heightGrid, int levelOfDetail)
+    {
+        this.HeightGrid = heightGrid;
+        this.LevelOfDetail = levelOfDetail;
+    }
 }

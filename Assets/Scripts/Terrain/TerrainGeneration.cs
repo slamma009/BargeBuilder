@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(MeshFilter))]
 public class TerrainGeneration : MonoBehaviour
 {
     Mesh TerrainMesh;
     // Start is called before the first frame update
 
     public int Seed;
+    public LODInfo[] DetailLevels;
     public float PerlinScale = 1;
     public float HeightScale = 20;
     public AnimationCurve MeshHeightCurve;
@@ -18,96 +18,122 @@ public class TerrainGeneration : MonoBehaviour
     public float Lacurarity = 2;
     public Vector2Int MeshOffset;
 
+    public Transform Viewer;
+
 
     private readonly int GridSize = 64;
 
     public Ore[] Ores;
-    float[,] HeightGrid;
+
+
+    public Vector2 ViewerPosition;
+    Vector2 ViewerPositionOld;
+
+    float MaxViewDistance;
+    int ChunkSize;
+    int ChunksVisibleInViewDst;
+
+
+    Dictionary<Vector2, TerrainChunk> TerrainChunkDictionary = new Dictionary<Vector2, TerrainChunk>();
+    static List<TerrainChunk> TerrainChunksVisibleLastUpdate = new List<TerrainChunk>();
 
     public void Start()
     {
         Initiate();
     }
 
-    List<EditorTerrainMeshData> CreatedMeshes = new List<EditorTerrainMeshData>();
     public void Initiate()
     {
 
-        for(var z = -2; z < 2; ++z)
-        {
-            for(var x = -2; x < 2; ++x)
-            {
-                TerrainMesh meshObj = new GameObject().AddComponent<TerrainMesh>();
-
-                meshObj.transform.position = new Vector3(x * GridSize, 0, z * GridSize);
-
-                meshObj.gameObject.AddComponent<MeshRenderer>().material = MeshMaterial;
-
-                Vector2 newOffset = new Vector2(x * (GridSize), z * (GridSize));
-                CreatedMeshes.Add(new EditorTerrainMeshData(meshObj, meshObj.gameObject.AddComponent<MeshFilter>(), newOffset, GridSize));
-                CreatedMeshes[CreatedMeshes.Count - 1].GenerateMesh(Octives, Persistance, Lacurarity, PerlinScale, MeshHeightCurve, HeightScale, Seed);
-            }
-        }
-
+        MaxViewDistance = DetailLevels[DetailLevels.Length - 1].visibleDstThreshold;
+        ChunkSize = GridSize;
+        ChunksVisibleInViewDst = Mathf.RoundToInt(MaxViewDistance / ChunkSize);
+ 
     }
 
+    void Update()
+    {
+        UpdateVisibleChunks();
+
+        //viewerPosition = new Vector2(Viewer.position.x, Viewer.position.z) / scale;
+        ViewerPosition = new Vector2(Viewer.position.x, Viewer.position.z);
+        //if ((viewerPositionOld - viewerPosition).sqrMagnitude > sqrViewerMoveThresholdForChunkUpdate)
+        //{
+        //    viewerPositionOld = viewerPosition;
+        //    UpdateVisibleChunks();
+        //}
+    }
+
+    void UpdateVisibleChunks()
+    {
+
+        for (int i = 0; i < TerrainChunksVisibleLastUpdate.Count; i++)
+        {
+            TerrainChunksVisibleLastUpdate[i].SetVisible(false);
+        }
+        TerrainChunksVisibleLastUpdate.Clear();
+
+        int currentChunkCoordX = Mathf.RoundToInt(ViewerPosition.x / ChunkSize);
+        int currentChunkCoordY = Mathf.RoundToInt(ViewerPosition.y / ChunkSize);
+        
+
+        for (int yOffset = -ChunksVisibleInViewDst; yOffset <= ChunksVisibleInViewDst; yOffset++)
+        {
+            for (int xOffset = -ChunksVisibleInViewDst; xOffset <= ChunksVisibleInViewDst; xOffset++)
+            {
+                Vector2 viewedChunkCoord = new Vector2(currentChunkCoordX + xOffset, currentChunkCoordY + yOffset);
+                if (TerrainChunkDictionary.ContainsKey(viewedChunkCoord))
+                {
+                    float viewerDstFromNearestEdge = Mathf.Sqrt(TerrainChunkDictionary[viewedChunkCoord].ChunkBounds.SqrDistance(ViewerPosition));
+                    
+                    int lodIndex = 0;
+                    for (int i = 0; i < DetailLevels.Length - 1; i++)
+                    {
+                        if (viewerDstFromNearestEdge > DetailLevels[i].visibleDstThreshold)
+                        {
+                            lodIndex = i + 1;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    TerrainChunkDictionary[viewedChunkCoord].UpdateChunk(Octives, Persistance, Lacurarity, PerlinScale, MeshHeightCurve, HeightScale, Seed, DetailLevels[lodIndex].lod);
+                    TerrainChunksVisibleLastUpdate.Add(TerrainChunkDictionary[viewedChunkCoord]);
+                }
+                else
+                {
+                    TerrainMesh meshObj = new GameObject().AddComponent<TerrainMesh>();
+                    meshObj.name = "Terrain Chunk (" + viewedChunkCoord.x +", " + viewedChunkCoord.y + ")";
+                    meshObj.transform.parent = this.transform;
+
+                    meshObj.transform.position = new Vector3(viewedChunkCoord.x * GridSize, 0, viewedChunkCoord.y * GridSize);
+
+                    MeshRenderer renderer = meshObj.gameObject.AddComponent<MeshRenderer>();
+                    renderer.material = MeshMaterial; ;
+
+                    Vector2 newOffset = new Vector2(viewedChunkCoord.x * GridSize, viewedChunkCoord.y * GridSize);
+                    TerrainChunkDictionary.Add(viewedChunkCoord, new TerrainChunk(meshObj, renderer, meshObj.gameObject.AddComponent<MeshFilter>(), newOffset, GridSize));
+                }
+
+            }
+        }
+    }
+
+    [System.Serializable]
+    public struct LODInfo
+    {
+        public int lod;
+        public float visibleDstThreshold;
+    }
 
     private void OnValidate()
     {
-        foreach(EditorTerrainMeshData data in CreatedMeshes)
+        foreach (Vector2 key in TerrainChunkDictionary.Keys)
         {
-            data.GenerateMesh(Octives, Persistance, Lacurarity, PerlinScale, MeshHeightCurve, HeightScale, Seed);
+            TerrainChunkDictionary[key].UpdateChunk(Octives, Persistance, Lacurarity, PerlinScale, MeshHeightCurve, HeightScale, Seed, TerrainChunkDictionary[key].SetLevelOfDetail);
         }
     }
-
-
-    struct EditorTerrainMeshData
-    {
-        private readonly TerrainMesh MeshLogic;
-        private readonly MeshFilter Filter;
-        private readonly Vector2 Offset;
-        public int LevelOfDetail;
-        private readonly int GridSize;
-
-        public EditorTerrainMeshData(TerrainMesh mesh, MeshFilter filter, Vector2 position, int gridSize, int levelOfDetail = 1)
-        {
-            this.MeshLogic = mesh;
-            this.Filter = filter;
-            this.Offset = position;
-            this.LevelOfDetail = levelOfDetail;
-            this.GridSize = gridSize;
-        }
-
-        public void GenerateMesh(int octaves, float persistance, float lacunarity, float perlinScale, AnimationCurve meshHeightCurve, float heightScale, int seed)
-        {
-            MeshLogic.RequestHeight(NoiseCallback, octaves, persistance, lacunarity, perlinScale, meshHeightCurve, heightScale, GridSize, Offset, seed);
-        }
-
-        void NoiseCallback(float[,] heightGrid)
-        {
-            MeshLogic.RequestMeshData(MeshCallBack , GridSize, heightGrid);
-        }
-
-        void MeshCallBack(MeshData data)
-        {
-            Mesh mesh = new Mesh();
-            mesh.vertices = data.Verticies;
-            mesh.normals = data.Normals;
-            mesh.triangles = data.Triangles;
-            mesh.uv = data.UVs;
-            Filter.mesh = mesh;
-        }
-    }
-
-
-
-
 }
 
-// n1, n3, n2, n4
-// v1, v3, v2, v4
-// 0, 2, 1,
-
-// 1, 2, 3
-
-//Debug.Log(Vertecies[Triangles[5]]);
