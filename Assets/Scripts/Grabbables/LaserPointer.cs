@@ -14,7 +14,14 @@ public class LaserPointer : GrabbableObject
         //Quaternion.AngleAxis(90, Vector3.up) * forward;
         base.ItemGrabbed(grabber, isRighthand);
         transform.localEulerAngles = new Vector3(-52.513f, 20.037f, -113.025f);
+        Line.enabled = true;
 
+    }
+
+    public override void ItemDropped()
+    {
+        Line.enabled = false;
+        base.ItemDropped();
     }
     public void FixedUpdate()
     {

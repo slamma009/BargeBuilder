@@ -5,7 +5,7 @@ using UnityEngine;
 public class ChestTrigger : MonoBehaviour {
 
     public Inventory inv;
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerStay(Collider other)
     {
         Item item = other.gameObject.GetComponent<Item>();
 
