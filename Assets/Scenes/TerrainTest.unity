@@ -378,5 +378,15 @@ PrefabInstance:
       propertyPath: Viewer
       value: 
       objectReference: {fileID: 237284228}
+    - target: {fileID: 6383418810681672727, guid: db77163739aa12442b14f4e678aa9f38,
+        type: 3}
+      propertyPath: DetailLevels.Array.data[1].lod
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 6383418810681672727, guid: db77163739aa12442b14f4e678aa9f38,
+        type: 3}
+      propertyPath: DetailLevels.Array.data[2].lod
+      value: 4
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: db77163739aa12442b14f4e678aa9f38, type: 3}

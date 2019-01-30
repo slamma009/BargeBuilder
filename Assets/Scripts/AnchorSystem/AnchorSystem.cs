@@ -97,7 +97,7 @@ public class AnchorSystem : MonoBehaviour {
 
             if (hit.transform.tag == "Placable")
             {
-                GhostObject.transform.position = hit.point + Vector3.up;
+                GhostObject.transform.position = hit.point + Vector3.up * PlacableItems[SelectedPrefab].MinHeight;
 
                 // Try snapping to nearby anchors first
                 GameObject closestAnchor = null;
@@ -263,7 +263,7 @@ public class AnchorSystem : MonoBehaviour {
     private void HitTerrain(RaycastHit hit, bool placeObject)
     {
         // Set the Ghost Object Position
-        GhostObject.transform.position = hit.point + Vector3.up;
+        GhostObject.transform.position = hit.point + Vector3.up * PlacableItems[SelectedPrefab].MinHeight;
         if(DraggedObject != null && !DraggedObject.gameObject.activeSelf)
                 DraggedObject.gameObject.SetActive(true);
         // If the dragged object is still anchoring to the last anchor, switch it to follow the ghost object again.
@@ -354,7 +354,9 @@ public class AnchorSystem : MonoBehaviour {
 
         // Instantiate the ghost avatar above the hand. 
         GameObject tempAvatar = Instantiate(PlacableItems[SelectedPrefab].Prefabs[0], GhostAvatarPoint.position, (GhostAvatar == null ? GhostAvatarPoint.rotation : GhostAvatar.transform.rotation)) as GameObject;
-        tempAvatar.GetComponent<PlacableObject>().MakeGhost(null);
+        PlacableObject poAvatar = tempAvatar.GetComponent<PlacableObject>();
+        poAvatar.MakeGhost(null);
+        Destroy(poAvatar);
         tempAvatar.transform.localScale = Vector3.one * 0.03f;
         tempAvatar.transform.parent = GhostAvatarPoint.parent;
 
@@ -380,6 +382,7 @@ public class AnchorSystem : MonoBehaviour {
 
         GhostObject = tempObject;
         GhostPlacable = GhostObject.GetComponent<PlacableObject>();
+        GhostPlacable.IsGhost = true;
         GameObject colliderObject = Instantiate(PlacableItems[SelectedPrefab].Prefabs[0], GhostObject.transform.position, GhostObject.transform.rotation) as GameObject;
         colliderObject.GetComponent<PlacableObject>().MakeGhost(null, false);
         colliderObject.name = "COLLIDEROBJECT";

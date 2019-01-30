@@ -14,10 +14,7 @@ public class Extractor : PlacableObject
 
     private ConveyorBelt OutputObject;
 
-
-    public void Start()
-    {
-    }
+    
     public void AnchorChanged(AnchorObject obj)
     {
         if (obj.ConnectAnchor == null)
@@ -31,11 +28,13 @@ public class Extractor : PlacableObject
                 OutputObject = null;
         }
     }
+
     public override void ObjectPlaced()
     {
         Anchors[0].AnchorChanged = AnchorChanged;
         base.ObjectPlaced();
     }
+
     public void FixedUpdate()
     {
         if (Placed && OutputObject != null && OutputObject.ActiveRigidBodies.Count < OutputObject.MaxItemsOnBelt)

@@ -38,8 +38,15 @@ public class HoverEngineStatic : MonoBehaviour
 
     private void Update()
     {
-        Vector2 leftInput = SteamVR_Input._default.inActions.ThumbStick.GetAxis(SteamVR_Input_Sources.LeftHand);
-        Vector2 rightInput = SteamVR_Input._default.inActions.ThumbStick.GetAxis(SteamVR_Input_Sources.RightHand);
+        Vector2 leftInput =  Vector2.zero;
+        Vector2 rightInput = Vector2.zero;
+
+        if (SteamVR_Input._default != null)
+        {
+            leftInput = SteamVR_Input._default.inActions.ThumbStick.GetAxis(SteamVR_Input_Sources.LeftHand);
+            rightInput = SteamVR_Input._default.inActions.ThumbStick.GetAxis(SteamVR_Input_Sources.RightHand);
+        }
+
         if (EnableEngine) 
         {
             PowerInput = EngineIsRightHand ? rightInput.y :leftInput.y;
