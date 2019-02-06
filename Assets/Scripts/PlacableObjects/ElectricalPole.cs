@@ -9,9 +9,10 @@ public class ElectricalPole : PlacableObject
     public GameObject WirePrefab;
 
     public Transform WireAnchorPoint;
+    
+    public List<ElectricalPoleWireHolder> ConnectedPoles = new List<ElectricalPoleWireHolder>();
 
-    [SerializeField]
-    private List<ElectricalPoleWireHolder> ConnectedPoles = new List<ElectricalPoleWireHolder>();
+    private PowerController Power;
 
     private void Update()
     {
@@ -34,6 +35,10 @@ public class ElectricalPole : PlacableObject
         }
     }
 
+    /// <summary>
+    /// Finds all poles within a given radius and attaches a wire to them
+    /// </summary>
+    /// <param name="setOtherPole">If true will assign itself to the poles it found</param>
     private void GetPolesInRadius(bool setOtherPole = false)
     {
         Collider[] hitColliders = Physics.OverlapSphere(transform.position, MaxWireDistance, LayerMask.GetMask("PlacementCollider"));
@@ -67,8 +72,10 @@ public class ElectricalPole : PlacableObject
 
     public override void ObjectPlaced()
     {
+        Power = GameObject.FindObjectOfType<PowerController>();
         GetPolesInRadius(true);
         base.ObjectPlaced();
+        Power.CheckNodeGroups();
     }
 
     private void OnDestroy()
@@ -86,11 +93,8 @@ public class ElectricalPole : PlacableObject
 
             Destroy(holder.Wire);
         }
-        
-
-        
-
-
+        if(Placed && Power != null)
+            Power.CheckNodeGroups();
     }
 }
 

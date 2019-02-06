@@ -7,7 +7,7 @@ public class PlacableObject : MonoBehaviour {
 
 
     public AnchorObject[] Anchors;
-    protected bool Placed = false;
+    public bool Placed { get; private set; }
     public bool IsGhost = false;
 
 
