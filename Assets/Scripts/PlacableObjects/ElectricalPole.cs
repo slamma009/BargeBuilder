@@ -12,7 +12,28 @@ public class ElectricalPole : PlacableObject
     
     public List<ElectricalPoleWireHolder> ConnectedPoles = new List<ElectricalPoleWireHolder>();
 
-    private PowerController Power;
+    public int GroupId
+    {
+        get
+        {
+            return _GroupId;
+        }
+        set
+        {
+            _GroupId = value;
+            GroupChanged();
+        }
+    }
+
+    private int _GroupId;
+
+    protected PowerController Power;
+
+
+    protected virtual void GroupChanged()
+    {
+
+    }
 
     private void Update()
     {

@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class PowerController : MonoBehaviour
 {
-    public List<ElectricalPole[]> NodeGroups = new List<ElectricalPole[]>();
+    public List<PowerNodeGroup> NodeGroups = new List<PowerNodeGroup>();
     private List<Color> AllColors = new List<Color>(); // DEBUG, DELETE LATER
 
     private void Start()
@@ -16,6 +16,15 @@ public class PowerController : MonoBehaviour
         AllColors.Add(Color.cyan);
         AllColors.Add(Color.magenta);
 
+    }
+
+    // DELTE LATER
+    private void SetWireColors(ElectricalPole pole, int i)
+    {
+        foreach (ElectricalPoleWireHolder holder in pole.ConnectedPoles)
+        {
+            holder.Wire.GetComponentInChildren<MeshRenderer>().material.color = AllColors[i];
+        }
     }
 
     public void CheckNodeGroups()
@@ -32,7 +41,7 @@ public class PowerController : MonoBehaviour
                 List<ElectricalPole> checkedNodes = new List<ElectricalPole>();
 
                 FindNodeGroup(node, checkedNodes);
-                NodeGroups.Add(checkedNodes.ToArray());
+                NodeGroups.Add(new PowerNodeGroup(checkedNodes.ToArray()));
                 allNodesChecked.AddRange(checkedNodes);
                 
 
@@ -41,12 +50,10 @@ public class PowerController : MonoBehaviour
 
         for (var i = 0; i < NodeGroups.Count; ++i)
         {
-            foreach(ElectricalPole pole in NodeGroups[i])
+            foreach(ElectricalPole pole in NodeGroups[i].Poles)
             {
-                foreach(ElectricalPoleWireHolder holder in pole.ConnectedPoles)
-                {
-                    holder.Wire.GetComponentInChildren<MeshRenderer>().material.color = AllColors[i];
-                }
+                pole.GroupId = i;
+                SetWireColors(pole, i);
             }
         }
         
@@ -67,4 +74,17 @@ public class PowerController : MonoBehaviour
         }
 
     }
+}
+
+[System.Serializable]
+public class PowerNodeGroup
+{
+    public PowerNodeGroup(ElectricalPole[] poles)
+    {
+        Poles = poles;
+    }
+
+    public readonly ElectricalPole[] Poles;
+    public int PowerInput;
+    public int PowerOutput;
 }

@@ -335,6 +335,11 @@ MonoBehaviour:
   Anchors:
   - Anchor: {fileID: 433009483}
   IsGhost: 0
+  MaxWireDistance: 10
+  WirePrefab: {fileID: 7639158662971958529, guid: ae770b3174a44ff499afe641c0a9d594,
+    type: 3}
+  WireAnchorPoint: {fileID: 2710695909672032882}
+  ConnectedPoles: []
   BurnTime: 10
 --- !u!114 &3790811973518387677
 MonoBehaviour:
@@ -776,7 +781,7 @@ GameObject:
   - component: {fileID: 2710695909672032877}
   - component: {fileID: 2710695909672032886}
   m_Layer: 10
-  m_Name: Cylinder
+  m_Name: WireAnchor
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

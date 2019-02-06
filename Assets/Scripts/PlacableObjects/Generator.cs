@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Inventory))]
-public class Generator : PlacableObject, IPushableObject
+public class Generator : ElectricalPole, IPushableObject
 {
     public float BurnTime = 10;
     private float SavedTime; // Saved time for burning objects
@@ -16,7 +16,10 @@ public class Generator : PlacableObject, IPushableObject
         ObjInventory = GetComponent<Inventory>();
     }
 
-
+    protected override void GroupChanged()
+    {
+        Power.NodeGroups[GroupId].PowerInput += 10;
+    }
     private void Update()
     {
         if (Time.timeSinceLevelLoad - SavedTime >= BurnTime)

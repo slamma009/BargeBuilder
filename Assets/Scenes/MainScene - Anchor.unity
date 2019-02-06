@@ -2391,6 +2391,27 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8339063109147099362, guid: dcaa5ea435503b346996f03dae752bff,
+        type: 3}
+      propertyPath: WireAnchorPoint
+      value: 
+      objectReference: {fileID: 2710695909672032882}
+    - target: {fileID: 8339063109147099362, guid: dcaa5ea435503b346996f03dae752bff,
+        type: 3}
+      propertyPath: WirePrefab
+      value: 
+      objectReference: {fileID: 7639158662971958529, guid: ae770b3174a44ff499afe641c0a9d594,
+        type: 3}
+    - target: {fileID: 8339063109147099362, guid: dcaa5ea435503b346996f03dae752bff,
+        type: 3}
+      propertyPath: MaxWireDistance
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 2710695909672032884, guid: dcaa5ea435503b346996f03dae752bff,
+        type: 3}
+      propertyPath: m_Name
+      value: WireAnchor
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: dcaa5ea435503b346996f03dae752bff, type: 3}
 --- !u!1001 &1775772544
@@ -2825,3 +2846,9 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 25fef4019980b884c8fa3e0b22d2240c, type: 2}
+--- !u!4 &2710695909672032882 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2710695909672032882, guid: dcaa5ea435503b346996f03dae752bff,
+    type: 3}
+  m_PrefabInstance: {fileID: 1655436870}
+  m_PrefabAsset: {fileID: 0}
