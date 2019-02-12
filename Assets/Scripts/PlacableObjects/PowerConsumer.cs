@@ -53,7 +53,8 @@ public class PowerConsumer : ElectricalPole
 
     private void OnDestroy()
     {
-        if(Placed)
+        DestroyElectricalPole();
+        if (Placed)
             TickController.TickEvent -= TickUpdate;
     }
 }

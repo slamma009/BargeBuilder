@@ -59,9 +59,12 @@ public class Generator : ElectricalPole, IPushableObject
         // If we are burning an object, add our power to the grid.
         if (_IsBurningObject)
         {
-            if(!Power.NodeGroups[GroupId].AddPowerToGrid(_PowerPerTick))
+            lock (Power)
             {
-                _TicksPassed -= 1;
+                if (!Power.NodeGroups[GroupId].AddPowerToGrid(_PowerPerTick))
+                {
+                    _TicksPassed -= 1;
+                }
             }
         }
     }
@@ -87,7 +90,8 @@ public class Generator : ElectricalPole, IPushableObject
     // Remove TickUpdate from the event list if it has been set.
     private void OnDestroy()
     {
-        if(Placed)
+        DestroyElectricalPole();
+        if (Placed)
             TickController.TickEvent -= TickUpdate;
     }
 

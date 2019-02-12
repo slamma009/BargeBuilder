@@ -101,6 +101,11 @@ public class ElectricalPole : PlacableObject
 
     private void OnDestroy()
     {
+        DestroyElectricalPole();
+    }
+
+    protected void DestroyElectricalPole()
+    {
         foreach (ElectricalPoleWireHolder holder in ConnectedPoles)
         {
             for (var i = holder.Pole.ConnectedPoles.Count - 1; i >= 0; --i)
@@ -114,7 +119,7 @@ public class ElectricalPole : PlacableObject
 
             Destroy(holder.Wire);
         }
-        if(Placed && Power != null)
+        if (Placed && Power != null)
             Power.CheckNodeGroups();
     }
 }

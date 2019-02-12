@@ -115,7 +115,12 @@ public class PowerNodeGroup
         float newPowerLevels = CurrentPowerLevels + watts;
         if (newPowerLevels > MaxPowerLevels)
         {
-            return UtalizeBatteries(newPowerLevels - MaxPowerLevels);
+            if(UtalizeBatteries(newPowerLevels - MaxPowerLevels))
+            {
+                CurrentPowerLevels = MaxPowerLevels;
+                return true;
+            }
+            return false;
         }
         CurrentPowerLevels = newPowerLevels;
         return true;
@@ -126,7 +131,12 @@ public class PowerNodeGroup
         float newPowerLevels = CurrentPowerLevels - watts;
         if (newPowerLevels < 0)
         {
-            return UtalizeBatteries(newPowerLevels);
+            if(UtalizeBatteries(newPowerLevels))
+            {
+                CurrentPowerLevels = 0;
+                return true;
+            }
+            return false;
         }
 
         CurrentPowerLevels = newPowerLevels;

@@ -174,7 +174,7 @@ GameObject:
   - component: {fileID: 1399756456774203259}
   - component: {fileID: 1399756456774203258}
   - component: {fileID: 5026553537645940043}
-  m_Layer: 0
+  m_Layer: 10
   m_Name: Lamp
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -255,9 +255,9 @@ CapsuleCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   m_Radius: 0.5000001
-  m_Height: 2
+  m_Height: 10
   m_Direction: 1
-  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+  m_Center: {x: 0.000000059604645, y: 3, z: -0.00000008940697}
 --- !u!114 &5026553537645940043
 MonoBehaviour:
   m_ObjectHideFlags: 0
