@@ -86,26 +86,26 @@ public class PowerNodeGroup
 
     public readonly ElectricalPole[] Poles;
 
-    [SerializeField]
-    private int _CurrentPowerLevels;
+    public float CurrentPowerLevels;
+    public float MaxPowerLevels;
 
-    public int CurrentPowerLevels { get { return _CurrentPowerLevels; } }
-    public int MaxPowerLevels;
-
-    public void AddPowerToGrid(int watts)
+    public bool AddPowerToGrid(float watts)
     {
-        _CurrentPowerLevels += watts;
-        if (_CurrentPowerLevels > MaxPowerLevels)
-            _CurrentPowerLevels = MaxPowerLevels;
+        float newPowerLevels = CurrentPowerLevels + watts;
+        if (newPowerLevels > MaxPowerLevels)
+            return false;
+
+        CurrentPowerLevels = newPowerLevels;
+        return true;
     }
 
-    public bool UsePower(int watts)
+    public bool UsePower(float watts)
     {
-        int newPowerLevels = _CurrentPowerLevels - watts;
+        float newPowerLevels = CurrentPowerLevels - watts;
         if (newPowerLevels < 0)
             return false;
 
-        _CurrentPowerLevels = newPowerLevels;
+        CurrentPowerLevels = newPowerLevels;
         return true;
     }
 
