@@ -18,10 +18,12 @@ public class Generator : ElectricalPole, IPushableObject
 
     protected override void GroupChanged()
     {
-        Power.NodeGroups[GroupId].PowerInput += 10;
+        Power.NodeGroups[GroupId].MaxPowerLevels += 10;
     }
     private void Update()
     {
+        if (!Placed)
+            return;
         if (Time.timeSinceLevelLoad - SavedTime >= BurnTime)
         {
             BurnObject();
@@ -32,8 +34,9 @@ public class Generator : ElectricalPole, IPushableObject
     {
         if(ObjInventory.Remove(0, 1) == 0)
         {
+            Power.NodeGroups[GroupId].AddPowerToGrid(10);
             SavedTime = Time.timeSinceLevelLoad;
-        }
+        } 
     }
 
 
