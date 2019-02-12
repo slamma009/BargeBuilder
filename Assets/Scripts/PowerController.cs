@@ -29,25 +29,35 @@ public class PowerController : MonoBehaviour
 
     public void CheckNodeGroups()
     {
-
+        // Clear all node groups to create new ones
         NodeGroups.Clear();
+        // A list of all the nodes in the game
         ElectricalPole[] allNodes = GameObject.FindObjectsOfType<ElectricalPole>();
-
+        // A lit of all nodes that have been checked in our outter foreachloop
         List<ElectricalPole> allNodesChecked = new List<ElectricalPole>();
+
+
         foreach (ElectricalPole node in allNodes)
         {
             if (node.Placed && !allNodesChecked.Contains(node))
             {
+                // Create a list to be passed into the FindNodeGroup via reference
                 List<ElectricalPole> checkedNodes = new List<ElectricalPole>();
 
+                // Find all the nodes in the group
                 FindNodeGroup(node, checkedNodes);
+
+                // Add a new node group to our node groups list
                 NodeGroups.Add(new PowerNodeGroup(checkedNodes.ToArray()));
+
+                // Add the nodes from the new node group to our nodesChecked list
                 allNodesChecked.AddRange(checkedNodes);
                 
 
             }
         }
 
+        // Temporary code to show the color of each node group
         for (var i = 0; i < NodeGroups.Count; ++i)
         {
             foreach(ElectricalPole pole in NodeGroups[i].Poles)
@@ -59,6 +69,11 @@ public class PowerController : MonoBehaviour
         
     }
 
+    /// <summary>
+    /// Finds all nodes in the node tree and puts them in checkedNodes recursively
+    /// </summary>
+    /// <param name="node">Starting node</param>
+    /// <param name="checkedNodes">Empty list passed by reference. Filled with all nodes found</param>
     void FindNodeGroup(ElectricalPole node, List<ElectricalPole> checkedNodes)
     {
         if (node.Placed && !checkedNodes.Contains(node))
@@ -68,11 +83,7 @@ public class PowerController : MonoBehaviour
             {
                 FindNodeGroup(newNode.Pole, checkedNodes);
             }
-        } else if (!node.Placed)
-        {
-            Debug.Log(node.name);
-        }
-
+        } 
     }
 }
 
@@ -89,12 +100,23 @@ public class PowerNodeGroup
     public float CurrentPowerLevels;
     public float MaxPowerLevels;
 
+    [SerializeField]
+    private List<Battery> _Batteries = new List<Battery>();
+
+    public void AddBattery(Battery battery)
+    {
+        _Batteries.Add(battery);
+    }
+
+
+
     public bool AddPowerToGrid(float watts)
     {
         float newPowerLevels = CurrentPowerLevels + watts;
         if (newPowerLevels > MaxPowerLevels)
-            return false;
-
+        {
+            return UtalizeBatteries(newPowerLevels - MaxPowerLevels);
+        }
         CurrentPowerLevels = newPowerLevels;
         return true;
     }
@@ -103,10 +125,37 @@ public class PowerNodeGroup
     {
         float newPowerLevels = CurrentPowerLevels - watts;
         if (newPowerLevels < 0)
-            return false;
+        {
+            return UtalizeBatteries(newPowerLevels);
+        }
 
         CurrentPowerLevels = newPowerLevels;
         return true;
+    }
+
+
+    private bool UtalizeBatteries(float watts)
+    {
+        float wattsToAdd = watts;
+        int i;
+        for (i = 0; i < _Batteries.Count; ++i)
+        {
+            wattsToAdd = _Batteries[i].CheckCapacity(wattsToAdd);
+            if (wattsToAdd == 0)
+                break;
+        }
+
+        if (i != _Batteries.Count)
+        {
+            wattsToAdd = watts;
+            for (var j = 0; j <= i; ++j)
+            {
+                wattsToAdd = _Batteries[i].AddWatts(wattsToAdd);
+            }
+            return true;
+        }
+
+        return false;
     }
 
 }
