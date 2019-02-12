@@ -932,6 +932,7 @@ GameObject:
   - component: {fileID: 413634273}
   - component: {fileID: 413634272}
   - component: {fileID: 413634274}
+  - component: {fileID: 413634275}
   m_Layer: 0
   m_Name: InventoryController
   m_TagString: InventoryController
@@ -981,6 +982,19 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   NodeGroups: []
+--- !u!114 &413634275
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 413634271}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b9b26853faf0cb0438187aae418d3578, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  TicksPerSecond: 5
 --- !u!1001 &415597329
 PrefabInstance:
   m_ObjectHideFlags: 0

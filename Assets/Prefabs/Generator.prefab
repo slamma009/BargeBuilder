@@ -340,7 +340,7 @@ MonoBehaviour:
     type: 3}
   WireAnchorPoint: {fileID: 2710695909672032882}
   ConnectedPoles: []
-  BurnTime: 10
+  BurnTime: 50
 --- !u!114 &3790811973518387677
 MonoBehaviour:
   m_ObjectHideFlags: 0

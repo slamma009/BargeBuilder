@@ -5,37 +5,43 @@ using UnityEngine;
 [RequireComponent(typeof(Inventory))]
 public class Generator : ElectricalPole, IPushableObject
 {
-    public float BurnTime = 10;
-    private float SavedTime; // Saved time for burning objects
+    public float BurnTime = 50;
 
-    private Inventory ObjInventory;
+    private float _TicksPassed;
 
+    private Inventory _ObjInventory;
 
     private void Start()
     {
-        ObjInventory = GetComponent<Inventory>();
+        _ObjInventory = GetComponent<Inventory>();
     }
 
+    public override void ObjectPlaced()
+    {
+        TickController.TickEvent += TickUpdate;
+        base.ObjectPlaced();
+    }
+    
     protected override void GroupChanged()
     {
         Power.NodeGroups[GroupId].MaxPowerLevels += 10;
     }
-    private void Update()
+
+    public void TickUpdate(object sender, TickArgs arg)
     {
-        if (!Placed)
-            return;
-        if (Time.timeSinceLevelLoad - SavedTime >= BurnTime)
+        _TicksPassed++;
+        if(_TicksPassed >= BurnTime)
         {
+            _TicksPassed = 0;
             BurnObject();
         }
     }
 
     private void BurnObject()
     {
-        if(ObjInventory.Remove(0, 1) == 0)
+        if(_ObjInventory.Remove(0, 1) == 0)
         {
             Power.NodeGroups[GroupId].AddPowerToGrid(10);
-            SavedTime = Time.timeSinceLevelLoad;
         } 
     }
 
@@ -47,6 +53,12 @@ public class Generator : ElectricalPole, IPushableObject
         return false;
     }
 
+    private void OnDestroy()
+    {
+        if(Placed)
+            TickController.TickEvent -= TickUpdate;
+    }
 
-       
+
+
 }
