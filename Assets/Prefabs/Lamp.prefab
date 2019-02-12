@@ -130,7 +130,7 @@ Light:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1399756456158238976}
-  m_Enabled: 1
+  m_Enabled: 0
   serializedVersion: 8
   m_Type: 2
   m_Color: {r: 1, g: 0, b: 0, a: 1}
@@ -173,7 +173,7 @@ GameObject:
   - component: {fileID: 1399756456774203256}
   - component: {fileID: 1399756456774203259}
   - component: {fileID: 1399756456774203258}
-  - component: {fileID: 8023250828506581759}
+  - component: {fileID: 5026553537645940043}
   m_Layer: 0
   m_Name: Lamp
   m_TagString: Untagged
@@ -258,7 +258,7 @@ CapsuleCollider:
   m_Height: 2
   m_Direction: 1
   m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
---- !u!114 &8023250828506581759
+--- !u!114 &5026553537645940043
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -267,7 +267,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 1399756456774203261}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d5c53c7a0334c1e4088f806c3c7d18f6, type: 3}
+  m_Script: {fileID: 11500000, guid: fd4e11dbc46743a48baaa5db7d844116, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   Anchors: []
@@ -277,6 +277,8 @@ MonoBehaviour:
     type: 3}
   WireAnchorPoint: {fileID: 2736677076994735807}
   ConnectedPoles: []
+  WattConsumtion: 0.2
+  Lamp: {fileID: 1399756456158238974}
 --- !u!1 &1399756457040864874
 GameObject:
   m_ObjectHideFlags: 0
