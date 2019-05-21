@@ -64,7 +64,7 @@ public class ConveyorBeltBezeir : DraggableObject, IPushableObject
                     itemMoved += ItemMoveDistance;
                     float extraDistance = itemMoved - BezierLogic.LookupTable[i - 1];
                     float percentage = extraDistance / (BezierLogic.LookupTable[i] - BezierLogic.LookupTable[i - 1]);
-                    ConveyorBeltCheckpoints[j] = Vector3.Lerp(BezierLogic.Path[i], BezierLogic.Path[i + 1], percentage);
+                    ConveyorBeltCheckpoints[j] = Vector3.Lerp(BezierLogic.Path[i], BezierLogic.Path[i + 1], percentage) + Vector3.up * 0.5f;
                     j++;
                 }
             }
@@ -72,7 +72,7 @@ public class ConveyorBeltBezeir : DraggableObject, IPushableObject
             {
                 Debug.Log(j +  " : " + ItemSegments);
                 if (j != ItemSegments)
-                ConveyorBeltCheckpoints[j] = BezierLogic.Path[i];
+                    ConveyorBeltCheckpoints[j] = BezierLogic.Path[i] + Vector3.up * 0.5f;
                 break;
             }
         }
@@ -120,10 +120,7 @@ public class ConveyorBeltBezeir : DraggableObject, IPushableObject
                     {
                         //Debug.Log(Time.time + ": " + ItemsOnBelt[i].State);
                         ItemsOnBelt[i].State += 1;
-                        ItemsOnBelt[i].Target =
-                            new Vector3(ConveyorBeltCheckpoints[ItemsOnBelt[i].State].x,
-                            ItemsOnBelt[i].Item.transform.position.y,
-                            ConveyorBeltCheckpoints[ItemsOnBelt[i].State].z);
+                        ItemsOnBelt[i].Target = ConveyorBeltCheckpoints[ItemsOnBelt[i].State];
                     }
                 }
                 else
@@ -185,8 +182,6 @@ public class ConveyorBeltBezeir : DraggableObject, IPushableObject
     {
         item.transform.parent = this.transform;
         ItemsOnBelt.Add(new ConveyorItemInfo(item, 
-            new Vector3(ConveyorBeltCheckpoints[0].x, 
-            item.transform.position.y,
-            ConveyorBeltCheckpoints[0].z)));
+            ConveyorBeltCheckpoints[0]));
     }
 }

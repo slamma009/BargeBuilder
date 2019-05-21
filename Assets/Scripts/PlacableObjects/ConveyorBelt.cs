@@ -88,7 +88,7 @@ public class ConveyorBelt : PlacableObject, IPushableObject
     public void PushObject(GameObject item)
     {
         item.transform.parent = this.transform;
-        ItemsOnBelt.Add(new ConveyorItemInfo(item, new Vector3(transform.position.x, item.transform.position.y, transform.position.z)));
+        ItemsOnBelt.Add(new ConveyorItemInfo(item, transform.position + Vector3.up * 0.5f));
     }
 
     public bool ObjectIsFull(List<IPushableObject> CheckedObjects = null)
