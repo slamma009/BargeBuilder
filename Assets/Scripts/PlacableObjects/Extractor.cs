@@ -37,13 +37,14 @@ public class Extractor : PlacableObject
 
     public void FixedUpdate()
     {
-        if (Placed && OutputObject != null && OutputObject.ActiveRigidBodies.Count < OutputObject.MaxItemsOnBelt)
+        if (Placed && OutputObject != null && OutputObject.ItemsOnBelt.Count < OutputObject.MaxItemsOnBelt)
         {
             TimeSinceLastSpawn += Time.deltaTime;
             if (TimeSinceLastSpawn > 60 / SpawnRatePerMinute)
             {
                 TimeSinceLastSpawn = 0;
-                Instantiate(SpawnObject, OreSpawn.position, Quaternion.identity);
+                GameObject newObj = Instantiate(SpawnObject, OreSpawn.position, Quaternion.identity);
+                OutputObject.PushObject(newObj);
             }
         }
     }

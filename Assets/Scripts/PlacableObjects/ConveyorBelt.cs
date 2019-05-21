@@ -5,13 +5,12 @@ using UnityEngine;
 
 public class ConveyorBelt : PlacableObject, IPushableObject
 {
-    public int MaxItemsOnBelt = 6;
+    public int MaxItemsOnBelt = 2;
     public GameObject[] Walls;
-
-    [HideInInspector]
-    public List<Rigidbody> ActiveRigidBodies = new List<Rigidbody>();
-
     public IPushableObject AttachechedObject;
+
+    public List<ConveyorItemInfo> ItemsOnBelt = new List<ConveyorItemInfo>();
+
 
 
     public override void ObjectPlaced()
@@ -36,15 +35,7 @@ public class ConveyorBelt : PlacableObject, IPushableObject
                     AttachechedObject = null;
                 else
                 {
-                    BezierBlender bezier = obj.ConnectAnchor.GetComponent<BezierBlender>();
-                    if(bezier != null)
-                    {
-                        AttachechedObject = bezier.FirstTriggerBox;
-                    }
-                    else
-                    {
-                        AttachechedObject = obj.ConnectAnchor.transform.GetTopParent().GetComponent<IPushableObject>();
-                    }
+                    AttachechedObject = obj.ConnectAnchor.transform.GetTopParent().GetComponent<IPushableObject>();
                 }
                 break;
             case "AnchorPoint R":
@@ -58,41 +49,46 @@ public class ConveyorBelt : PlacableObject, IPushableObject
                 break;
         }
     }
-
-    private void OnTriggerEnter(Collider other)
-    {
-        Rigidbody rigid = other.GetComponent<Rigidbody>();
-        if(rigid != null && !rigid.isKinematic)
-        {
-            ActiveRigidBodies.Add(rigid);
-        }
-    }
-
-    private void OnTriggerExit(Collider other)
-    {
-        Rigidbody rigid = other.GetComponent<Rigidbody>();
-        if (rigid != null && ActiveRigidBodies.Contains(rigid))
-        {
-            ActiveRigidBodies.Remove(rigid);
-        }
-    }
+    
     
     private void FixedUpdate()
     {
-        bool canPushObject = AttachechedObject == null || (AttachechedObject.ObjectIsFull());
-        for (var i=ActiveRigidBodies.Count - 1; i >= 0; --i)
+        for(var i=ItemsOnBelt.Count - 1; i>=0; --i)
         {
-            if (ActiveRigidBodies[i] != null)
-            {
-                    Vector3 targetForce = canPushObject ? Vector3.zero : transform.forward;
-                    ActiveRigidBodies[i].velocity = Vector3.Lerp(ActiveRigidBodies[i].velocity, targetForce, Time.deltaTime);
                 
-            }
-            else
+            ItemsOnBelt[i].Item.transform.position = Vector3.MoveTowards(
+                ItemsOnBelt[i].Item.transform.position,
+                ItemsOnBelt[i].Target,
+                Time.deltaTime);
+
+            if (Vector3.Distance(ItemsOnBelt[i].Item.transform.position, ItemsOnBelt[i].Target) < 0.001f)
             {
-                ActiveRigidBodies.RemoveAt(i);
+                ItemsOnBelt[i].Item.transform.position = ItemsOnBelt[i].Target;
+                if (ItemsOnBelt[i].State == 0)
+                {
+                    if (AttachechedObject != null && ItemsOnBelt.Where(x => x.State == 1).Count() == 0)
+                    {
+                        ItemsOnBelt[i].State++;
+                        ItemsOnBelt[i].Target = ItemsOnBelt[i].Target + transform.forward;
+                    }
+                }
+                else
+                {
+                    if (AttachechedObject != null && !AttachechedObject.ObjectIsFull())
+                    {
+                        AttachechedObject.PushObject(ItemsOnBelt[i].Item);
+                        ItemsOnBelt.RemoveAt(i);
+                    }
+                }
             }
+            
         }
+    }
+
+    public void PushObject(GameObject item)
+    {
+        item.transform.parent = this.transform;
+        ItemsOnBelt.Add(new ConveyorItemInfo(item, new Vector3(transform.position.x, item.transform.position.y, transform.position.z)));
     }
 
     public bool ObjectIsFull(List<IPushableObject> CheckedObjects = null)
@@ -103,12 +99,27 @@ public class ConveyorBelt : PlacableObject, IPushableObject
                 CheckedObjects = new List<IPushableObject>();
             else if (CheckedObjects.Contains(this))
             {
-                return ActiveRigidBodies.Count >= MaxItemsOnBelt;
+                 return ItemsOnBelt.Count >= MaxItemsOnBelt;
             }
             CheckedObjects.Add(this);
         }
 
-        return ActiveRigidBodies.Count >= MaxItemsOnBelt && (AttachechedObject == null || AttachechedObject.ObjectIsFull(CheckedObjects));
+        return ItemsOnBelt.Where(x => x.State == 0).Count() > 0;
     }
 }
 
+[Serializable]
+public class ConveyorItemInfo
+{
+    public GameObject Item;
+
+    public int State = 0;
+
+    public Vector3 Target;
+
+    public ConveyorItemInfo(GameObject item, Vector3 target)
+    {
+        Item = item;
+        Target = target;
+    }
+}

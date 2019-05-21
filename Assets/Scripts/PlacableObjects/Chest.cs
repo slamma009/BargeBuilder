@@ -33,15 +33,8 @@ public class Chest : PlacableObject, IPushableObject {
                     AttachechedObject = null;
                 else
                 {
-                    BezierBlender bezier = obj.ConnectAnchor.GetComponent<BezierBlender>();
-                    if (bezier != null)
-                    {
-                        AttachechedObject = bezier.FirstTriggerBox;
-                    }
-                    else
-                    {
-                        AttachechedObject = obj.ConnectAnchor.transform.GetTopParent().GetComponent<IPushableObject>();
-                    }
+                    AttachechedObject = obj.ConnectAnchor.transform.GetTopParent().GetComponent<IPushableObject>();
+                    
                 }
                 break;
             case "AnchorPoint B":
@@ -51,23 +44,10 @@ public class Chest : PlacableObject, IPushableObject {
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    public void PushObject(GameObject other)
     {
-        Rigidbody rigid = other.GetComponent<Rigidbody>();
-        if (rigid != null && !rigid.isKinematic)
-        {
-            ActiveRigidBodies.Add(rigid);
-        }
     }
-
-    private void OnTriggerExit(Collider other)
-    {
-        Rigidbody rigid = other.GetComponent<Rigidbody>();
-        if (rigid != null && ActiveRigidBodies.Contains(rigid))
-        {
-            ActiveRigidBodies.Remove(rigid);
-        }
-    }
+    
 
     private void FixedUpdate()
     {

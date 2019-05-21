@@ -4,12 +4,13 @@ using UnityEngine;
 
 public class BezierCurve3D : MonoBehaviour
 {
-    [HideInInspector]
-    public float CurveLength;
+    public float CurveLength { get; private set; }
+    public float[] LookupTable { get; private set; }
+    public Vector3[] SegmentPoints { get; private set; }
 
     public float MinAngle = 5;
 
-    protected Vector3 GetPoint ( Vector3[] pts, float t)
+    public Vector3 GetPoint ( Vector3[] pts, float t)
     {
         // Calculation of bezier curve point. 
         // a = (1-t)p0 + tp1
@@ -67,13 +68,14 @@ public class BezierCurve3D : MonoBehaviour
 
     public Mesh Extrude(Mesh mesh, ExtrudeShape shape, OrientedPoint[] path, Vector3[] Points, out bool validLine, int leftIndex, int rightIndex)
     {
+        SegmentPoints = Points;
         int vertsInShape = shape.verts.Length;
         int segments = path.Length - 1;
         int edgeLoops = path.Length;
         int vertCount = vertsInShape * edgeLoops;
         int triCount = shape.lines.Length * segments;
         int triIndexCount = triCount * 3;
-        float[] LookupTable = CalcLengthTableInto(Points, segments);
+        LookupTable = CalcLengthTableInto(path, Points, segments);
 
         int[] triangleIndices = new int[ triIndexCount ];
         Vector3[] vertices  = new Vector3[ vertCount ];
@@ -154,25 +156,44 @@ public class BezierCurve3D : MonoBehaviour
         return mesh;
     }
 
-    public float[] CalcLengthTableInto(Vector3[] Points, int Segments)
+    public float[] CalcLengthTableInto(OrientedPoint[] path, Vector3[] Points, int Segments)
     {
-        float[] arr = new float[Segments];
+        //Debug.Log(Segments);
+        //float[] arr = new float[Segments];
 
-        arr[0] = 0f;
-        float totalLength = 0f;
-        Vector3 prev = Points[0];
-        for (int i = 0; i < arr.Length; ++i)
+        //float totalLength = 0f;
+        //Vector3 prev = path[0].Position;
+        //for (int i = 1; i < arr.Length + 1; ++i)
+        //{
+        //    float t = ((float)i) / (arr.Length);
+        //    Vector3 pt = GetPoint(Points, t);
+        //    float diff = Vector3.Distance(prev, pt);
+        //    totalLength += diff;
+        //    arr[i - 1] = totalLength;
+        //    prev = pt;
+        //}
+        //CurveLength = totalLength;
+
+
+        float[] arr = new float[Segments];
+        float totalLength = 0;
+        for(var i=1; i<path.Length; ++i)
         {
-            float t = ((float)i) / (arr.Length - 1);
-            Vector3 pt = GetPoint(Points, t);
-            float diff = (prev - pt).magnitude;
-            totalLength += diff;
-            arr[i] = totalLength;
-            prev = pt;
+            float dif = Vector3.Distance(path[i].Position, path[i - 1].Position);
+            totalLength += dif;
+            arr[i - 1] = totalLength;
         }
         CurveLength = totalLength;
         return arr;
 
+    }
+    public float CalcBezeirDistance(int segmentId, Vector3 currentPosition)
+    {
+
+        float t = ((float)segmentId) / (49);
+        Vector3 pt = GetPoint(SegmentPoints, t);
+        float diff = (pt - currentPosition).magnitude;
+            return (segmentId == 0 ? 0 : LookupTable[segmentId - 1]) + diff;
     }
 
 

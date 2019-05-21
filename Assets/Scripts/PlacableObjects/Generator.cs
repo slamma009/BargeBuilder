@@ -95,6 +95,8 @@ public class Generator : ElectricalPole, IPushableObject
             TickController.TickEvent -= TickUpdate;
     }
 
-
-
+    public void PushObject(GameObject item)
+    {
+        throw new System.NotImplementedException();
+    }
 }

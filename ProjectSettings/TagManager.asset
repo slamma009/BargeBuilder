@@ -10,6 +10,7 @@ TagManager:
   - ConveyorBelt
   - Draggable
   - InventoryController
+  - ConveyorItem
   layers:
   - Default
   - TransparentFX

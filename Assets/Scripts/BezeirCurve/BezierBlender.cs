@@ -7,11 +7,8 @@ public class BezierBlender: BezierCurve3D
     public ExtrudeShape shape;
     public float Segments = 5;
     public Transform[] Points;
-    public GameObject TriggerBox;
     public GameObject PointRepresentation;
     public Material ObjectMaterial;
-
-    private List<GameObject> TriggerBoxes = new List<GameObject>();
 
     private MeshFilter meshFilter;
     private Mesh mesh;
@@ -22,10 +19,7 @@ public class BezierBlender: BezierCurve3D
     private int MeshLeftIndex;
     private int MeshRightIndex;
 
-    [HideInInspector]
-    public IPushableObject FirstTriggerBox;
-    [HideInInspector]
-    public BezeirConveyor SecondTriggerBox;
+    public List<Vector3> Path { get; private set; }
 
     public void Awake()
     {
@@ -36,6 +30,8 @@ public class BezierBlender: BezierCurve3D
         meshRenderer = GetComponent<MeshRenderer>();
 
         BezierController = GetComponent<ConveyorBeltBezeir>();
+
+        Path = new List<Vector3>();
     }
 
     public int[] GetLinesFromVerts(List<ExtrudeShapeVert> verts)
@@ -196,40 +192,6 @@ public class BezierBlender: BezierCurve3D
 
     public bool CreateCurve()
     {
-
-
-        if (TriggerBoxes.Count < Segments - 1)
-        {
-            for (int i = TriggerBoxes.Count; i < Segments - 1; ++i)
-            {
-                TriggerBoxes.Add(Instantiate(TriggerBox, Vector3.zero, Quaternion.identity));
-                TriggerBoxes[TriggerBoxes.Count - 1].transform.parent = gameObject.transform;
-                TriggerBoxes[TriggerBoxes.Count - 1].name += i;
-
-                if (i == 0)
-                {
-                    FirstTriggerBox = TriggerBoxes[0].GetComponent<IPushableObject>();
-                }
-                else
-                    TriggerBoxes[TriggerBoxes.Count - 2].GetComponent<BezeirConveyor>().nextObject = TriggerBoxes[TriggerBoxes.Count - 1].GetComponent<IPushableObject>();
-
-                if (i == Segments - 2)
-                {
-                    SecondTriggerBox = TriggerBoxes[i].GetComponent<BezeirConveyor>();
-                }
-            }
-        }
-        else if (TriggerBoxes.Count >= Segments - 1)
-        {
-            for (var i = TriggerBoxes.Count - 1; i >= Segments - 1; --i)
-            {
-                Destroy(TriggerBoxes[i]);
-                TriggerBoxes.RemoveAt(i);
-            }
-        }
-
-
-
         // Generate Curve
 
         Vector3[] pointPositions = new Vector3[4];
@@ -238,25 +200,20 @@ public class BezierBlender: BezierCurve3D
             pointPositions[i] = Points[i].position;
         }
         OrientedPoint[] path = new OrientedPoint[(int)Segments];
+        Path.Clear();
         for (int i = 0; i < Segments; ++i)
         {
             float t = i / (Segments - 1);
             Vector3 curvePoint = GetPoint(pointPositions, t);
 
             Quaternion rotation = GetPointOrientation3d(pointPositions, t, Vector3.up);
-            if (i != Segments - 1)
-            {
-                Vector3 nextPoint = GetPoint(pointPositions, (i + 1) / (Segments - 1));
-                Vector3 average = (nextPoint + curvePoint) * 0.5f;
-                TriggerBoxes[i].transform.position = average;
-                TriggerBoxes[i].transform.rotation = Quaternion.LookRotation((nextPoint - curvePoint).normalized, rotation * Vector3.up);
-                TriggerBoxes[i].transform.localScale = new Vector3(1, 1, Vector3.Distance(curvePoint, nextPoint));
-            }
+
             path[i] = new OrientedPoint()
             {
                 Position = curvePoint,
                 Rotation = rotation
             };
+            Path.Add(curvePoint);
 
         }
         bool intersecting = false;

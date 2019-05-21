@@ -86,15 +86,7 @@ public class Splitter : PlacableObject, IPushableObject
             AttachedObjects[index] = null;
         else
         {
-            BezierBlender bezier = obj.ConnectAnchor.GetComponent<BezierBlender>();
-            if (bezier != null)
-            {
-                AttachedObjects[index] = bezier.FirstTriggerBox;
-            }
-            else
-            {
-                AttachedObjects[index] = obj.ConnectAnchor.transform.GetTopParent().GetComponent<IPushableObject>();
-            }
+            AttachedObjects[index] = obj.ConnectAnchor.transform.GetTopParent().GetComponent<IPushableObject>();
         }
     }
 
@@ -171,5 +163,10 @@ public class Splitter : PlacableObject, IPushableObject
         //}
 
         return InventoryIsFull() && ActiveRigidBodies.Count > 6;// && (AttachechedObject == null || AttachechedObject.ObjectIsFull(CheckedObjects));
+    }
+
+    public void PushObject(GameObject item)
+    {
+        throw new NotImplementedException();
     }
 }
