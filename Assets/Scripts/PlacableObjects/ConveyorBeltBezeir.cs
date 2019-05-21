@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class ConveyorBeltBezeir : DraggableObject, IPushableObject
 {
-    public List<ConveyorItemInfo> ItemsOnBelt = new List<ConveyorItemInfo>();
+    public List<BezierConveyorItemInfo> ItemsOnBelt = new List<BezierConveyorItemInfo>();
     private BezierBlender BezierLogic;
     public IPushableObject AttachechedObject;
 
@@ -18,7 +18,7 @@ public class ConveyorBeltBezeir : DraggableObject, IPushableObject
     {
         BezierLogic = GetComponent<BezierBlender>();
     }
-    private Vector3[] ConveyorBeltCheckpoints;
+    private OrientedPoint[] ConveyorBeltCheckpoints;
     public override void Initialize(GameObject anchor, GameObject ghostObject)
     {
         base.Initialize(anchor, ghostObject);
@@ -37,7 +37,6 @@ public class ConveyorBeltBezeir : DraggableObject, IPushableObject
     {
         Anchors[1] = anchor;
         AttachechedObject = anchor.GetComponentInParent<IPushableObject>();
-        //Debug.Log(AttachechedObject);
         AnchorObject obj = anchor.transform.GetTopParent().GetComponent<PlacableObject>().Anchors.SingleOrDefault(x => x.Anchor.name == anchor.name);
         obj.ConnectAnchor = this.gameObject;
         AnchorObject firstAnchor = FirstAnchor.transform.GetTopParent().GetComponent<PlacableObject>().Anchors.SingleOrDefault(x => x.Anchor.name == FirstAnchor.name);
@@ -50,7 +49,7 @@ public class ConveyorBeltBezeir : DraggableObject, IPushableObject
         BezierLogic.CreateCurve();
         
         ItemSegments = Mathf.RoundToInt(BezierLogic.CurveLength);
-        ConveyorBeltCheckpoints = new Vector3[ItemSegments];
+        ConveyorBeltCheckpoints = new OrientedPoint[ItemSegments];
         SpeedModifier = ItemMoveDistance = BezierLogic.CurveLength / ItemSegments;
 
         float itemMoved = 0;
@@ -64,19 +63,23 @@ public class ConveyorBeltBezeir : DraggableObject, IPushableObject
                     itemMoved += ItemMoveDistance;
                     float extraDistance = itemMoved - BezierLogic.LookupTable[i - 1];
                     float percentage = extraDistance / (BezierLogic.LookupTable[i] - BezierLogic.LookupTable[i - 1]);
-                    ConveyorBeltCheckpoints[j] = Vector3.Lerp(BezierLogic.Path[i], BezierLogic.Path[i + 1], percentage) + Vector3.up * 0.5f;
+                    ConveyorBeltCheckpoints[j] = new OrientedPoint(
+                        Vector3.Lerp(BezierLogic.Path[i], BezierLogic.Path[i + 1], percentage) + Vector3.up * 0.5f,
+                        Quaternion.Lerp(BezierLogic.OrientedPath[i].Rotation, BezierLogic.OrientedPath[i + 1].Rotation, percentage)
+                    );
                     j++;
                 }
             }
             else
             {
-                Debug.Log(j +  " : " + ItemSegments);
                 if (j != ItemSegments)
-                    ConveyorBeltCheckpoints[j] = BezierLogic.Path[i] + Vector3.up * 0.5f;
+                    ConveyorBeltCheckpoints[j] = new OrientedPoint(
+                        BezierLogic.Path[i] + Vector3.up * 0.5f,
+                        BezierLogic.OrientedPath[i].Rotation
+                        );
                 break;
             }
         }
-        
 
     }
 
@@ -104,23 +107,32 @@ public class ConveyorBeltBezeir : DraggableObject, IPushableObject
     {
         for (var i = ItemsOnBelt.Count - 1; i >= 0; --i)
         {
-            
-            ItemsOnBelt[i].Item.transform.position = Vector3.MoveTowards(
-            ItemsOnBelt[i].Item.transform.position,
-            ItemsOnBelt[i].Target,
-            Time.deltaTime * SpeedModifier);
+            ItemsOnBelt[i].TravelTime += Time.deltaTime;
+            ItemsOnBelt[i].Item.transform.SetPositionAndRotation(Vector3.Lerp(
+                ItemsOnBelt[i].Start,
+                ItemsOnBelt[i].Target,
+                ItemsOnBelt[i].TravelTime),
 
-            if (Vector3.Distance(ItemsOnBelt[i].Item.transform.position, ItemsOnBelt[i].Target) < 0.001f)
+                Quaternion.Lerp(
+                ItemsOnBelt[i].StartRotation,
+                ItemsOnBelt[i].TargetRotation,
+                ItemsOnBelt[i].TravelTime));
+
+            if (ItemsOnBelt[i].TravelTime > 1)
             {
-                ItemsOnBelt[i].Item.transform.position = ItemsOnBelt[i].Target; float ourDistance = BezierLogic.LookupTable[ItemsOnBelt[i].State]; //BezierLogic.CalcBezeirDistance(ItemsOnBelt[i].State, ItemsOnBelt[i].Item.transform.position);
-               
+                ItemsOnBelt[i].Item.transform.position = ItemsOnBelt[i].Target;
+                ItemsOnBelt[i].Item.transform.rotation = ItemsOnBelt[i].TargetRotation;
                 if (ItemsOnBelt[i].State < ConveyorBeltCheckpoints.Length - 1)
                 {
                     if (ItemsOnBelt.Where(x => x.State == ItemsOnBelt[i].State + 1).Count() == 0)
                     {
                         //Debug.Log(Time.time + ": " + ItemsOnBelt[i].State);
+                        ItemsOnBelt[i].TravelTime = 0;
+                        ItemsOnBelt[i].Start = ItemsOnBelt[i].Item.transform.position;
+                        ItemsOnBelt[i].StartRotation = ItemsOnBelt[i].Item.transform.rotation;
                         ItemsOnBelt[i].State += 1;
-                        ItemsOnBelt[i].Target = ConveyorBeltCheckpoints[ItemsOnBelt[i].State];
+                        ItemsOnBelt[i].Target = ConveyorBeltCheckpoints[ItemsOnBelt[i].State].Position;
+                        ItemsOnBelt[i].TargetRotation = ConveyorBeltCheckpoints[ItemsOnBelt[i].State].Rotation;
                     }
                 }
                 else
@@ -181,7 +193,25 @@ public class ConveyorBeltBezeir : DraggableObject, IPushableObject
     public void PushObject(GameObject item)
     {
         item.transform.parent = this.transform;
-        ItemsOnBelt.Add(new ConveyorItemInfo(item, 
-            ConveyorBeltCheckpoints[0]));
+        ItemsOnBelt.Add(new BezierConveyorItemInfo(item,
+            ConveyorBeltCheckpoints[0].Position,
+            item.transform.position,
+            ConveyorBeltCheckpoints[0].Rotation,
+            item.transform.rotation)
+            );
+    }
+
+}
+
+public class BezierConveyorItemInfo : ConveyorItemInfo
+{
+    public Quaternion TargetRotation;
+    public Quaternion StartRotation;
+    public BezierConveyorItemInfo(GameObject item, Vector3 targetPosition, Vector3 startPosition, Quaternion targetRotation, Quaternion startRotation)
+        : base(item, targetPosition, startPosition)
+    {
+        TargetRotation = targetRotation;
+        StartRotation = startRotation;
     }
 }
+

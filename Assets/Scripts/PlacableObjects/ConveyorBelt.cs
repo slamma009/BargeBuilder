@@ -55,21 +55,23 @@ public class ConveyorBelt : PlacableObject, IPushableObject
     {
         for(var i=ItemsOnBelt.Count - 1; i>=0; --i)
         {
-                
-            ItemsOnBelt[i].Item.transform.position = Vector3.MoveTowards(
-                ItemsOnBelt[i].Item.transform.position,
+            ItemsOnBelt[i].TravelTime += Time.deltaTime;
+            ItemsOnBelt[i].Item.transform.position = Vector3.Lerp(
+                ItemsOnBelt[i].Start,
                 ItemsOnBelt[i].Target,
-                Time.deltaTime);
+                ItemsOnBelt[i].TravelTime);
 
-            if (Vector3.Distance(ItemsOnBelt[i].Item.transform.position, ItemsOnBelt[i].Target) < 0.001f)
+            if (ItemsOnBelt[i].TravelTime >= 1)
             {
                 ItemsOnBelt[i].Item.transform.position = ItemsOnBelt[i].Target;
                 if (ItemsOnBelt[i].State == 0)
                 {
                     if (AttachechedObject != null && ItemsOnBelt.Where(x => x.State == 1).Count() == 0)
                     {
+                        ItemsOnBelt[i].TravelTime = 0;
                         ItemsOnBelt[i].State++;
                         ItemsOnBelt[i].Target = ItemsOnBelt[i].Target + transform.forward;
+                        ItemsOnBelt[i].Start = ItemsOnBelt[i].Item.transform.position;
                     }
                 }
                 else
@@ -88,7 +90,7 @@ public class ConveyorBelt : PlacableObject, IPushableObject
     public void PushObject(GameObject item)
     {
         item.transform.parent = this.transform;
-        ItemsOnBelt.Add(new ConveyorItemInfo(item, transform.position + Vector3.up * 0.5f));
+        ItemsOnBelt.Add(new ConveyorItemInfo(item, transform.position + Vector3.up * 0.5f, item.transform.position));
     }
 
     public bool ObjectIsFull(List<IPushableObject> CheckedObjects = null)
@@ -115,10 +117,14 @@ public class ConveyorItemInfo
 
     public int State = 0;
 
+    public Vector3 Start;
     public Vector3 Target;
 
-    public ConveyorItemInfo(GameObject item, Vector3 target)
+    public float TravelTime = 0;
+
+    public ConveyorItemInfo(GameObject item, Vector3 target, Vector3 start)
     {
+        Start = start;
         Item = item;
         Target = target;
     }

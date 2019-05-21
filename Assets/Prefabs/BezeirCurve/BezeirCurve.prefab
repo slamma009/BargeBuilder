@@ -443,6 +443,3 @@ MonoBehaviour:
   - {fileID: 4877880927893860}
   Anchors: []
   GhostObject: {fileID: 0}
-  ItemsOnBelt: []
-  TempObject: {fileID: 4557695106964764061, guid: e3d1910af1ee3064fa910549141d2115,
-    type: 3}

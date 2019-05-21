@@ -20,7 +20,7 @@ public class BezierBlender: BezierCurve3D
     private int MeshRightIndex;
 
     public List<Vector3> Path { get; private set; }
-
+    public List<OrientedPoint> OrientedPath { get; private set; }
     public void Awake()
     {
         shape = GenerateShape(BezeirMesh);
@@ -32,6 +32,7 @@ public class BezierBlender: BezierCurve3D
         BezierController = GetComponent<ConveyorBeltBezeir>();
 
         Path = new List<Vector3>();
+        OrientedPath = new List<OrientedPoint>();
     }
 
     public int[] GetLinesFromVerts(List<ExtrudeShapeVert> verts)
@@ -193,7 +194,6 @@ public class BezierBlender: BezierCurve3D
     public bool CreateCurve()
     {
         // Generate Curve
-
         Vector3[] pointPositions = new Vector3[4];
         for (int i = 0; i < Points.Length; ++i)
         {
@@ -201,6 +201,7 @@ public class BezierBlender: BezierCurve3D
         }
         OrientedPoint[] path = new OrientedPoint[(int)Segments];
         Path.Clear();
+        OrientedPath.Clear();
         for (int i = 0; i < Segments; ++i)
         {
             float t = i / (Segments - 1);
@@ -213,6 +214,7 @@ public class BezierBlender: BezierCurve3D
                 Position = curvePoint,
                 Rotation = rotation
             };
+            OrientedPath.Add(path[i]);
             Path.Add(curvePoint);
 
         }

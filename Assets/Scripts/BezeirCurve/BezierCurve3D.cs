@@ -60,12 +60,6 @@ public class BezierCurve3D : MonoBehaviour
         return Quaternion.LookRotation(tng, nrm);
     }
 
-    public Vector3 GetPointsBinormal(Vector3[] pts, float t, Vector3 up)
-    {
-        Vector3 tng = GetPointTangent(pts, t); // z axis
-        return Vector3.Cross(up, tng).normalized; // x axis
-    }
-
     public Mesh Extrude(Mesh mesh, ExtrudeShape shape, OrientedPoint[] path, Vector3[] Points, out bool validLine, int leftIndex, int rightIndex)
     {
         SegmentPoints = Points;
