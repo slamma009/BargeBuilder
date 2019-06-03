@@ -6,8 +6,8 @@ using UnityEngine;
 
 public interface IPushableObject
 {
-    bool ObjectIsFull(List<IPushableObject> CheckedObjects = null);
+    bool CanTakeItem(Item item);
 
-    void PushObject(GameObject item);
+    void PushItem(Item item);
 }
 

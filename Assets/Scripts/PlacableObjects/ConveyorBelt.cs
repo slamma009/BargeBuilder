@@ -76,9 +76,9 @@ public class ConveyorBelt : PlacableObject, IPushableObject
                 }
                 else
                 {
-                    if (AttachechedObject != null && !AttachechedObject.ObjectIsFull())
+                    if (AttachechedObject != null && AttachechedObject.CanTakeItem(ItemsOnBelt[i].Item))
                     {
-                        AttachechedObject.PushObject(ItemsOnBelt[i].Item);
+                        AttachechedObject.PushItem(ItemsOnBelt[i].Item);
                         ItemsOnBelt.RemoveAt(i);
                     }
                 }
@@ -87,33 +87,22 @@ public class ConveyorBelt : PlacableObject, IPushableObject
         }
     }
 
-    public void PushObject(GameObject item)
+    public void PushItem(Item item)
     {
         item.transform.parent = this.transform;
         ItemsOnBelt.Add(new ConveyorItemInfo(item, transform.position + Vector3.up * 0.5f, item.transform.position));
     }
 
-    public bool ObjectIsFull(List<IPushableObject> CheckedObjects = null)
+    public bool CanTakeItem(Item item)
     {
-        if (Anchors.Where(x => x.ConnectAnchor != null).Count<AnchorObject>() > 1)
-        {
-            if (CheckedObjects == null)
-                CheckedObjects = new List<IPushableObject>();
-            else if (CheckedObjects.Contains(this))
-            {
-                 return ItemsOnBelt.Count >= MaxItemsOnBelt;
-            }
-            CheckedObjects.Add(this);
-        }
-
-        return ItemsOnBelt.Where(x => x.State == 0).Count() > 0;
+        return ItemsOnBelt.Where(x => x.State == 0).Count() == 0;
     }
 }
 
 [Serializable]
 public class ConveyorItemInfo
 {
-    public GameObject Item;
+    public Item Item;
 
     public int State = 0;
 
@@ -122,7 +111,7 @@ public class ConveyorItemInfo
 
     public float TravelTime = 0;
 
-    public ConveyorItemInfo(GameObject item, Vector3 target, Vector3 start)
+    public ConveyorItemInfo(Item item, Vector3 target, Vector3 start)
     {
         Start = start;
         Item = item;

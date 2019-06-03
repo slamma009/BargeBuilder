@@ -124,9 +124,10 @@ public class Generator : ElectricalPole, IPushableObject
 
 
 
-    public bool ObjectIsFull(List<IPushableObject> CheckedObjects = null)
+    public bool CanTakeItem(Item item)
     {
-        return _currentItem != null;
+        //TODO: Confirm item can be used as fuel
+        return _currentItem == null;
     }
 
     // Remove TickUpdate from the event list if it has been set.
@@ -137,15 +138,16 @@ public class Generator : ElectricalPole, IPushableObject
             TickController.TickEvent -= TickUpdate;
     }
 
-    public void PushObject(GameObject item)
+    public void PushItem(Item item)
     {
+        if (item == null)
+            throw new ArgumentNullException("item", "A null value was passed into PushItem");
         if (_currentItem != null)
             throw new InvalidOperationException("The Current Item in the Generator has not been removed, but another is attempting to be added");
 
-        _currentItem = item.GetComponent<Item>();
+        _currentItem = item;
         _currentItemHeldLength = ItemHoldLength;
 
-        if (_currentItem == null)
-            throw new MissingComponentException("The item " + item.name + " was expected to have the component Item but it was not found.");
+        
     }
 }

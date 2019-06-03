@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Splitter : PlacableObject, IPushableObject
+public class Splitter : PlacableObject//, IPushableObject
 {
 
     public Transform[] SpawnPoints;
@@ -102,7 +102,7 @@ public class Splitter : PlacableObject, IPushableObject
                 bool CanOutput = false;
                 for(var k =0; k<3; ++k)
                 {
-                    if(AttachedObjects[LastOutput] != null && !AttachedObjects[LastOutput].ObjectIsFull())
+                    if(AttachedObjects[LastOutput] != null && !AttachedObjects[LastOutput].CanTakeItem(null))
                     {
                         CanOutput = true;
                         break;
@@ -165,7 +165,7 @@ public class Splitter : PlacableObject, IPushableObject
         return InventoryIsFull() && ActiveRigidBodies.Count > 6;// && (AttachechedObject == null || AttachechedObject.ObjectIsFull(CheckedObjects));
     }
 
-    public void PushObject(GameObject item)
+    public void PushItem(GameObject item)
     {
         throw new NotImplementedException();
     }

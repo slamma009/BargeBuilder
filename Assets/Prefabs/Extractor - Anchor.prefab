@@ -142,7 +142,7 @@ MonoBehaviour:
   IsGhost: 0
   OreSpawn: {fileID: 4377778610695126}
   SpawnRatePerMinute: 20
-  SpawnObject: {fileID: 1879209391492952, guid: d2117ca14ca754c4b8827efc9077312d,
+  SpawnObject: {fileID: 114758688367776528, guid: d2117ca14ca754c4b8827efc9077312d,
     type: 3}
   OutputAnchor: {fileID: 0}
 --- !u!1 &1131167429057868

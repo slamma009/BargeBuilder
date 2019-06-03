@@ -6,7 +6,7 @@ public class Extractor : PlacableObject
 {
     public Transform OreSpawn;
     public float SpawnRatePerMinute = 20;
-    public GameObject SpawnObject;
+    public Item SpawnObject;
     public Transform OutputAnchor;
 
     private float TimeSinceLastSpawn;
@@ -37,14 +37,14 @@ public class Extractor : PlacableObject
 
     public void FixedUpdate()
     {
-        if (Placed && OutputObject != null && OutputObject.ItemsOnBelt.Count < OutputObject.MaxItemsOnBelt)
+        if (Placed && OutputObject != null && OutputObject.CanTakeItem(SpawnObject))
         {
             TimeSinceLastSpawn += Time.deltaTime;
             if (TimeSinceLastSpawn > 60 / SpawnRatePerMinute)
             {
                 TimeSinceLastSpawn = 0;
-                GameObject newObj = Instantiate(SpawnObject, OreSpawn.position, Quaternion.identity);
-                OutputObject.PushObject(newObj);
+                Item newObj = Instantiate(SpawnObject, OreSpawn.position, Quaternion.identity).GetComponent<Item>();
+                OutputObject.PushItem(newObj);
             }
         }
     }

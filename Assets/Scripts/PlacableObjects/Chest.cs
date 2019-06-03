@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Chest : PlacableObject, IPushableObject {
+public class Chest : PlacableObject{//, IPushableObject {
 
     public int MaxItemsOnBelt = 3;
     public IPushableObject AttachechedObject;
@@ -44,14 +44,14 @@ public class Chest : PlacableObject, IPushableObject {
         }
     }
 
-    public void PushObject(GameObject other)
+    public void PushItem(GameObject other)
     {
     }
     
 
     private void FixedUpdate()
     {
-        bool canPushObject = AttachechedObject == null || (AttachechedObject.ObjectIsFull());
+        bool canPushObject = AttachechedObject == null || (AttachechedObject.CanTakeItem(null));
         for (var i = ActiveRigidBodies.Count - 1; i >= 0; --i)
         {
             if (ActiveRigidBodies[i] != null)
@@ -69,17 +69,6 @@ public class Chest : PlacableObject, IPushableObject {
 
     public bool ObjectIsFull(List<IPushableObject> CheckedObjects = null)
     {
-        if (Anchors.Where(x => x.ConnectAnchor != null).Count<AnchorObject>() > 1)
-        {
-            if (CheckedObjects == null)
-                CheckedObjects = new List<IPushableObject>();
-            else if (CheckedObjects.Contains(this))
-            {
-                return ActiveRigidBodies.Count >= MaxItemsOnBelt;
-            }
-            CheckedObjects.Add(this);
-        }
-
-        return ActiveRigidBodies.Count >= MaxItemsOnBelt && (AttachechedObject == null || AttachechedObject.ObjectIsFull(CheckedObjects));
+        return false;
     }
 }

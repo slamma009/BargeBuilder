@@ -138,9 +138,9 @@ public class ConveyorBeltBezeir : DraggableObject, IPushableObject
                 else
                 {
                     //Debug.Log(AttachechedObject);
-                    if (AttachechedObject != null && !AttachechedObject.ObjectIsFull())
+                    if (AttachechedObject != null && AttachechedObject.CanTakeItem(ItemsOnBelt[i].Item))
                     {
-                        AttachechedObject.PushObject(ItemsOnBelt[i].Item);
+                        AttachechedObject.PushItem(ItemsOnBelt[i].Item);
                         ItemsOnBelt.RemoveAt(i);
                     }
                 }
@@ -184,13 +184,13 @@ public class ConveyorBeltBezeir : DraggableObject, IPushableObject
     }
 
 
-    public bool ObjectIsFull(List<IPushableObject> CheckedObjects = null)
+    public bool CanTakeItem(Item item)
     {
-        return !(ItemsOnBelt.Count == 0 ||
-            (ItemsOnBelt[ItemsOnBelt.Count - 1].State != 0));
+        return ItemsOnBelt.Count == 0 ||
+            (ItemsOnBelt[ItemsOnBelt.Count - 1].State != 0);
     }
 
-    public void PushObject(GameObject item)
+    public void PushItem(Item item)
     {
         item.transform.parent = this.transform;
         ItemsOnBelt.Add(new BezierConveyorItemInfo(item,
@@ -207,7 +207,7 @@ public class BezierConveyorItemInfo : ConveyorItemInfo
 {
     public Quaternion TargetRotation;
     public Quaternion StartRotation;
-    public BezierConveyorItemInfo(GameObject item, Vector3 targetPosition, Vector3 startPosition, Quaternion targetRotation, Quaternion startRotation)
+    public BezierConveyorItemInfo(Item item, Vector3 targetPosition, Vector3 startPosition, Quaternion targetRotation, Quaternion startRotation)
         : base(item, targetPosition, startPosition)
     {
         TargetRotation = targetRotation;
