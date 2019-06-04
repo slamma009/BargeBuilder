@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -192,6 +193,8 @@ public class ConveyorBeltBezeir : DraggableObject, IPushableObject
 
     public void PushItem(Item item)
     {
+        if (item == null)
+            throw new ArgumentNullException("item", "A null value was passed into PushItem");
         item.transform.parent = this.transform;
         ItemsOnBelt.Add(new BezierConveyorItemInfo(item,
             ConveyorBeltCheckpoints[0].Position,

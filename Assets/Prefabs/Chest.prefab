@@ -293,64 +293,6 @@ MeshCollider:
   m_Convex: 0
   m_CookingOptions: 14
   m_Mesh: {fileID: 4300008, guid: a931bdbaad1ce1d4b97209e184ddbf27, type: 3}
---- !u!1 &1191959423850342
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 4402749542603314}
-  - component: {fileID: 65719935097267090}
-  - component: {fileID: 114840617966715864}
-  m_Layer: 10
-  m_Name: InventoryTrigger
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &4402749542603314
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1191959423850342}
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.9, y: 0.9, z: 0.120000005}
-  m_Children: []
-  m_Father: {fileID: 4919060703590760}
-  m_RootOrder: 13
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!65 &65719935097267090
-BoxCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1191959423850342}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  serializedVersion: 2
-  m_Size: {x: 1, y: 1, z: 1}
-  m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &114840617966715864
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1191959423850342}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 896e4bfab89dafd4bbefb4f995847b05, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  inv: {fileID: 114382405692218952}
 --- !u!1 &1309181587025898
 GameObject:
   m_ObjectHideFlags: 0
@@ -702,7 +644,7 @@ Transform:
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_Children: []
   m_Father: {fileID: 4919060703590760}
-  m_RootOrder: 15
+  m_RootOrder: 14
   m_LocalEulerAnglesHint: {x: -90, y: 0, z: 0}
 --- !u!33 &33695531227532276
 MeshFilter:
@@ -1166,7 +1108,7 @@ Transform:
   m_LocalScale: {x: 100, y: 100, z: 100}
   m_Children: []
   m_Father: {fileID: 4919060703590760}
-  m_RootOrder: 14
+  m_RootOrder: 13
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!33 &33702177299485918
 MeshFilter:
@@ -1513,7 +1455,6 @@ Transform:
   - {fileID: 4856795687477438}
   - {fileID: 4453031813245456}
   - {fileID: 4921227638682618}
-  - {fileID: 4402749542603314}
   - {fileID: 4723375147182836}
   - {fileID: 4147666227745850}
   m_Father: {fileID: 0}
@@ -1552,7 +1493,8 @@ MonoBehaviour:
   Walls:
   - {fileID: 1651999921327972}
   - {fileID: 1462773355199208}
-  ActiveRigidBodies: []
+  inventory: {fileID: 114382405692218952}
+  ItemsOnBelt: []
 --- !u!114 &114382405692218952
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1565,8 +1507,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94ff135bee1dc2f4ca4ebd2a010535be, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  InventorySize: 20
-  _InventorySlots: []
+  InventorySize: 5
+  _InventorySlots:
+  - Amount: 0
+    Item: {fileID: 0}
 --- !u!1 &1940276892041720
 GameObject:
   m_ObjectHideFlags: 0

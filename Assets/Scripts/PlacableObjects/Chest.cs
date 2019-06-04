@@ -1,16 +1,19 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Chest : PlacableObject{//, IPushableObject {
+public class Chest : PlacableObject, IPushableObject {
 
     public int MaxItemsOnBelt = 3;
     public IPushableObject AttachechedObject;
     public GameObject[] Walls;
 
+    public Inventory inventory;
+
     [HideInInspector]
-    public List<Rigidbody> ActiveRigidBodies = new List<Rigidbody>();
+    public List<ConveyorItemInfo> ItemsOnBelt = new List<ConveyorItemInfo>();
 
     public override void ObjectPlaced()
     {
@@ -44,31 +47,60 @@ public class Chest : PlacableObject{//, IPushableObject {
         }
     }
 
-    public void PushItem(GameObject other)
-    {
-    }
-    
+
 
     private void FixedUpdate()
     {
-        bool canPushObject = AttachechedObject == null || (AttachechedObject.CanTakeItem(null));
-        for (var i = ActiveRigidBodies.Count - 1; i >= 0; --i)
+        for (var i = ItemsOnBelt.Count - 1; i >= 0; --i)
         {
-            if (ActiveRigidBodies[i] != null)
-            {
-                Vector3 targetForce = canPushObject ? Vector3.zero : transform.forward;
-                ActiveRigidBodies[i].velocity = Vector3.Lerp(ActiveRigidBodies[i].velocity, targetForce, Time.deltaTime);
+            ItemsOnBelt[i].TravelTime += Time.deltaTime;
+            ItemsOnBelt[i].Item.transform.position = Vector3.Lerp(
+                ItemsOnBelt[i].Start,
+                ItemsOnBelt[i].Target,
+                ItemsOnBelt[i].TravelTime);
 
-            }
-            else
+            if (ItemsOnBelt[i].TravelTime >= 1)
             {
-                ActiveRigidBodies.RemoveAt(i);
+                ItemsOnBelt[i].Item.transform.position = ItemsOnBelt[i].Target;
+                if (ItemsOnBelt[i].State == 0)
+                {
+                    if(inventory.Add(ItemsOnBelt[i].Item.ID) == 0)
+                    {
+                        Destroy(ItemsOnBelt[i].Item.gameObject);
+                        ItemsOnBelt.RemoveAt(i);
+                    }
+                    else if (AttachechedObject != null && ItemsOnBelt.Where(x => x.State == 1).Count() == 0)
+                    {
+                        ItemsOnBelt[i].TravelTime = 0;
+                        ItemsOnBelt[i].State++;
+                        ItemsOnBelt[i].Target = ItemsOnBelt[i].Target + transform.forward;
+                        ItemsOnBelt[i].Start = ItemsOnBelt[i].Item.transform.position;
+                    }
+                }
+                else
+                {
+                    if (AttachechedObject != null && AttachechedObject.CanTakeItem(ItemsOnBelt[i].Item))
+                    {
+                        AttachechedObject.PushItem(ItemsOnBelt[i].Item);
+                        ItemsOnBelt.RemoveAt(i);
+                    }
+                }
             }
+
         }
     }
 
-    public bool ObjectIsFull(List<IPushableObject> CheckedObjects = null)
+    public bool CanTakeItem(Item item)
     {
-        return false;
+        return ItemsOnBelt.Where(x => x.State == 0).Count() == 0;
+    }
+
+    public void PushItem(Item item)
+    {
+        if (item == null)
+            throw new ArgumentNullException("item", "A null value was passed into PushItem");
+        item.transform.parent = this.transform;
+        ItemsOnBelt.Add(new ConveyorItemInfo(item, transform.position + Vector3.up * 0.5f, item.transform.position));
+
     }
 }

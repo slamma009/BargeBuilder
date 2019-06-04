@@ -89,6 +89,8 @@ public class ConveyorBelt : PlacableObject, IPushableObject
 
     public void PushItem(Item item)
     {
+        if (item == null)
+            throw new ArgumentNullException("item", "A null value was passed into PushItem");
         item.transform.parent = this.transform;
         ItemsOnBelt.Add(new ConveyorItemInfo(item, transform.position + Vector3.up * 0.5f, item.transform.position));
     }
