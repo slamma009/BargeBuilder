@@ -105,3 +105,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   ID: 1
+  Amount: 2
+  BurnModifier: 1
+  IsFuel: 1
+  ExtractModifier: 1

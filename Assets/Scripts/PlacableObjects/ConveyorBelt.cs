@@ -87,7 +87,7 @@ public class ConveyorBelt : PlacableObject, IPushableObject
         }
     }
 
-    public void PushItem(Item item)
+    public void PushItem(ItemInstance item)
     {
         if (item == null)
             throw new ArgumentNullException("item", "A null value was passed into PushItem");
@@ -95,7 +95,7 @@ public class ConveyorBelt : PlacableObject, IPushableObject
         ItemsOnBelt.Add(new ConveyorItemInfo(item, transform.position + Vector3.up * 0.5f, item.transform.position));
     }
 
-    public bool CanTakeItem(Item item)
+    public bool CanTakeItem(ItemInstance item)
     {
         return ItemsOnBelt.Where(x => x.State == 0).Count() == 0;
     }
@@ -104,7 +104,7 @@ public class ConveyorBelt : PlacableObject, IPushableObject
 [Serializable]
 public class ConveyorItemInfo
 {
-    public Item Item;
+    public ItemInstance Item;
 
     public int State = 0;
 
@@ -113,7 +113,7 @@ public class ConveyorItemInfo
 
     public float TravelTime = 0;
 
-    public ConveyorItemInfo(Item item, Vector3 target, Vector3 start)
+    public ConveyorItemInfo(ItemInstance item, Vector3 target, Vector3 start)
     {
         Start = start;
         Item = item;

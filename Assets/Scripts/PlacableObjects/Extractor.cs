@@ -10,14 +10,14 @@ public class Extractor : PlacableObject
     public Transform OreSpawn;
 
     /// <summary>
-    /// Base spawn time in ticks
+    /// Modifier for Spawn Rate speed of items
     /// </summary>
-    public float SpawnRate = 15;
+    public float SpawnRateModifier = 1;
 
     /// <summary>
     /// The item to spawn
     /// </summary>
-    public Item SpawnObject;
+    public ItemInstance SpawnObject;
     
     public Transform OutputAnchor;
 
@@ -55,10 +55,10 @@ public class Extractor : PlacableObject
         if (Placed && outputObject != null && outputObject.CanTakeItem(SpawnObject))
         {
             _ticksSinceLastSpawn++;
-            if (_ticksSinceLastSpawn > SpawnRate)
+            if (_ticksSinceLastSpawn > SpawnRateModifier * SpawnObject.ExtractTime)
             {
                 _ticksSinceLastSpawn = 0;
-                Item newObj = Instantiate(SpawnObject, OreSpawn.position, Quaternion.identity).GetComponent<Item>();
+                ItemInstance newObj = Instantiate(SpawnObject, OreSpawn.position, Quaternion.identity).GetComponent<ItemInstance>();
                 outputObject.PushItem(newObj);
             }
         }

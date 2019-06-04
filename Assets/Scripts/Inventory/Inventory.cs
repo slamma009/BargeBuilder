@@ -14,7 +14,7 @@ public class Inventory : MonoBehaviour
         }
     }
 
-    private Dictionary<int, InventoryItem> Items = new Dictionary<int, InventoryItem>();
+    private Dictionary<int, InventoryItem> ItemCache = new Dictionary<int, InventoryItem>();
     private InventoryController Controller;
 
     private void Start()
@@ -40,9 +40,17 @@ public class Inventory : MonoBehaviour
     /// Attempt to add the given item to the Inventory. Returns the amount left after.
     /// </summary>
     /// <returns>Returns the amount of items not added.</returns>
+    public int Add(ItemInstance item)
+    {
+        return Add(item.ID, item.Amount);
+    }
+    /// <summary>
+    /// Attempt to add the given item to the Inventory. Returns the amount left after.
+    /// </summary>
+    /// <returns>Returns the amount of items not added.</returns>
     public int Add(int id, int amount = 1)
     {
-        if (!Items.ContainsKey(id))
+        if (!ItemCache.ContainsKey(id))
         {
             InventoryItem newItem = Controller.GetItem(id);
             if(newItem == null)
@@ -50,7 +58,7 @@ public class Inventory : MonoBehaviour
                 Debug.LogError("Unabled to find item with id " + id);
                 return amount;
             }
-            Items.Add(id, newItem);
+            ItemCache.Add(id, newItem);
         }
 
 
@@ -65,7 +73,7 @@ public class Inventory : MonoBehaviour
             else
             {
                 // Try to place item in existing slots first
-                if (_InventorySlots[i].Item.ID == Items[id].ID && _InventorySlots[i].Amount < Items[id].StackSize)
+                if (_InventorySlots[i].Item.ID == ItemCache[id].ID && _InventorySlots[i].Amount < ItemCache[id].StackSize)
                 {
                     amount -= AddItemToSlot(amount, i);
                     if (amount == 0)
@@ -91,7 +99,7 @@ public class Inventory : MonoBehaviour
         {
             foreach (int i in emptySlots)
             {
-                _InventorySlots[i].Item = Items[id];
+                _InventorySlots[i].Item = ItemCache[id];
                 amount -= AddItemToSlot(amount, i);
                 if (amount == 0)
                 {

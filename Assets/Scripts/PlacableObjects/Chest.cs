@@ -10,7 +10,7 @@ public class Chest : PlacableObject, IPushableObject {
     public IPushableObject AttachechedObject;
     public GameObject[] Walls;
 
-    public Inventory inventory;
+    private Inventory _inventory;
 
     [HideInInspector]
     public List<ConveyorItemInfo> ItemsOnBelt = new List<ConveyorItemInfo>();
@@ -22,6 +22,11 @@ public class Chest : PlacableObject, IPushableObject {
         {
             Anchors[i].AnchorChanged = AnchorChanged;
         }
+
+        _inventory = gameObject.GetComponent<Inventory>();
+        if (_inventory == null)
+            throw new MissingComponentException("The Inventory component was not found on the Generator object");
+
         base.ObjectPlaced();
     }
 
@@ -47,8 +52,6 @@ public class Chest : PlacableObject, IPushableObject {
         }
     }
 
-
-
     private void FixedUpdate()
     {
         for (var i = ItemsOnBelt.Count - 1; i >= 0; --i)
@@ -64,17 +67,25 @@ public class Chest : PlacableObject, IPushableObject {
                 ItemsOnBelt[i].Item.transform.position = ItemsOnBelt[i].Target;
                 if (ItemsOnBelt[i].State == 0)
                 {
-                    if(inventory.Add(ItemsOnBelt[i].Item.ID) == 0)
+                    int amountOfItemBefore = ItemsOnBelt[i].Item.Amount;
+                    int amountOfItemAfter = _inventory.Add(ItemsOnBelt[i].Item);
+                    if (amountOfItemAfter == 0)
                     {
                         Destroy(ItemsOnBelt[i].Item.gameObject);
                         ItemsOnBelt.RemoveAt(i);
                     }
-                    else if (AttachechedObject != null && ItemsOnBelt.Where(x => x.State == 1).Count() == 0)
-                    {
-                        ItemsOnBelt[i].TravelTime = 0;
-                        ItemsOnBelt[i].State++;
-                        ItemsOnBelt[i].Target = ItemsOnBelt[i].Target + transform.forward;
-                        ItemsOnBelt[i].Start = ItemsOnBelt[i].Item.transform.position;
+                    else
+                    { 
+                        if(amountOfItemBefore != amountOfItemAfter)
+                            ItemsOnBelt[i].Item.Amount = amountOfItemAfter;
+
+                        if (AttachechedObject != null && ItemsOnBelt.Where(x => x.State == 1).Count() == 0)
+                        {
+                            ItemsOnBelt[i].TravelTime = 0;
+                            ItemsOnBelt[i].State++;
+                            ItemsOnBelt[i].Target = ItemsOnBelt[i].Target + transform.forward;
+                            ItemsOnBelt[i].Start = ItemsOnBelt[i].Item.transform.position;
+                        }
                     }
                 }
                 else
@@ -90,12 +101,12 @@ public class Chest : PlacableObject, IPushableObject {
         }
     }
 
-    public bool CanTakeItem(Item item)
+    public bool CanTakeItem(ItemInstance item)
     {
         return ItemsOnBelt.Where(x => x.State == 0).Count() == 0;
     }
 
-    public void PushItem(Item item)
+    public void PushItem(ItemInstance item)
     {
         if (item == null)
             throw new ArgumentNullException("item", "A null value was passed into PushItem");

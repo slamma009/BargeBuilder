@@ -6,8 +6,8 @@ using UnityEngine;
 
 public interface IPushableObject
 {
-    bool CanTakeItem(Item item);
+    bool CanTakeItem(ItemInstance item);
 
-    void PushItem(Item item);
+    void PushItem(ItemInstance item);
 }
 

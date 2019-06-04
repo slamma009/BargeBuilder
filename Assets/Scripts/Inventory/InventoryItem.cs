@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "NewInventoryItem", menuName ="Inventory Item")]
+/// <summary>
+/// Class for information about an Items Inventory aspects
+/// </summary>
+[CreateAssetMenu(fileName = "NewInventoryItem", menuName = "Inventory Item")]
 public class InventoryItem : ScriptableObject
 {
     public int ID;

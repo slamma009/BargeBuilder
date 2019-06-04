@@ -16,8 +16,8 @@ public class Generator : ElectricalPole, IPushableObject
     /// <summary>
     /// The delay in ticks to wait until putting an item in the inventory
     /// </summary>
-    public int ItemHoldLength = 5;
-    private float _currentItemHeldLength = 0;
+    public int ItemHoldTime = 5;
+    private float _currentItemHeldTime = 0;
 
     private float _ticksPassed;
 
@@ -27,7 +27,8 @@ public class Generator : ElectricalPole, IPushableObject
 
     private bool _isBurningObject;
 
-    private Item _currentItem;
+    private ItemInstance _currentItem;
+    
     private void Start()
     {
         // Get our Objects Inventory controller, and calculate how much power to add per tick
@@ -53,17 +54,23 @@ public class Generator : ElectricalPole, IPushableObject
         // See if any item we have inside the generator can be put in the inventory
         if (_currentItem != null)
         {
-            if (_currentItemHeldLength <= 0)
+            if (_currentItemHeldTime <= 0)
             {
-                if (_objInventory.Add(_currentItem.ID) == 0)
+                int amountOfItemBefore = _currentItem.Amount;
+                int amountOfItemAfter = _objInventory.Add(_currentItem);
+                if (amountOfItemAfter == 0)
                 {
                     Destroy(_currentItem.gameObject);
                     _currentItem = null;
                 }
+                else if(amountOfItemBefore != amountOfItemAfter)
+                {
+                    _currentItem.Amount = amountOfItemAfter;
+                }
             }
             else
             {
-                _currentItemHeldLength--;
+                _currentItemHeldTime--;
             }
         }
     
@@ -124,7 +131,7 @@ public class Generator : ElectricalPole, IPushableObject
 
 
 
-    public bool CanTakeItem(Item item)
+    public bool CanTakeItem(ItemInstance item)
     {
         //TODO: Confirm item can be used as fuel
         return _currentItem == null;
@@ -138,7 +145,7 @@ public class Generator : ElectricalPole, IPushableObject
             TickController.TickEvent -= TickUpdate;
     }
 
-    public void PushItem(Item item)
+    public void PushItem(ItemInstance item)
     {
         if (item == null)
             throw new ArgumentNullException("item", "A null value was passed into PushItem");
@@ -146,7 +153,7 @@ public class Generator : ElectricalPole, IPushableObject
             throw new InvalidOperationException("The Current Item in the Generator has not been removed, but another is attempting to be added");
 
         _currentItem = item;
-        _currentItemHeldLength = ItemHoldLength;
+        _currentItemHeldTime = ItemHoldTime;
 
         
     }

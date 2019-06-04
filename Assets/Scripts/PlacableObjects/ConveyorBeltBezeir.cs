@@ -185,13 +185,13 @@ public class ConveyorBeltBezeir : DraggableObject, IPushableObject
     }
 
 
-    public bool CanTakeItem(Item item)
+    public bool CanTakeItem(ItemInstance item)
     {
         return ItemsOnBelt.Count == 0 ||
             (ItemsOnBelt[ItemsOnBelt.Count - 1].State != 0);
     }
 
-    public void PushItem(Item item)
+    public void PushItem(ItemInstance item)
     {
         if (item == null)
             throw new ArgumentNullException("item", "A null value was passed into PushItem");
@@ -210,7 +210,7 @@ public class BezierConveyorItemInfo : ConveyorItemInfo
 {
     public Quaternion TargetRotation;
     public Quaternion StartRotation;
-    public BezierConveyorItemInfo(Item item, Vector3 targetPosition, Vector3 startPosition, Quaternion targetRotation, Quaternion startRotation)
+    public BezierConveyorItemInfo(ItemInstance item, Vector3 targetPosition, Vector3 startPosition, Quaternion targetRotation, Quaternion startRotation)
         : base(item, targetPosition, startPosition)
     {
         TargetRotation = targetRotation;

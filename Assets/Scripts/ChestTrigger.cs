@@ -7,7 +7,7 @@ public class ChestTrigger : MonoBehaviour {
     public Inventory inv;
     private void OnTriggerStay(Collider other)
     {
-        Item item = other.gameObject.GetComponent<Item>();
+        ItemInstance item = other.gameObject.GetComponent<ItemInstance>();
 
         if(item != null)
         {
