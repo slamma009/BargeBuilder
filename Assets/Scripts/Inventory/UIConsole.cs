@@ -6,6 +6,7 @@ public class UIConsole : MonoBehaviour
 {
     public InventoryCanvas HoverBargeCanvas;
     public InventoryCanvas OtherCanvas;
+    public InventoryCanvas HotBar;
 
     InventoryCanvas SelectedCanvas;
     int SelectedIndex = -1;
@@ -14,6 +15,7 @@ public class UIConsole : MonoBehaviour
     {
         HoverBargeCanvas.SlotSelectedEvent = SlotChanged;
         OtherCanvas.SlotSelectedEvent = SlotChanged;
+        HotBar.SlotSelectedEvent = SlotChanged;
     }
     public void SlotChanged(int index, InventoryCanvas canvas)
     {

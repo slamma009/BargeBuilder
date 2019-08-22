@@ -10,9 +10,14 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c0a9017ad1b9e9d49ade9d79707e474c, type: 3}
-  m_Name: Coal
+  m_Name: ConveyorBelt
   m_EditorClassIdentifier: 
-  ID: 1
+  ID: 4
   StackSize: 64
-  Image: {fileID: 21300000, guid: 5584ded4be8b80e4eb7f394d1c0229e2, type: 3}
-  Prefab: {fileID: 1879209391492952, guid: d2117ca14ca754c4b8827efc9077312d, type: 3}
+  Tag: 1
+  PlaceHeight: 1
+  Image: {fileID: 21300000, guid: 86d1930a74276904a8717e829d7f5b45, type: 3}
+  Prefab: {fileID: 1359610701922662, guid: 4abce2f3714d6e44ba082af15d12ec39, type: 3}
+  IsPlacable: 1
+  SecondaryPrefabs:
+  - {fileID: 1915915016580594, guid: f581339be3238be4a9026a03c707b4b8, type: 3}

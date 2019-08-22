@@ -115,7 +115,7 @@ public class Splitter : PlacableObject//, IPushableObject
                 if (CanOutput)
                 {
                     Instantiate(SplitterInventory.InventorySlots[i].Item.Prefab, SpawnPoints[LastOutput].position, Quaternion.identity);
-                    if(SplitterInventory.Remove(i) > 0)
+                    if(SplitterInventory.RemoveByIndex(i) > 0)
                     {
                         throw new Exception("Iventory didn't remove item we placed.");
                     }

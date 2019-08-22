@@ -120,7 +120,7 @@ public class Generator : ElectricalPole, IPushableObject
 
     private bool BurnObject()
     {
-        if(_objInventory.Remove(0, 1) == 0)
+        if(_objInventory.RemoveByIndex(0, 1) == 0)
         {
             return true;
         }

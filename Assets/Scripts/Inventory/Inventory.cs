@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 public class Inventory : MonoBehaviour
 {
+    public string InventoryName = "Inventory";
     public int InventorySize = 8;
-    public InventorySlot[] _InventorySlots;
+    private InventorySlot[] _InventorySlots { get; set; }
     
     public InventorySlot[] InventorySlots
     {
@@ -128,7 +129,7 @@ public class Inventory : MonoBehaviour
         return amountToAdd;
     }
 
-    public int Remove(int index, int amount = 1)
+    public int RemoveByIndex(int index, int amount = 1)
     {
         if (_InventorySlots[index].Amount <= 0 || _InventorySlots[index].Item == null)
             return amount;

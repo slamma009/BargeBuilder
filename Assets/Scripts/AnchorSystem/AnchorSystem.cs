@@ -8,7 +8,9 @@ public class AnchorSystem : MonoBehaviour {
 
     public float PlaceDistance = 1000;
     public float RotateSpeed = 50;
-    public PlacableItemHolder[] PlacableItems;
+    public InventoryItem[] PlacableItems;
+    public Inventory HotbarInventory;
+    public bool UseHotbar = true;
     public Transform GhostAvatarPoint;
     public Material GhostMaterial;
     public Material GhostErrorMaterial;
@@ -21,7 +23,8 @@ public class AnchorSystem : MonoBehaviour {
     protected List<Collider> GhostColliders = new List<Collider>();
     public List<GameObject> DraggableCollidedObjects = new List<GameObject>();
 
-    protected int SelectedPrefab = 0;
+    protected int _placableItemIndex = -1;
+    protected int _hotbarItemId;
 
     protected bool DestructionMode;
     protected bool PlacingModeEnabled = false; // In placing mode
@@ -97,7 +100,7 @@ public class AnchorSystem : MonoBehaviour {
 
             if (hit.transform.tag == "Placable")
             {
-                GhostObject.transform.position = hit.point + Vector3.up * PlacableItems[SelectedPrefab].MinHeight;
+                GhostObject.transform.position = hit.point + Vector3.up * GetSelectedItem().PlaceHeight;
 
                 // Try snapping to nearby anchors first
                 GameObject closestAnchor = null;
@@ -209,10 +212,11 @@ public class AnchorSystem : MonoBehaviour {
 
         if (ObjectCanBePlaced && buttonDown)
         {
-            if (PlacableItems[SelectedPrefab].id == "ConveyorBelt" && anchor.transform.parent.tag == "ConveyorBelt")
+            //TODO: Replace ConveyorBelt check with id value
+            if (GetSelectedItem().Tag == EItemTag.ConveyorBelt && anchor.transform.parent.tag == EItemTag.ConveyorBelt.ToString())
             {
                 DragMode = true;
-                GameObject curve = Instantiate(PlacableItems[SelectedPrefab].Prefabs[1], Vector3.zero, Quaternion.identity);
+                GameObject curve = Instantiate(GetSelectedItem().SecondaryPrefabs[0], Vector3.zero, Quaternion.identity);
                 DraggedObject = curve.GetComponent<ConveyorBeltBezeir>();
                 DraggedObject.Initialize(anchor, GhostObject);
 
@@ -246,8 +250,11 @@ public class AnchorSystem : MonoBehaviour {
 
             if (ObjectCanBePlaced && placeGhost)
             {
-                GameObject newObj = Instantiate(PlacableItems[SelectedPrefab].Prefabs[0], GhostObject.transform.position, GhostObject.transform.rotation);
+                GameObject newObj = Instantiate(GetSelectedItem().Prefab, GhostObject.transform.position, GhostObject.transform.rotation);
                 newObj.GetComponent<PlacableObject>().ObjectPlaced();
+
+                HandleInventoryAfterPlace();
+
                 if (DraggedObject != null && DragMode)
                 {
                     DraggedObject.ObjectPlaced(newObj.GetComponent<ConveyorBelt>());
@@ -263,7 +270,7 @@ public class AnchorSystem : MonoBehaviour {
     private void HitTerrain(RaycastHit hit, bool placeObject)
     {
         // Set the Ghost Object Position
-        GhostObject.transform.position = hit.point + Vector3.up * PlacableItems[SelectedPrefab].MinHeight;
+        GhostObject.transform.position = hit.point + Vector3.up * GetSelectedItem().PlaceHeight;
         if(DraggedObject != null && !DraggedObject.gameObject.activeSelf)
                 DraggedObject.gameObject.SetActive(true);
         // If the dragged object is still anchoring to the last anchor, switch it to follow the ghost object again.
@@ -283,8 +290,10 @@ public class AnchorSystem : MonoBehaviour {
             if (ObjectCanBePlaced)
             {
                 // Place the item we have selected
-                GameObject newObj = Instantiate(PlacableItems[SelectedPrefab].Prefabs[0], GhostObject.transform.position, GhostObject.transform.rotation);
+                GameObject newObj = Instantiate(GetSelectedItem().Prefab, GhostObject.transform.position, GhostObject.transform.rotation);
                 newObj.GetComponent<PlacableObject>().ObjectPlaced();
+
+                HandleInventoryAfterPlace();
 
                 // Check if we are draging an item and place it too
                 if (DraggedObject != null && DragMode)
@@ -297,6 +306,36 @@ public class AnchorSystem : MonoBehaviour {
             {
                 // Just in case we have an item that's being dragged, lets exit
                 ExitDragMode(true);
+            }
+        }
+    }
+
+    /// <summary>
+    /// Checks if selected item in hot bar is still available
+    /// </summary>
+    /// <returns>True if selected item still exists in hotbar</returns>
+    protected bool CheckSelectedItem()
+    {
+        if (!UseHotbar)
+            return true;
+
+        return _placableItemIndex >= 0 && HotbarInventory.InventorySlots[_placableItemIndex].Amount > 0;
+    }
+
+    /// <summary>
+    /// Attempts to remove 1 of the selected items from the hotbar
+    /// </summary>
+    protected void HandleInventoryAfterPlace()
+    {
+        // If using hotbar, remove 1 item.
+        if (UseHotbar)
+        {
+            int amount = HotbarInventory.RemoveByIndex(_placableItemIndex, 1);
+
+            // If all items were used, then change prefab
+            if (HotbarInventory.InventorySlots[_placableItemIndex].Amount == 0)
+            {
+                ChangePrefabsWithHotbar();
             }
         }
     }
@@ -317,14 +356,18 @@ public class AnchorSystem : MonoBehaviour {
     {
         if (enabling)
         {
-            PlacingModeEnabled = true;
-            SelectedPrefab -= 1;
+            if(_placableItemIndex >= 0)
+                _placableItemIndex -= 1;
             ChangePrefabs();
+
+            if (_placableItemIndex >= 0)
+                PlacingModeEnabled = true;
 
         }
         else
         {
             PlacingModeEnabled = false;
+            _hotbarItemId = -1;
 
             if (GhostObject != null)
             {
@@ -348,17 +391,97 @@ public class AnchorSystem : MonoBehaviour {
     /// </summary>
     protected void ChangePrefabs()
     {
-        SelectedPrefab += 1;
-        if (SelectedPrefab >= PlacableItems.Length)
-            SelectedPrefab = 0;
+        if (UseHotbar)
+            ChangePrefabsWithHotbar();
+        else
+            ChangePrefabsWithPlacableItemsArray();
+    }
 
+    /// <summary>
+    /// Utalized the Hotbar for Survival like placement
+    /// </summary>
+    protected void ChangePrefabsWithHotbar()
+    {
+        int valueBefore = _placableItemIndex;
+        for (var i = _placableItemIndex + 1; i != _placableItemIndex; ++i)
+        {
+
+            if (HotbarInventory.InventorySlots[i].Amount > 0)
+            {
+                if (HotbarInventory.InventorySlots[i].Item.IsPlacable)
+                {
+                    // If we don't have any items left in our selected slot
+                    // we need to change to the new slot
+                    if (_placableItemIndex >= 0
+                        && HotbarInventory.InventorySlots[_placableItemIndex].Amount == 0)
+                    {
+                        _placableItemIndex = i;
+
+                        // If the new item is different then the current one, update the ghost avatar
+                        if (HotbarInventory.InventorySlots[i].Item.ID != _hotbarItemId)
+                        {
+                            _hotbarItemId = HotbarInventory.InventorySlots[i].Item.ID;
+                            ChangePrefab(HotbarInventory.InventorySlots[i].Item.Prefab);
+                        }
+
+                        break;
+                    }
+                    // Will trigger if we've found a new item to select
+                    else if (HotbarInventory.InventorySlots[i].Item.ID != _hotbarItemId)
+                    {
+                        _placableItemIndex = i;
+                        _hotbarItemId = HotbarInventory.InventorySlots[i].Item.ID;
+                        ChangePrefab(HotbarInventory.InventorySlots[i].Item.Prefab);
+                        break;
+                    }
+
+                }
+            }
+
+
+            if (i == HotbarInventory.InventorySize - 1)
+            {
+                i = -1;
+
+                if (_placableItemIndex <= -1)
+                    break;
+            }
+        }
+
+        // If we didn't find any new items to place, and we have none left in our current slot
+        // reset the slots
+        if (_placableItemIndex == valueBefore 
+            && _placableItemIndex >= 0 
+            && HotbarInventory.InventorySlots[_placableItemIndex].Amount == 0)
+        {
+            _placableItemIndex = -1;
+            _hotbarItemId = -1;
+            EnablePlacingMode(false);
+        }
+    }
+    
+    /// <summary>
+    /// Utalized the PlacableItemsArray for Creative like placement
+    /// </summary>
+    protected void ChangePrefabsWithPlacableItemsArray()
+    {
+        _placableItemIndex += 1;
+        if (_placableItemIndex >= PlacableItems.Length)
+            _placableItemIndex = 0;
+
+        ChangePrefab(GetSelectedItem().Prefab);
+    }
+
+    protected void ChangePrefab(GameObject prefab)
+    { 
         // Instantiate the ghost avatar above the hand. 
-        GameObject tempAvatar = Instantiate(PlacableItems[SelectedPrefab].Prefabs[0], GhostAvatarPoint.position, (GhostAvatar == null ? GhostAvatarPoint.rotation : GhostAvatar.transform.rotation)) as GameObject;
+        GameObject tempAvatar = Instantiate(prefab, GhostAvatarPoint.position, (GhostAvatar == null ? GhostAvatarPoint.rotation : GhostAvatar.transform.rotation)) as GameObject;
         PlacableObject poAvatar = tempAvatar.GetComponent<PlacableObject>();
         poAvatar.MakeGhost(null);
         Destroy(poAvatar);
         tempAvatar.transform.localScale = Vector3.one * 0.03f;
-        tempAvatar.transform.parent = GhostAvatarPoint.parent;
+        if(GhostAvatarPoint.parent)
+        tempAvatar.transform.parent = GhostAvatarPoint;
 
         if (GhostAvatar != null)
         {
@@ -369,7 +492,7 @@ public class AnchorSystem : MonoBehaviour {
 
 
         // Instantiate the ghost object
-        GameObject tempObject = Instantiate(PlacableItems[SelectedPrefab].Prefabs[0], (GhostObject == null ? Vector3.zero - Vector3.up * 5 : GhostObject.transform.position), Quaternion.identity) as GameObject;
+        GameObject tempObject = Instantiate(prefab, (GhostObject == null ? Vector3.zero - Vector3.up * 5 : GhostObject.transform.position), Quaternion.identity) as GameObject;
         
         tempObject.GetComponent<PlacableObject>().MakeGhost(GhostMaterial);
         tempObject.transform.rotation = GhostObject == null ? Quaternion.identity : GhostObject.transform.rotation;
@@ -383,7 +506,7 @@ public class AnchorSystem : MonoBehaviour {
         GhostObject = tempObject;
         GhostPlacable = GhostObject.GetComponent<PlacableObject>();
         GhostPlacable.IsGhost = true;
-        GameObject colliderObject = Instantiate(PlacableItems[SelectedPrefab].Prefabs[0], GhostObject.transform.position, GhostObject.transform.rotation) as GameObject;
+        GameObject colliderObject = Instantiate(prefab, GhostObject.transform.position, GhostObject.transform.rotation) as GameObject;
         colliderObject.GetComponent<PlacableObject>().MakeGhost(null, false);
         colliderObject.name = "COLLIDEROBJECT";
         colliderObject.transform.localScale = colliderObject.transform.localScale * 0.95f;
@@ -473,5 +596,15 @@ public class AnchorSystem : MonoBehaviour {
         return false;
     }
 
-
+    /// <summary>
+    /// Returns the tag of the item
+    /// </summary>
+    /// <returns>The Tag of the item</returns>
+    protected InventoryItem GetSelectedItem()
+    {
+        if (!UseHotbar)
+            return PlacableItems[_placableItemIndex];
+        else
+            return HotbarInventory.InventorySlots[_placableItemIndex].Item;
+    }
 }

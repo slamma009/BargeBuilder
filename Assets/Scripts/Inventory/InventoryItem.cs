@@ -10,7 +10,13 @@ public class InventoryItem : ScriptableObject
 {
     public int ID;
     public int StackSize;
+    public EItemTag Tag;
+    public int PlaceHeight;
     public Sprite Image;
     public GameObject Prefab;
+    public bool IsPlacable;
+    public GameObject[] SecondaryPrefabs;
 
 }
+
+public enum EItemTag { None, ConveyorBelt }
