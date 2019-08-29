@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c0a9017ad1b9e9d49ade9d79707e474c, type: 3}
+  m_Name: Extractor
+  m_EditorClassIdentifier: 
+  ID: 5
+  StackSize: 64
+  Tag: 0
+  PlaceHeight: 1
+  Image: {fileID: 21300000, guid: 78aea836083ef804b9e0964857efd2c0, type: 3}
+  Prefab: {fileID: 1117321200372210, guid: 74cb8450ed1a1a14ea1c5982b8be51ad, type: 3}
+  IsPlacable: 0
+  SecondaryPrefabs: []
+  RecipeItems:
+  - Item: {fileID: 11400000, guid: 2687ac115967bbe46b4aab4c7468ba25, type: 2}
+    Amount: 10

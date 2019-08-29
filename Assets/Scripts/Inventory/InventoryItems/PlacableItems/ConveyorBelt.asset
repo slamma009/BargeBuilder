@@ -21,3 +21,6 @@ MonoBehaviour:
   IsPlacable: 1
   SecondaryPrefabs:
   - {fileID: 1915915016580594, guid: f581339be3238be4a9026a03c707b4b8, type: 3}
+  RecipeItems:
+  - Item: {fileID: 11400000}
+    Amount: 1

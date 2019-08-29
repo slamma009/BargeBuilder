@@ -16,7 +16,13 @@ public class InventoryItem : ScriptableObject
     public GameObject Prefab;
     public bool IsPlacable;
     public GameObject[] SecondaryPrefabs;
-
+    public RecipeItem[] RecipeItems;
 }
 
+[System.Serializable]
+public struct RecipeItem
+{
+    public InventoryItem Item;
+    public int Amount;
+}
 public enum EItemTag { None, ConveyorBelt }

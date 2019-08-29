@@ -34,11 +34,11 @@ public class UIConsole : MonoBehaviour
         {
             if (index != SelectedIndex || SelectedCanvas != canvas)
             {
-
                 int amount = SelectedCanvas.AttachedInventory.InventorySlots[SelectedIndex].Amount;
                 InventoryItem item = SelectedCanvas.AttachedInventory.InventorySlots[SelectedIndex].Item;
+                canvas.AttachedInventory.TryAddItemToItemCache(item);
 
-                if(canvas.AttachedInventory.InventorySlots[index].Amount > 0 
+                if (canvas.AttachedInventory.InventorySlots[index].Amount > 0 
                     && canvas.AttachedInventory.InventorySlots[index].Item != null
                     && item.ID == canvas.AttachedInventory.InventorySlots[index].Item.ID && 
                     canvas.AttachedInventory.InventorySlots[index].Amount < item.StackSize)
@@ -67,5 +67,18 @@ public class UIConsole : MonoBehaviour
             SelectedCanvas.currentSlots[SelectedIndex].OutlineImage.color = OriginalSlotColor;
             SelectedIndex = -1;
         }
+    }
+
+    /// <summary>
+    /// Finds the amount of the given itemId in the inventories
+    /// </summary>
+    /// <param name="itemId">The itemId to look for</param>
+    /// <param name="includeConnectedInventory">Flag for using connected inventory</param>
+    /// <returns>The amount of the item available</returns>
+    public int FindItemCount(int itemId, bool includeConnectedInventory = true)
+    {
+        return HoverBargeCanvas.AttachedInventory.GetCountById(itemId) +
+            HotBar.AttachedInventory.GetCountById(itemId) +
+            (includeConnectedInventory && OtherCanvas.AttachedInventory != null ? OtherCanvas.AttachedInventory.GetCountById(itemId) : 0);
     }
 }

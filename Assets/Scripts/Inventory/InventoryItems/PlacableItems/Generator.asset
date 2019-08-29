@@ -17,6 +17,11 @@ MonoBehaviour:
   Tag: 1
   PlaceHeight: 1
   Image: {fileID: 21300000, guid: fcbf7d444e0e7834ea7ccf522fd09f86, type: 3}
-  Prefab: {fileID: 1117321200372210, guid: 74cb8450ed1a1a14ea1c5982b8be51ad, type: 3}
+  Prefab: {fileID: 1655436872, guid: dcaa5ea435503b346996f03dae752bff, type: 3}
   IsPlacable: 1
   SecondaryPrefabs: []
+  RecipeItems:
+  - Item: {fileID: 11400000, guid: 2687ac115967bbe46b4aab4c7468ba25, type: 2}
+    Amount: 20
+  - Item: {fileID: 11400000, guid: c0bc7ea9e9b68074d8f79af8e2d57dfe, type: 2}
+    Amount: 10

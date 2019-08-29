@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 public class Inventory : MonoBehaviour
 {
@@ -51,15 +52,9 @@ public class Inventory : MonoBehaviour
     /// <returns>Returns the amount of items not added.</returns>
     public int Add(int id, int amount = 1)
     {
-        if (!ItemCache.ContainsKey(id))
+        if (!TryAddItemToItemCache(id))
         {
-            InventoryItem newItem = Controller.GetItem(id);
-            if(newItem == null)
-            {
-                Debug.LogError("Unabled to find item with id " + id);
-                return amount;
-            }
-            ItemCache.Add(id, newItem);
+            return amount;
         }
 
 
@@ -129,6 +124,35 @@ public class Inventory : MonoBehaviour
         return amountToAdd;
     }
 
+    /// <summary>
+    /// Gets the amount of an item in the inventory by id
+    /// </summary>
+    /// <param name="itemId">The Id of the item</param>
+    /// <returns>The amount of the item in the inventory</returns>
+    public int GetCountById(int itemId)
+    {
+        // If the ID isn't even in the cache, then it can't be in the inventory
+        if (!ItemCache.ContainsKey(itemId))
+        {
+            return 0;
+        }
+
+        var slotsWithId = _InventorySlots.Where(x => x.Item != null && x.Item.ID == itemId);
+
+        // If no slots with the itemId are found, then return 0
+        if (slotsWithId.Count() == 0)
+            return 0;
+
+        // Count the amount of items in each slot
+        int amount = 0;
+        foreach(var slot in slotsWithId)
+        {
+            amount += slot.Amount;
+        }
+
+        return amount;
+    }
+
     public int RemoveByIndex(int index, int amount = 1)
     {
         if (_InventorySlots[index].Amount <= 0 || _InventorySlots[index].Item == null)
@@ -146,6 +170,33 @@ public class Inventory : MonoBehaviour
         
     }
 
+
+    public bool TryAddItemToItemCache(int id)
+    {
+        if (!ItemCache.ContainsKey(id))
+        {
+            InventoryItem newItem = Controller.GetItem(id);
+            if (newItem == null)
+            {
+                Debug.LogError("Unabled to find item with id " + id);
+                return false;
+            }
+
+            return TryAddItemToItemCache(newItem);
+        }
+
+        return true;
+    }
+
+    public bool TryAddItemToItemCache(InventoryItem item)
+    {
+        if (!ItemCache.ContainsKey(item.ID))
+        {
+            ItemCache.Add(item.ID, item);
+        }
+
+        return true;
+    }
 }
 
 [Serializable]

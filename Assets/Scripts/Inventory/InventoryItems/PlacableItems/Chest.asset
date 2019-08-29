@@ -20,3 +20,6 @@ MonoBehaviour:
   Prefab: {fileID: 1874131229887166, guid: 92e69187c40b03147aa12c5071396321, type: 3}
   IsPlacable: 1
   SecondaryPrefabs: []
+  RecipeItems:
+  - Item: {fileID: 11400000, guid: 2687ac115967bbe46b4aab4c7468ba25, type: 2}
+    Amount: 5
