@@ -1,5 +1,104 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &1788474795
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1788474796}
+  - component: {fileID: 1788474799}
+  - component: {fileID: 1788474798}
+  - component: {fileID: 1788474797}
+  m_Layer: 5
+  m_Name: QueuedItemPanel
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1788474796
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1788474795}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: -0}
+  m_LocalScale: {x: 0.9991143, y: 0.99911386, z: 0}
+  m_Children: []
+  m_Father: {fileID: 2676294383988144177}
+  m_RootOrder: 2
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 1, y: 1}
+  m_AnchoredPosition: {x: 337.5, y: -40}
+  m_SizeDelta: {x: -695, y: -100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!222 &1788474799
+CanvasRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1788474795}
+  m_CullTransparentMesh: 0
+--- !u!114 &1788474798
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1788474795}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -765806418, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Material: {fileID: 0}
+  m_Color: {r: 1, g: 1, b: 1, a: 0.392}
+  m_RaycastTarget: 1
+  m_OnCullStateChanged:
+    m_PersistentCalls:
+      m_Calls: []
+    m_TypeName: UnityEngine.UI.MaskableGraphic+CullStateChangedEvent, UnityEngine.UI,
+      Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+  m_Sprite: {fileID: 21300000, guid: 85950b75b114c294384cd72cbd20a76d, type: 3}
+  m_Type: 0
+  m_PreserveAspect: 0
+  m_FillCenter: 1
+  m_FillMethod: 4
+  m_FillAmount: 1
+  m_FillClockwise: 1
+  m_FillOrigin: 0
+  m_UseSpriteMesh: 0
+--- !u!114 &1788474797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1788474795}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -2095666955, guid: f70555f144d8491a825f0804e09c671c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  m_StartCorner: 0
+  m_StartAxis: 1
+  m_CellSize: {x: 70, y: 70}
+  m_Spacing: {x: 0, y: 0}
+  m_Constraint: 0
+  m_ConstraintCount: 2
 --- !u!1 &2676294383911185855
 GameObject:
   m_ObjectHideFlags: 0
@@ -189,6 +288,7 @@ RectTransform:
   m_Children:
   - {fileID: 2676294385848772102}
   - {fileID: 2676294385122054740}
+  - {fileID: 1788474796}
   m_Father: {fileID: 2676294384510097936}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -247,6 +347,7 @@ GameObject:
   - component: {fileID: 2676294384510097950}
   - component: {fileID: 2676294384510097949}
   - component: {fileID: 2676294384510097937}
+  - component: {fileID: 2086331374}
   m_Layer: 5
   m_Name: Crafting Canvas
   m_TagString: Untagged
@@ -263,7 +364,7 @@ RectTransform:
   m_GameObject: {fileID: 2676294384510097948}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: -6.74}
-  m_LocalScale: {x: 0.004148434, y: 0.004148434, z: 0}
+  m_LocalScale: {x: 0.0010705449, y: 0.0010705449, z: 0.001070545}
   m_Children:
   - {fileID: 2676294383988144177}
   - {fileID: 2676294385052218342}
@@ -366,12 +467,32 @@ MonoBehaviour:
   TabInactiveColor: {r: 0.62352943, g: 0.3647059, b: 0, a: 1}
   RecipeSelectedColor: {r: 1, g: 0.9805217, b: 0.8160377, a: 1}
   RecipeInactiveColor: {r: 1, g: 0.89411765, b: 0, a: 1}
+  EnoughItemsForRecipeTextColor: {r: 0.5807227, g: 0.8490566, b: 0.6099581, a: 1}
+  NotEnoughItemsForRecipeTextColor: {r: 1, g: 0.7077556, b: 0.6179246, a: 1}
+  CraftButton: {fileID: 2676294385848772103}
+  UIConsoleController: {fileID: 0}
   ItemDisplayPrefab: {fileID: 1651103774259505757, guid: a0f7862afcd9f6147a95a30cacabfd47,
     type: 3}
   RecipeDisplayPrefab: {fileID: 8449016841704722354, guid: c7e8c94b41dc74a4ba8a17633b031bc5,
     type: 3}
+  QueuedItemDisplayPrefab: {fileID: 2721126754816721581, guid: 64c2bbeb6fe489d4a82c77f78e242428,
+    type: 3}
   MainPanel: {fileID: 2676294385052218342}
   CraftingPanel: {fileID: 2676294385122054740}
+  QueuedPanel: {fileID: 1788474796}
+--- !u!65 &2086331374
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2676294384510097948}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1400, y: 800, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &2676294385052218341
 GameObject:
   m_ObjectHideFlags: 0
@@ -943,7 +1064,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 334.47, y: 37.88}
+  m_AnchoredPosition: {x: 334.47, y: 81}
   m_SizeDelta: {x: 220, y: 60}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2676294385848772121
@@ -967,7 +1088,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.2971698, g: 1, b: 0.35781124, a: 1}
+  m_Color: {r: 0, g: 1, b: 0.083798885, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1006,7 +1127,7 @@ MonoBehaviour:
     m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
     m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
     m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
+    m_DisabledColor: {r: 1, g: 1, b: 1, a: 0.5019608}
     m_ColorMultiplier: 1
     m_FadeDuration: 0.1
   m_SpriteState:
@@ -1018,10 +1139,21 @@ MonoBehaviour:
     m_HighlightedTrigger: Highlighted
     m_PressedTrigger: Pressed
     m_DisabledTrigger: Disabled
-  m_Interactable: 1
+  m_Interactable: 0
   m_TargetGraphic: {fileID: 2676294385848772120}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2676294384510097937}
+        m_MethodName: QueueCraftItem
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
     m_TypeName: UnityEngine.UI.Button+ButtonClickedEvent, UnityEngine.UI, Version=1.0.0.0,
       Culture=neutral, PublicKeyToken=null

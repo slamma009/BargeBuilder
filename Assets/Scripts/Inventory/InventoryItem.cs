@@ -17,6 +17,7 @@ public class InventoryItem : ScriptableObject
     public bool IsPlacable;
     public GameObject[] SecondaryPrefabs;
     public RecipeItem[] RecipeItems;
+    public int RecipeTimeInTicks = 25;
 }
 
 [System.Serializable]

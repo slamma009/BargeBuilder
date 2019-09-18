@@ -101,6 +101,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4855938572392310}
   - component: {fileID: 114323655849771900}
+  - component: {fileID: 8310755721921369956}
   m_Layer: 0
   m_Name: Extractor - Anchor
   m_TagString: Untagged
@@ -141,10 +142,25 @@ MonoBehaviour:
   - Anchor: {fileID: 1685782826595438}
   IsGhost: 0
   OreSpawn: {fileID: 4377778610695126}
-  SpawnRatePerMinute: 20
+  SpawnRateModifier: 1
   SpawnObject: {fileID: 114758688367776528, guid: d2117ca14ca754c4b8827efc9077312d,
     type: 3}
+  ExtractorInventory: {fileID: 8310755721921369956}
   OutputAnchor: {fileID: 0}
+--- !u!114 &8310755721921369956
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1117321200372210}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 94ff135bee1dc2f4ca4ebd2a010535be, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  InventoryName: Inventory
+  InventorySize: 1
 --- !u!1 &1131167429057868
 GameObject:
   m_ObjectHideFlags: 0

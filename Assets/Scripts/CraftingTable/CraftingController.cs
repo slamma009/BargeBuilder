@@ -27,6 +27,8 @@ public class CraftingController : MonoBehaviour
 
     public Color NotEnoughItemsForRecipeTextColor;
 
+    public Button CraftButton;
+
     /// <summary>The Controller for the Inventory Console</summary>
     public UIConsole UIConsoleController;
 
@@ -36,17 +38,26 @@ public class CraftingController : MonoBehaviour
     /// <summary>Prefab for a <see cref="RecipeItemDisplay"/></summary>
     public RecipeItemDisplay RecipeDisplayPrefab;
 
+    /// <summary>Prefab for a <see cref="QueuedItemDisplay"/></summary>
+    public QueuedItemDisplay QueuedItemDisplayPrefab;
+
     /// <summary>The main panel to show <see cref="CraftingItemDisplay"/> on</summary>
     public Transform MainPanel;
 
     /// <summary>The main panel to show <see cref="RecipeItemDisplay"/> on</summary>
     public Transform CraftingPanel;
+    
+    /// <summary>The main panel to show <see cref="QueuedItemDisplay"/> on</summary>
+    public Transform QueuedPanel;
 
     /// <summary>The currently active items being displayed</summary>
     private List<CraftingItemDisplay> _activeCraftingItems = new List<CraftingItemDisplay>();
 
     /// <summary>The currently active items being displayed</summary>
     private List<RecipeItemDisplay> _activeRecipeItems = new List<RecipeItemDisplay>();
+    
+    /// <summary>The current list of items being crafted</summary>
+    private List<QueuedItemDisplay> _queuedItems = new List<QueuedItemDisplay>();
 
     /// <summary>Our current active index for the tab</summary>
     private int _activeTabIndex = -1;
@@ -63,6 +74,8 @@ public class CraftingController : MonoBehaviour
             Tabs[i].TabButton.enabled = true;
         }
         SetActiveTab(0);
+        UIConsoleController.InventoryUpdated += UpdateCraftingButton;
+        TickController.TickEvent += TickUpdate;
     }
 
     /// <summary>
@@ -135,19 +148,95 @@ public class CraftingController : MonoBehaviour
             foreach(var item in Tabs[_activeTabIndex].Items[_activeCraftingItems[index].ArrayIndex].RecipeItems)
             {
                 RecipeItemDisplay newDisplay = Instantiate(RecipeDisplayPrefab, CraftingPanel);
-                newDisplay.SetText(
-                    item.Item.name + ": " + item.Amount,
-                    UIConsoleController.FindItemCount(item.Item.ID) >= item.Amount ?
-                        EnoughItemsForRecipeTextColor :
-                        NotEnoughItemsForRecipeTextColor
-                    );
                 newDisplay.SetImage(item.Item.Image);
                 _activeRecipeItems.Add(newDisplay);
             }
         }
 
+        UpdateCraftingButton();
+
     }
 
+
+    public void UpdateCraftingButton()
+    {
+        if (UpdateRecipeItemCounts())
+            CraftButton.interactable = true;
+        else
+            CraftButton.interactable = false;
+    }
+
+    /// <summary>
+    /// Checks inventories for Recipe Items for the current recipe
+    /// Updates the color of the items based on that count
+    /// </summary>
+    public bool UpdateRecipeItemCounts()
+    {
+        if(_activeRecipeIndex < 0)
+            return false;
+
+        var i = 0;
+        bool allItemsPresent = true;
+        foreach (var item in Tabs[_activeTabIndex].Items[_activeCraftingItems[_activeRecipeIndex].ArrayIndex].RecipeItems)
+        {
+            bool hasEnough = UIConsoleController.FindItemCount(item.Item.ID) >= item.Amount;
+            _activeRecipeItems[i].SetText(
+                item.Item.name + ": " + item.Amount,
+                hasEnough ?
+                    EnoughItemsForRecipeTextColor :
+                    NotEnoughItemsForRecipeTextColor
+                );
+
+            if (!hasEnough)
+                allItemsPresent = false;
+
+            i++;
+        }
+
+        return allItemsPresent;
+    }
+
+    /// <summary>
+    /// Enqueues the selected item to the crafting list
+    /// </summary>
+    public void QueueCraftItem()
+    {
+        InventoryItem itemToCraft = Tabs[_activeTabIndex].Items[_activeCraftingItems[_activeRecipeIndex].ArrayIndex];
+
+        // Remove all items needed to craft item
+        foreach (var recipeItem in itemToCraft.RecipeItems)
+        {
+            if (UIConsoleController.RemoveItemFromInventories(recipeItem.Item.ID, recipeItem.Amount) > 0)
+            {
+                throw new System.Exception("Inventories did not have at least " + recipeItem.Amount + " items with the id of " + recipeItem.Item.ID);
+            }
+        }
+
+        // Create new display for the crafting item
+        QueuedItemDisplay newItem = Instantiate(QueuedItemDisplayPrefab, QueuedPanel);
+        newItem.SetItem(itemToCraft);
+        _queuedItems.Add(newItem);
+    }
+
+    public void TickUpdate(object sender, TickArgs arg)
+    {
+        if(_queuedItems.Count > 0)
+        {
+            if (_queuedItems[0].AddTick())
+            {
+                // Item has finished crafting
+
+                if (UIConsoleController.AddItemToInventories(_queuedItems[0].Item.ID) > 0)
+                {
+                    throw new System.Exception("Unable to add crafted item with id " + _queuedItems[0].Item.ID + " to the inventory");
+                }
+
+                // Remove the item
+                Destroy(_queuedItems[0].gameObject);
+                _queuedItems.RemoveAt(0);
+            }
+        }
+    }
 
     [System.Serializable]
     public struct CraftingTableTab

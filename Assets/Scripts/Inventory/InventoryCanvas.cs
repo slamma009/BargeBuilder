@@ -15,6 +15,8 @@ public class InventoryCanvas : MonoBehaviour
 
     public delegate void InventorySlotArg(int Index, InventoryCanvas canvas);
     public InventorySlotArg SlotSelectedEvent;
+    
+    public Inventory.InventoryUpdatedAction InventoryUpdated;
 
 
     public Inventory AttachedInventory {
@@ -24,8 +26,19 @@ public class InventoryCanvas : MonoBehaviour
         }
         set
         {
+            if (InventoryUpdated != null)
+            {
+                if(_AttachedInv != null)
+                    _AttachedInv.InventoryUpdated -= InventoryUpdated;
+
+                if(value != null) 
+                    value.InventoryUpdated += InventoryUpdated;
+            }
             _AttachedInv = value;
             ChangeSlots(_AttachedInv == null ? 0 : _AttachedInv.InventorySize);
+
+            if (InventoryUpdated != null)
+                InventoryUpdated();
         }
     }
     // Start is called before the first frame update

@@ -7,6 +7,9 @@ public class Inventory : MonoBehaviour
     public string InventoryName = "Inventory";
     public int InventorySize = 8;
     private InventorySlot[] _InventorySlots { get; set; }
+
+    public delegate void InventoryUpdatedAction();
+    public event InventoryUpdatedAction InventoryUpdated;
     
     public InventorySlot[] InventorySlots
     {
@@ -74,6 +77,8 @@ public class Inventory : MonoBehaviour
                     amount -= AddItemToSlot(amount, i);
                     if (amount == 0)
                     {
+                        if (InventoryUpdated != null)
+                            InventoryUpdated();
                         return 0;
                     }
                     else if (amount < 0)
@@ -99,6 +104,8 @@ public class Inventory : MonoBehaviour
                 amount -= AddItemToSlot(amount, i);
                 if (amount == 0)
                 {
+                    if (InventoryUpdated != null)
+                        InventoryUpdated();
                     return 0;
                 }
                 else if (amount < 0)
@@ -109,6 +116,8 @@ public class Inventory : MonoBehaviour
         }
 
         // Unable to put all items in the inventory
+        if (InventoryUpdated != null)
+            InventoryUpdated();
         return amount;
     }
 
@@ -120,6 +129,9 @@ public class Inventory : MonoBehaviour
             amountToAdd = amount;
         }
         _InventorySlots[index].Amount += amountToAdd;
+
+        if (InventoryUpdated != null)
+            InventoryUpdated();
 
         return amountToAdd;
     }
@@ -153,6 +165,35 @@ public class Inventory : MonoBehaviour
         return amount;
     }
 
+    /// <summary>
+    /// Checks to see if inventory can add the provided <see cref="InventoryItem"/>
+    /// </summary>
+    /// <param name="itemId">The item to check</param>
+    /// <param name="amount">The amount to check</param>
+    /// <returns>True if inventory can add all the items provided</returns>
+    public bool CanAddItem(int itemId, int amount = 1)
+    {
+        if (!TryAddItemToItemCache(itemId))
+            return false;
+
+        for (var i = 0; i < InventorySize; ++i)
+        {
+            if (_InventorySlots[i].Item == null && _InventorySlots[i].Amount == 0)
+            {
+                amount -= ItemCache[itemId].StackSize;
+            }
+            else if(_InventorySlots[i].Item.ID == itemId)
+            {
+                amount -= _InventorySlots[i].Item.StackSize - _InventorySlots[i].Amount;
+            }
+
+            if (amount <= 0)
+                return true;
+        }
+
+        return false;
+    }
+
     public int RemoveByIndex(int index, int amount = 1)
     {
         if (_InventorySlots[index].Amount <= 0 || _InventorySlots[index].Item == null)
@@ -166,10 +207,40 @@ public class Inventory : MonoBehaviour
         if(_InventorySlots[index].Amount == 0)
             _InventorySlots[index].Item = null;
 
+        if (InventoryUpdated != null)
+            InventoryUpdated();
         return amount - amountToRemove;
         
     }
 
+    /// <summary>
+    /// Try to remove the provided <see cref="InventoryItem"/> from the inventory
+    /// </summary>
+    /// <param name="itemId">The id of the <see cref="InventoryItem"/></param>
+    /// <param name="amount">The amount to try and remove</param>
+    /// <returns>The amount not removed from the inventory</returns>
+    public int RemoveById(int itemId, int amount = 1)
+    {
+        if (!ItemCache.ContainsKey(itemId))
+            return amount;
+        
+        for (var i = 0; i < InventorySize; ++i)
+        {
+            if (_InventorySlots[i].Item != null && 
+                _InventorySlots[i].Item.ID == ItemCache[itemId].ID &&
+                _InventorySlots[i].Amount >= 0)
+            {
+                amount = RemoveByIndex(i, amount);
+                if (amount == 0)
+                    return 0;
+            }
+        }
+
+        return amount;
+
+
+
+    }
 
     public bool TryAddItemToItemCache(int id)
     {
